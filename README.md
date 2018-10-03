@@ -2,7 +2,7 @@
 
 This is a standalone desktop application which hopes to aid and be a friendly companion of the Bible Translator. In essence it is a basic [USFM](http://paratext.org/about/usfm) editor which is capable of import and export of USFM files. It has handy features like color-coded diffs across imported texts for comparison between revisions, search and replace and export to formatted HTML.
 
-The crucial difference between [Autographa Lite](https://github.com/friendsofagape/autographa-lite) is that, Autographa Live will include capabilities for Syncing data with online repositories and that this application is licensed differently.
+The crucial difference between [Autographa Lite](https://github.com/friendsofagape/autographa-lite) is that, Autographa Live will include capabilities for syncing data with online repositories and that this application is licensed differently.
 
 **Both 'Lite' and 'Live' versions will continue being supported and developed.**
 
