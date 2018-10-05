@@ -14,16 +14,28 @@ It is relatively easy to setup the application locally for development.
 [Yarn 1.9.4](https://yarnpkg.com/en/docs/install)    
 [Python 2](https://www.python.org/downloads/release/python-2715/) (One of our build tools [breaks under Python 3](https://github.com/nodejs/node-gyp/issues/1337).)
 
-### Mac (tested on MacOS Sierra 10.14) and *nix Setup (tested on Ubuntu 18.04)
-Fork this repository.   
-\# Set environment variable ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true.   
-\# In Bash-like shell:
+### Build and run
+1. Fork and clone this repository
+2. Set environment variable ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true
+3. Install dependencies with ```yarn install```
+3. Start the application with ```yarn start```
+
+#### Mac and *nix (tested on MacOS Sierra 10.14 and Ubuntu 18.04)  
+In Bash-like shell:
 
 ```% export ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true ```     
 ```% cd autographa-live && yarn install ```     
 ```% yarn start```
 
-This should start the application and open up the main screen.
+#### Windows (tested on Windows 10)  
+In Command Prompt:
+
+```
+cd autographa-lite
+set ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true
+yarn install
+yarn start
+```
 
 ## Contributing
 If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
