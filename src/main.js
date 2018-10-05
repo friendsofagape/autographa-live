@@ -56,7 +56,7 @@ function createWindow() {
 
     //loading window gracefully
     win.once('ready-to-show', () => {
-	win.maximize();
+        win.maximize();
         win.show();
     });
 
@@ -65,10 +65,10 @@ function createWindow() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-	win = null;
-	if (process.platform !== 'darwin') {
-	    app.quit();
-	}
+        win = null;
+        if (process.platform !== 'darwin') {
+            app.quit();
+        }
     });
 }
 
@@ -77,35 +77,35 @@ var dbSetup = new Promise(
     if ( !existsSync('db') ) {
       mkdirSync( 'db' );
     }
-	// Setup database.
-	var dbUtil = require(`${__dirname}/util/DbUtil.js`);
-	dbUtil.setupTargetDb
-	    .then((response) => {
-		console.log(response);
-		return dbUtil.setupRefDb;
-	    })
-	    .then((response) => {
-		console.log(response);
+        // Setup database.
+        var dbUtil = require(`${__dirname}/util/DbUtil.js`);
+        dbUtil.setupTargetDb
+            .then((response) => {
+                console.log(response);
+                return dbUtil.setupRefDb;
+            })
+            .then((response) => {
+                console.log(response);
         return dbUtil.setupLookupsDb;
-	    })
+            })
         .then((response)=>{
             console.log(response)
             resolve(response)
         })
         .catch((err) => {
-		console.log('Error while DB setup. ' + err);
-		reject(err);
-	    });
+                console.log('Error while DB setup. ' + err);
+                reject(err);
+            });
     });
 
 function preProcess() {
     dbSetup
-	.then((response) => {
-	    createWindow();
-	})
-	.catch((err) => {
-	    console.log('Error while App intialization.' + err);
-	});
+        .then((response) => {
+            createWindow();
+        })
+        .catch((err) => {
+            console.log('Error while App intialization.' + err);
+        });
 }
 
 // This method will be called when Electron has finished
