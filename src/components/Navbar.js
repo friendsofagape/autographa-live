@@ -23,6 +23,7 @@ const dmp_diff = new DiffMatchPatch();
 let exportHtml = require(`${__dirname}/../util/export_html.js`);
 let currentBook, book;
 const bibleJson = require(`${__dirname}/../lib/full_bible_skel.json`);
+import Loader from './Loader';
 
 injectTapEventPlugin();
 
@@ -46,7 +47,9 @@ class Navbar extends React.Component {
             searchVal: "", 
             replaceVal:"",
             toggled: false,
-            setDiff: false
+            setDiff: false,
+            showLoader: false
+
         };
        
         var verses, chunks, chapter;
@@ -617,8 +620,10 @@ class Navbar extends React.Component {
             AutographaStore.tDel[i] = 0;
         }
     }
-    
-    
+    setLoader = (value) => {
+        this.setState({showLoader: value})
+    }
+
     render() {
         // const layout = AutographaStore.layout;
         var OTbooksstart = 0;
@@ -719,7 +724,7 @@ class Navbar extends React.Component {
                         </Tabs>
                     </Modal.Body>
                 </Modal>
-                <SettingsModal show={AutographaStore.showModalSettings} />
+                <SettingsModal show={AutographaStore.showModalSettings} showLoader = {this.setLoader} />
                 <AboutUsModal show={AutographaStore.showModalAboutUs} />
                 <SearchModal show={AutographaStore.showModalSearch}/>
                 <DownloadModal show={AutographaStore.showModalDownload} />
@@ -845,6 +850,7 @@ class Navbar extends React.Component {
                     </div>
                 }  
                 <Footer onSave={this.saveTarget} getRef = {this.getRefContents}/>
+                {this.state.showLoader ? <Loader /> : ""}
             </div>
         )
     }
