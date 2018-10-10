@@ -16,6 +16,14 @@ import {existsSync, mkdirSync} from 'fs'
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 
+// Allow F12 or Ctrl-Shift-I to open Chrome Dev Tools when in development mode.
+if (env.name === "development") {
+    require('electron-debug')({
+        showDevTools: false,
+        devToolsMode: "previous"
+    });
+}
+
 function createWindow() {
     // Create the browser window.
     win = new BrowserWindow({
@@ -30,10 +38,7 @@ function createWindow() {
     'webPreferences': {'session': session},
     show: false
     });
-    if (env.name === "development") {
-        //win.openDevTools();
-    }
-    
+
     // and load the index.html of the app.
     // win.loadURL(`file:${__dirname}/views/index.html`);
     win.setMenu(null);
@@ -51,9 +56,7 @@ function createWindow() {
 
     //loading window gracefully
     win.once('ready-to-show', () => {
-	// Open the DevTools.
-	//win.webContents.openDevTools();	
-	win.maximize();
+        win.maximize();
         win.show();
     });
 
@@ -62,10 +65,10 @@ function createWindow() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-	win = null;
-	if (process.platform !== 'darwin') {
-	    app.quit();
-	}
+        win = null;
+        if (process.platform !== 'darwin') {
+            app.quit();
+        }
     });
 }
 
@@ -74,40 +77,37 @@ var dbSetup = new Promise(
     if ( !existsSync('db') ) {
       mkdirSync( 'db' );
     }
-	// Setup database.
-	var dbUtil = require(`${__dirname}/util/DbUtil.js`);
-	dbUtil.setupTargetDb
-	    .then((response) => {
-		console.log(response);
-		return dbUtil.setupRefDb;
-	    })
-	    .then((response) => {
-		console.log(response);
+        // Setup database.
+        var dbUtil = require(`${__dirname}/util/DbUtil.js`);
+        dbUtil.setupTargetDb
+            .then((response) => {
+                console.log(response);
+                return dbUtil.setupRefDb;
+            })
+            .then((response) => {
+                console.log(response);
         return dbUtil.setupLookupsDb;
-	    })
+            })
         .then((response)=>{
             console.log(response)
             resolve(response)
         })
         .catch((err) => {
-		console.log('Error while DB setup. ' + err);
-		reject(err);
-	    });
+                console.log('Error while DB setup. ' + err);
+                reject(err);
+            });
     });
 
 function preProcess() {
     dbSetup
-	.then((response) => {
-	    createWindow();
-	})
-	.catch((err) => {
-	    console.log('Error while App intialization.' + err);
-	});
+        .then((response) => {
+            createWindow();
+        })
+        .catch((err) => {
+            console.log('Error while App intialization.' + err);
+        });
 }
 
-// if (env.name === "development") {
-//     win.openDevTools();
-//   }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -129,8 +129,6 @@ app.on('activate', () => {
     if (win === null) {
     createWindow();
     }
-    // win.openDevTools();
-    
 });
 
 //code for sigle instance at a time according to electron 3.0.0
