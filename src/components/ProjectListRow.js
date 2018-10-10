@@ -271,7 +271,7 @@ class ProjectListRow extends React.Component {
   		});
     }
     getBooks = async (projectId) =>{
-        console.log(await this.props.paratextObj.getBooks(projectId))
+        this.setState({bookList: await this.props.paratextObj.getBooks(projectId)})
     }
   	render (){
   		const {project, index} = this.props;

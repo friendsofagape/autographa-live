@@ -15,7 +15,11 @@ export default class Paratext {
     constructor(username, password){
         this.username = username;
         this.password = password;
-        this.accessToken = this.getToken();
+        this.setToken(this.getToken());
+    }
+
+    setToken(token){
+        this.accessToken = token;
     }
     
     /**
@@ -60,6 +64,7 @@ export default class Paratext {
         let response = await axios.get("https://data-access.paratext.org/api8/projects", config).then((res) => {
                 return res.data;
             }).catch((err) => {
+                
                 return [];
             })
         let projects = [];
@@ -70,7 +75,7 @@ export default class Paratext {
         }
         return projects;
     }
-    async getBooks(projectId) {
+    async getBooksList(projectId) {
         let token = await this.accessToken;
         let config = {headers: {
             Authorization: `Bearer ${token}`
@@ -82,15 +87,35 @@ export default class Paratext {
             return [];
         });
         if(response.length > 0){
-
-            new xml2js.Parser().parser.parseString(res.data, (err, result) => {
+            new xml2js.Parser().parseString(response, (err, result) => {
              	    books = result.ProjectBooks.Book.map((res, i) => {
              		    return res.$
              	    });
             });
             return books;
+        }else {
+            return [];
         }
     }
+    getJsonBookData(projectId, bookId){
+        //ouput should be in json which will directly put on the db
+        return bookData;
+    }
+    //importing
+    getUsxBookData(projectId, bookId){
+        //ouput should be in json which will directly put on the db
+        return bookData;
+    }
+    //exporting
+
+    updateBookData(projectId, bookId, bookData){
+        //convert in usx
+        //send to the paratext API
+    }
+
+
+
+    
 }
 
 
