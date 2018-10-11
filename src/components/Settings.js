@@ -677,8 +677,9 @@ class SettingsModal extends React.Component {
 		this.props.showLoader(true);
 		let paratextObj = new paratext(username, password);
 		if(paratextObj.accessToken){
-			let projects = await paratextObj.getProjects();
-			refDb.get('paratext_credential').then((doc) => {
+			try{
+                let projects = await paratextObj.getProjects();
+			    refDb.get('paratext_credential').then((doc) => {
 				this.props.showLoader(false);
 				AutographaStore.username = doc.username;
 				AutographaStore.password = doc.password;
@@ -686,25 +687,31 @@ class SettingsModal extends React.Component {
 					projectData: projects,
 					paratextObj: paratextObj
 				})
-			}).catch((err) => {
-				let doc = {
-					_id: 'paratext_credential',
-					username: username,
-					password: password
-				}
-				refDb.put(doc).then((res) => {
-					this.props.showLoader(false);
-					this.setState({
-						projectData: projects,
-						paratextObj: paratextObj
-					})
-					swal(AutographaStore.currentTrans["dynamic-msg-error"], "Signin success", "success");
-				}).catch((err) => {
-					console.log(err)
-					this.props.showLoader(false);
-					swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
-				});
-			})
+			    }).catch((err) => {
+				    let doc = {
+					    _id: 'paratext_credential',
+					    username: username,
+					    password: password
+				    }
+				    refDb.put(doc).then((res) => {
+					    this.props.showLoader(false);
+					    this.setState({
+						    projectData: projects,
+						    paratextObj: paratextObj
+					    })
+					    swal(AutographaStore.currentTrans["dynamic-msg-error"], "Signin success", "success");
+				    }).catch((err) => {
+					    console.log(err)
+					    this.props.showLoader(false);
+					    swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+				    });
+			    })
+			}catch(err){
+                swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+			}finally{
+                this.props.showLoader(false);
+			}
+			
 		}else{
 			this.props.showLoader(false);
 			console.log("error")

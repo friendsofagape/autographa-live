@@ -62,16 +62,17 @@ export default class Paratext {
             }
         }
         let response = await axios.get("https://data-access.paratext.org/api8/projects", config).then((res) => {
-                return res.data;
+                return res;
             }).catch((err) => {
-                
-                return [];
+                return err;
             })
         let projects = [];
-        if(response.length > 0){
-            new xml2js.Parser().parseString(response, (err, result) => {
+        if(response && response.status == 200){
+            new xml2js.Parser().parseString(response.data, (err, result) => {
                 projects = result.repos.repo;
             })
+        }else{
+            throw new Error("Something went wrong");
         }
         return projects;
     }
@@ -82,29 +83,36 @@ export default class Paratext {
         }}
         let books = [];
         let response = await axios.get(`https://data-access.paratext.org/api8/books/${projectId}`, config).then((res) => {
-            return res.data
+            return res;
         }).catch((err) => {
-            return [];
+            return {status: 400};
         });
-        if(response.length > 0){
-            new xml2js.Parser().parseString(response, (err, result) => {
-             	    books = result.ProjectBooks.Book.map((res, i) => {
-             		    return res.$
-             	    });
+        if(response && response.status == 200 ){
+            new xml2js.Parser().parseString(response.data, (err, result) => {
+             	books = result.ProjectBooks.Book.map((res, i) => {
+             	    return res.$
+             	});
             });
             return books;
         }else {
-            return [];
+            throw new Error("Something went wrong");
         }
     }
-    getJsonBookData(projectId, bookId){
+    async getJsonBookData(projectId, bookId){
         //ouput should be in json which will directly put on the db
-        return bookData;
+        
     }
     //importing
-    getUsxBookData(projectId, bookId){
-        //ouput should be in json which will directly put on the db
-        return bookData;
+    async getUsxBookData(projectId, bookId){
+        let token = await this.accessToken;
+        let config = {headers: {
+            Authorization: `Bearer ${token}`
+        }}
+        await axios.get(`https://data-access.paratext.org/api8/text/${projectId}/${bookId}`, config).then((res) => {
+            return res.data;
+        }).catch((err) =>{
+            throw new Error("Fetch bookdata issue");
+        })
     }
     //exporting
 
@@ -112,6 +120,7 @@ export default class Paratext {
         //convert in usx
         //send to the paratext API
     }
+
 
 
 

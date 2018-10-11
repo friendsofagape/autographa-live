@@ -44,10 +44,10 @@ class ProjectListRow extends React.Component {
 		// console.log(projId, bookId, obj.target.checked)
 		if(obj.target.checked) {
 			this.state.selectedBook.push(bookId)
-			AutographaStore.selectedParaTextBook[projId] = this.state.selectedBook
+			AutographaStore.paratextBook[projId] = this.state.selectedBook
 		}else{
 			this.state.selectedBook = this.state.selectedBook.filter(id => id !== bookId )
-			AutographaStore.selectedParaTextBook[projId] = this.state.selectedBook
+			AutographaStore.paratextBook[projId] = this.state.selectedBook
 		}
 	}
 	resetLoader = () => {
@@ -55,20 +55,11 @@ class ProjectListRow extends React.Component {
 	    this.setState({importText: AutographaStore.currentTrans["btn-import"], isImporting: false})
     }
   	importBook = (projectId) => {
-		this.props.setToken(AutographaStore.userName, AutographaStore.password).then((res)=>{
-			if (!res){
-				swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
-				return
-			}
-		});
-  		if(AutographaStore.selectedParaTextBook[projectId] == null || Object.keys(AutographaStore.selectedParaTextBook[projectId]).length == 0){
+  		if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length == 0){
         	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["label-selection"], "error");
   			return
   		}
 		const currentTrans = AutographaStore.currentTrans;
-	    let config = {headers: {
-            Authorization: `Bearer ${AutographaStore.tempAccessToken}`
-        }}
 	    swal({
 	        title: currentTrans["label-warning"],
 	        text: currentTrans["label-override-text"],
@@ -82,24 +73,17 @@ class ProjectListRow extends React.Component {
 	        if (action) {
 	        } else {
 				this.props.showLoader(true)
-	        	this.setState({importText: AutographaStore.currentTrans["label-importing"], isImporting: true})
-	        	AutographaStore.selectedParaTextBook[projectId].map((bookId) => {
- 	        		axios.get(`https://data-access.paratext.org/api8/text/${projectId}/${bookId}`, config).then((res) => {
+	        	AutographaStore.paratextBook[projectId].map(async(bookId) => {
+ 	        		let bookData = await this.props.paratextObj.getUsxBookData(projectId, bookId);
 					
 		            let book = {};
                 	let verse = [];
                 	let chapters = {};
 		            let parser = new DOMParser();
-					let xmlDoc = parser.parseFromString(res.data,"text/xml");
+					let xmlDoc = parser.parseFromString(bookData,"text/xml");
 					let childNodes = xmlDoc.getElementsByTagName('usx')[0].childNodes;
 					let verseNodes = [];
 					
-					//creating dir in userdata path and writing file as book name of paratext
-					if (!fs.existsSync(dir)){
-						fs.mkdirSync(dir);
-					}
-					fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_book', `${bookId}.xml`), res.data, 'utf8');
-					//end
 
 					if (xmlDoc.evaluate) {
 						let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ANY_TYPE, null);
@@ -162,12 +146,6 @@ class ProjectListRow extends React.Component {
 						});
                 	});
 					// console.log(book)
-		        	}).catch((err) => {
-						console.log(err);
-						this.resetLoader();
-						swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
-
-					})
  	        	})
 	        }
 	    });
@@ -270,21 +248,50 @@ class ProjectListRow extends React.Component {
   			});
   		});
     }
-    getBooks = async (projectId) =>{
-        this.setState({bookList: await this.props.paratextObj.getBooks(projectId)})
+    getBooks = async (projectId, projectName) =>{
+        this.props.showLoader(true);
+        let _this = this;
+        try{
+            let booksList = await this.props.paratextObj.getBooksList(projectId);
+			booksList = booksList.map((book, i) => {
+				if (booksCodes.includes(book.id)){
+					return book.id
+				}
+			}).filter(book => book);
+
+            if(booksList.length > 0){
+                booksList.map(async(book, index)=> {
+			 			let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
+			 			if(bookData !== undefined || bookData !== null){
+			 				if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+			 					fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
+			 				}
+			 				if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+			 					fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
+			 				}
+			 			}
+                    
+                })
+            }
+            this.setState({bookList: booksList});
+        }catch(err){
+		 	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
+        }finally{
+            this.props.showLoader(false);
+        }
     }
   	render (){
   		const {project, index} = this.props;
 	  		return (
 	  			<Panel eventKey={index+1}>
 				    <Panel.Heading>
-				      <Panel.Title toggle onClick = {() => {this.getBooks(project.projid[0])}}>{ project.proj[0] }</Panel.Title>
+				      <Panel.Title toggle onClick = {() => {this.getBooks(project.projid[0],  project.proj[0])}}>{ project.proj[0] }</Panel.Title>
 				    </Panel.Heading>
 				    <Panel.Body collapsible>
 				    	<FormGroup>
 						    {
 						    	this.state.bookList.map((res, i) => {
-						    		return(<Checkbox inline key={i} value={res.id} onChange={(e) => {this.selectBook(project.projid[0], res.id, e)}}>{res.id}</Checkbox>)
+						    		return(<Checkbox inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res}</Checkbox>)
 						    	})
 						    }
 				    	</FormGroup>
