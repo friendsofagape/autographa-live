@@ -64,6 +64,7 @@ export class AutographaStore {
   @observable setDiff = false
   @observable username = ""
   @observable password = ""
+  @observable paratextBook = {}
 
 
 
