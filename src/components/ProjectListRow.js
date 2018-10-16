@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import swal from 'sweetalert';
 import AutographaStore from "./AutographaStore";
+import * as usfm_import from "../util/usfm_import";
+import Wacs from "../helpers/wacsAdapter"
 import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
@@ -53,8 +55,17 @@ class ProjectListRow extends React.Component {
 	resetLoader = () => {
 		this.props.showLoader(false);						
 	    this.setState({importText: AutographaStore.currentTrans["btn-import"], isImporting: false})
-    }
-  	importBook = (projectId) => {
+    };
+
+	importBook = (projectId) => {
+		if (this.props.paratextObj instanceof Wacs) {
+			return this.importBookWacs(projectId);
+		} else {
+			return this.importBookParatext(projectId);
+		}
+	};
+
+  	importBookParatext = (projectId) => {
   		if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length == 0){
         	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["label-selection"], "error");
   			return
@@ -179,8 +190,58 @@ class ProjectListRow extends React.Component {
  	        	})
 	        }
 	    });
-  	}
-  	uploadBook = async(projectId, projectName) => {
+  	};
+
+    importBookWacs = async (projectId) => {
+        const langCode = 'TBD'; // TODO
+        const langVersion = 'TBD';
+        // const localPath = this.state.folderPathImport;
+        // if (!localPath) {
+        //     return swal(AutographaStore.currentTrans["dynamic-msg-error"],
+        //         AutographaStore.currentTrans['dynamic-msg-bib-path-validation'], "error");
+        // }
+
+        const currentTrans = AutographaStore.currentTrans;
+
+        if (await swal({
+            title: currentTrans["label-warning"],
+            text: currentTrans["label-override-text"],
+            icon: "warning",
+            buttons: [currentTrans["btn-ok"], currentTrans["btn-cancel"]],
+            dangerMode: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false
+        })) {
+        	return;
+		};
+
+        this.props.showLoader(true);
+
+        try {
+            const localPath = await this.props.paratextObj.clone(projectId);
+
+            await usfm_import.importTranslation(localPath, langCode, langVersion);
+
+            this.resetLoader();
+            await swal({
+                title: AutographaStore.currentTrans["btn-import"],
+                text:  AutographaStore.currentTrans["label-imported-book"],
+                icon: "success",
+                dangerMode: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            });
+
+            window.location.reload();
+        } catch(err) {
+        	console.log(err);
+        	this.resetLoader();
+			await swal(AutographaStore.currentTrans["dynamic-msg-error"],
+				AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
+		}
+    };
+
+    uploadBook = async(projectId, projectName) => {
 		let currentTrans = AutographaStore.currentTrans;
         let book = {};
         let _this = this;

@@ -3,26 +3,25 @@ import ReactDOM from 'react-dom';
 import { remote } from 'electron';
 import {MenuItem, RadioButton, RadioButtonGroup, RaisedButton, SelectField, TextField} from 'material-ui';
 import swal from 'sweetalert';
-import { observer } from "mobx-react"
+import {observer} from "mobx-react"
 import AutographaStore from "./AutographaStore";
-import ReferencePanel from './ReferencePanel';
+import {FormattedMessage} from 'react-intl';
+import Loader from './Loader';
+import paratext from "../helpers/paratextAdapter";
+import wacs from "../helpers/wacsAdapter";
+import * as usfm_import from "../util/usfm_import";
+import ProjectList from "./ProjectList";
+
 const { dialog, getCurrentWindow } = require('electron').remote;
 const { Tabs, Tab, Modal, Button, Col, Row, Grid, Nav, NavItem, Panel, PanelGroup } = require('react-bootstrap/lib');
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const lookupsDb = require(`${__dirname}/../util/data-provider`).lookupsDb();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
-const Constant = require("../util/constants")
-const bibUtil_to_json = require(`${__dirname}/../util/usfm_to_json`);
+const Constant = require("../util/constants");
 const session = require('electron').remote.session;
 const path = require("path");
 const Promise = require("bluebird");
 var fs = Promise.promisifyAll(require('fs'));
-
-import { FormattedMessage } from 'react-intl';
-import Loader from './Loader';
-import paratext from "../helpers/paratextAdapter";
-import ProjectList from "./ProjectList";
 
 
 @observer
@@ -62,6 +61,8 @@ class SettingsModal extends React.Component {
 			modalBody: "",
 			title: "",
 			paratext: {
+				syncProvider: "",
+				endpoint: "",
 				username: "",
 				password: ""
 			},
@@ -76,21 +77,14 @@ class SettingsModal extends React.Component {
 		})
 		AutographaStore.refList = [];
 		refDb.get('paratext_credential').then((doc) => {
+			AutographaStore.syncProvider = doc.syncProvider;
+			AutographaStore.endpoint = doc.endpoint;
 			AutographaStore.username = doc.username;
 			AutographaStore.password = doc.password;
 		}).catch((err) => {
 			console.log(err);
 		})
 		this.loadSetting();
-	}
-
-	getStuffAsync = (param) => {
-		return new Promise(function(resolve,reject){
-			bibUtil_to_json.toJson(param, function(err, data){
-				if(err !== null) return reject(err);
-				resolve(data);
-			});
-		});
 	}
 
 	loadSetting = () => {
@@ -298,37 +292,27 @@ class SettingsModal extends React.Component {
 
 	importTranslation = () => {
 		let that = this;
-		if (this.import_sync_setting() == false) return;
+		if (!this.import_sync_setting()) return;
 		this.setState({
 			showLoader: true
-		})
+		});
 
 		const {
 			langCode,
 			langVersion
 		} = this.state.settingData;
-		let inputPath = this.state.folderPathImport;
-		var files = fs.readdirSync(inputPath[0]);
-		Promise.map(files, (file) => {
-			var filePath = path.join(inputPath[0], file);
-			if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
-				var options = {
-					lang: langCode.toLowerCase(),
-					version: langVersion.toLowerCase(),
-					usfmFile: filePath,
-					targetDb: 'target',
-					scriptDirection: AutographaStore.refScriptDirection
-				}
-				return that.getStuffAsync(options);
-			}
-		}).catch((err) => {
-			const currentTrans = AutographaStore.currentTrans;
-			console.log(err)
-			that.setState({
-				showLoader: false
-			});
-			return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-		}).finally(() => window.location.reload())
+		const importDir = this.state.folderPathImport[0];
+
+        usfm_import.importTranslation(importDir, langCode, langVersion)
+			.catch((err) => {
+				const currentTrans = AutographaStore.currentTrans;
+				console.log(err)
+				that.setState({
+					showLoader: false
+				});
+				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+			})
+			.finally(() => window.location.reload())
 	}
 
 	reference_setting() {
@@ -379,7 +363,7 @@ class SettingsModal extends React.Component {
 		var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
 			ref_entry = {},
 			ref_arr = [],
-			files = fs.readdirSync(refFolderPath[0]);
+			dir = refFolderPath[0];
 		ref_entry.ref_id = ref_id_value;
 		ref_entry.ref_name = bibleName;
 		ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
@@ -402,7 +386,7 @@ class SettingsModal extends React.Component {
 			});
 			doc.ref_ids = ref_arr;
 			refDb.put(doc).then((res) => {
-				this.saveJsonToDB(files);
+				this.saveJsonToDB(dir);
 			});
 			// if (!refExistsFlag) {
 			//     doc.ref_ids = ref_arr;
@@ -421,7 +405,7 @@ class SettingsModal extends React.Component {
 				ref_entry.isDefault = true;
 				refs.ref_ids.push(ref_entry);
 				refDb.put(refs).then((res) => {
-					this.saveJsonToDB(files);
+					this.saveJsonToDB(dir);
 				}, (internalErr) => {
 					console.log(internalErr)
 				});
@@ -429,7 +413,7 @@ class SettingsModal extends React.Component {
 		});
 	}
 
-	saveJsonToDB = (files) => {
+	saveJsonToDB = (dir) => {
 		const {
 			bibleName,
 			refVersion,
@@ -437,27 +421,15 @@ class SettingsModal extends React.Component {
 			refFolderPath
 		} = this.state.refSetting;
 		const that = this;
-		Promise.map(files, (file) => {
-			const filePath = path.join(refFolderPath[0], file);
-			if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
-				const options = {
-					bibleName: bibleName,
-					lang: refLangCodeValue.toLowerCase(),
-					version: refVersion.toLowerCase(),
-					usfmFile: filePath,
-					targetDb: 'refs',
-					scriptDirection: AutographaStore.refScriptDirection
-				}
-				return that.getStuffAsync(options);
-			}
-		}).catch((err) => {
-			const currentTrans = AutographaStore.currentTrans;
-			console.log(err)
-			that.setState({
-				showLoader: false
-			});
-			return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-		}).finally(() => window.location.reload())
+		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+			.catch((err) => {
+				const currentTrans = AutographaStore.currentTrans;
+				console.log(err)
+				that.setState({
+					showLoader: false
+				});
+				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+			}).finally(() => window.location.reload())
 	}
 
 	clickListSettingData = (evt, obj) => {
@@ -649,8 +621,27 @@ class SettingsModal extends React.Component {
 		this.setState({
 			paratext: this.state.paratext
 		})
-	}
+	};
+
+	getSyncProvider = () => {
+		const sp = (this.state.paratext && this.state.paratext.syncProvider) || AutographaStore.syncProvider;
+		return sp;
+	};
+
+	setSyncProvider = (providerName) => {
+		const oldVal = this.state.paratext && this.state.paratext.syncProvider;
+		if (providerName && providerName != oldVal) {
+			const state = {
+				projectData: [], // clears UI project list
+				paratext: {syncProvider: providerName}
+			};
+			this.setState(state, () => AutographaStore.syncProvider = providerName);
+		}
+	};
+
 	signin = (clickSrc) => {
+		const syncProvider = this.state.paratext.syncProvider;
+		const endpoint = "https://content-qa.bibletranslationtools.org/api/v1"; //TODO
 		if (clickSrc == "btn") {
 			let userName = this.state.paratext.username;
 			let password = this.state.paratext.password;
@@ -665,22 +656,27 @@ class SettingsModal extends React.Component {
 			if (!isValid) {
 				return
 			}
-			this.importParaTextProject(userName, password);
+			this.importParaTextProject(userName, password, syncProvider, endpoint);
 		} else {
-			if (AutographaStore.username && AutographaStore.password){
-				this.importParaTextProject(AutographaStore.username, AutographaStore.password);
+			if (AutographaStore.syncProvider && AutographaStore.username && AutographaStore.password){
+				this.importParaTextProject(AutographaStore.username, AutographaStore.password,
+					AutographaStore.syncProvider, endpoint);
 			}
 		}
 	}
 
-	importParaTextProject = async (username, password) => {
+	importParaTextProject = async (username, password, syncProvider, endpoint=null) => {
 		this.props.showLoader(true);
-        let paratextObj = new paratext(username, password);
+		let paratextObj = syncProvider === "wacs"
+			? new wacs(username, password, endpoint)
+			: new paratext(username, password);
 		if(paratextObj.accessToken){
 			try{
                 let projects = await paratextObj.getProjects(3);
 			    refDb.get('paratext_credential').then((doc) => {
                     this.props.showLoader(false);
+                    AutographaStore.syncProvider = syncProvider;
+                    AutographaStore.endpoint = endpoint;
                     AutographaStore.username = username;
                     AutographaStore.password = password;
                     this.setState({
@@ -690,6 +686,8 @@ class SettingsModal extends React.Component {
                     let newdoc = {
                         _id: 'paratext_credential',
                         _rev: doc._rev,
+					    syncProvider: syncProvider,
+					    endpoint: endpoint,
 					    username: username,
 					    password: password
 				    }
@@ -697,6 +695,8 @@ class SettingsModal extends React.Component {
 			    }).catch((err) => {
 				    let doc = {
 					    _id: 'paratext_credential',
+                        syncProvider: syncProvider,
+                        endpoint: endpoint,
 					    username: username,
 					    password: password
 				    }
@@ -1146,8 +1146,8 @@ class SettingsModal extends React.Component {
                         </div>
                       </Tab.Pane>
                       <Tab.Pane eventKey="seventh">
-							<Tabs id="projectList">
-								<Tab eventKey={1} title={`${AutographaStore.currentTrans["label-paratext"]}`}>
+							<Tabs id="projectList" onSelect={this.setSyncProvider} defaultActiveKey={this.getSyncProvider()}>
+								<Tab eventKey="paratext" title={`${AutographaStore.currentTrans["label-paratext"]}`}>
 									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}}  >
 										<Panel eventKey={0}>
 											<Panel.Heading id="credential-title">
@@ -1195,6 +1195,59 @@ class SettingsModal extends React.Component {
 													onClick={() =>{this.signin("btn")}}
                                                     disabled = {this.state.btnDisabled}
                                                     id="signin"
+												/>
+											</Panel.Body>
+										</Panel>
+										{
+											<ProjectList projects={this.state.projectData} showLoader = {this.props.showLoader} paratextObj = {this.state.paratextObj}/> 
+										}
+									</PanelGroup> 
+								</Tab>
+								<Tab eventKey="wacs" title={`${AutographaStore.currentTrans["label-wacs"]}`}>
+									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}}  >
+										<Panel eventKey={0}>
+											<Panel.Heading>
+												<Panel.Title toggle onClick = {() => {this.editCredential()}}><FormattedMessage id="label-credentials"/></Panel.Title>
+											</Panel.Heading>
+											<Panel.Body collapsible>
+												<div>
+													
+													<label><FormattedMessage id="label-username"/></label>
+													<br />
+													<FormattedMessage id="label-username">
+														{(message) => 
+															<TextField
+																hintText={message}
+																name="username"
+																className = "margin-top-24 textbox-width-70"
+                               	 								value = {this.state.paratext.username}
+																onChange = {this.handleCredential.bind(this)}
+															/>
+														}
+													</FormattedMessage>
+												</div>
+												<div>
+													<label><FormattedMessage id="label-pwd"/></label>
+													<br />
+													<FormattedMessage id="label-pwd">
+														{(message) => 
+															<TextField
+																hintText={message}
+																name="password"
+																className = "margin-top-24 textbox-width-70"
+																value = {this.state.paratext.password}
+																onChange = {this.handleCredential.bind(this)}
+															/>
+														}
+													</FormattedMessage>
+												</div>
+												<br/>
+												<RaisedButton
+													style={{marginTop: "27px", float: 'right', 'marginRight': '33px'}}
+													label="Signin"
+													primary={true}
+													onClick={() =>{this.signin("btn")}}
+													disabled = {this.state.btnDisabled}
 												/>
 											</Panel.Body>
 										</Panel>

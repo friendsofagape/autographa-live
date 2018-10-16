@@ -42,6 +42,7 @@
 	"label-credentials": "Credentials",
 	"label-no-project" : "No projects to show.",
 	"label-paratext": "Paratext",
+	"label-wacs": "WACS",
 	"label-warning": "Warning",
 	"label-override-text": "This will overwrite any existing text in the selected books.",
 	"label-selection": "Please make a selection to continue.",
