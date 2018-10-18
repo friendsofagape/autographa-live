@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { remote } from 'electron';
-import { TextField, RaisedButton, SelectField, MenuItem } from 'material-ui';
+import {MenuItem, RadioButton, RadioButtonGroup, RaisedButton, SelectField, TextField} from 'material-ui';
 import swal from 'sweetalert';
 import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore";
@@ -764,7 +764,7 @@ class SettingsModal extends React.Component {
               (this.state.hideAlert === 'success' ? 'alert-success msg' : 'alert-danger msg'): 'invisible')
             }
           >
-            <span>{this.state.message ? <FormattedMessage id={this.state.message}/ > : ""}</span>
+            <span>{this.state.message ? <FormattedMessage id={this.state.message}/> : ""}</span>
           </div>
         </Modal.Header>
           <Modal.Body>
@@ -1215,4 +1215,4 @@ class SettingsModal extends React.Component {
   }
 }
 
-module.exports = SettingsModal
+module.exports = SettingsModal;
