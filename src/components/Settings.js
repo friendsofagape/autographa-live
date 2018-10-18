@@ -675,18 +675,25 @@ class SettingsModal extends React.Component {
 
 	importParaTextProject = async (username, password) => {
 		this.props.showLoader(true);
-		let paratextObj = new paratext(username, password);
+        let paratextObj = new paratext(username, password);
 		if(paratextObj.accessToken){
 			try{
                 let projects = await paratextObj.getProjects();
 			    refDb.get('paratext_credential').then((doc) => {
-				this.props.showLoader(false);
-				AutographaStore.username = doc.username;
-				AutographaStore.password = doc.password;
-				this.setState({
-					projectData: projects,
-					paratextObj: paratextObj
-				})
+                    this.props.showLoader(false);
+                    AutographaStore.username = username;
+                    AutographaStore.password = password;
+                    this.setState({
+                        projectData: projects,
+                        paratextObj: paratextObj
+                    })
+                    let newdoc = {
+                        _id: 'paratext_credential',
+                        _rev: doc._rev,
+					    username: username,
+					    password: password
+				    }
+                    refDb.put(newdoc);
 			    }).catch((err) => {
 				    let doc = {
 					    _id: 'paratext_credential',
@@ -699,7 +706,6 @@ class SettingsModal extends React.Component {
 						    projectData: projects,
 						    paratextObj: paratextObj
 					    })
-					    swal(AutographaStore.currentTrans["dynamic-msg-error"], "Signin success", "success");
 				    }).catch((err) => {
 					    console.log(err)
 					    this.props.showLoader(false);

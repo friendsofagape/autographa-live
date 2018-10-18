@@ -2,8 +2,6 @@
 /**
  * Description: UIUS.
  * Version: 1.0.0
- * Author: Arpit Jacob <ajacob@zetalight.com>
- * Supported By: Nishant Bajpai <nishant.bajpai@jktech.com> 
  * Summary:
  *
  *  - Common
@@ -8662,7 +8660,7 @@ body {
 
 #tab-settings .modal-content {
   width: 880px;
-  height: 500px; }
+  height: 620px; }
 
 #tab-settings label {
   color: #03a9f4; }
@@ -8681,7 +8679,7 @@ body {
   display: inline-block; }
 
 .nav-stacked li a {
-  height: 70px;
+  height: 65px;
   font-size: 20px;
   text-align: center;
   padding-top: 22px; }
@@ -8836,6 +8834,9 @@ body {
 
 .margin-top-24 {
   margin-top: -24px;
+}
+.margin-right-10 {
+  margin-right: 10px;
 }
 .textbox-width-70 {
   width: 70% !important
