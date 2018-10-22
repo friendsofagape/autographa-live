@@ -20,7 +20,8 @@ class ProjectListRow extends React.Component {
 			bookList: [],
 			selectedBook: [],
 			importText: AutographaStore.currentTrans["btn-import"],
-			isImporting: false
+			isImporting: false,
+			open: false
 		}
 	}
 	componentDidMount() {
@@ -95,13 +96,24 @@ class ProjectListRow extends React.Component {
 							}
 							if(!currVerse.nextSibling){
 								//do nothing
-							}else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
-                                let currSibling = currVerse.nextElementSibling;
-								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: currSibling.nextSibling !== null ? (currSibling.nextSibling.data !== undefined ? currSibling.nextSibling.data : "")   : ""})
-							}else if(currVerse.nextSibling.nodeName === "#text"){
-								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
-							}else{
-								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
+							}else {
+								let temp = currVerse.nextSibling;
+								let verseText = '';
+								while(true){
+									if(!temp || temp.nodeName === "verse"){
+										break;
+									}
+									if(temp.nodeName === "note"){
+										//do nothing
+									}else if(temp.nodeName === "#text"){
+										verseText += temp.data
+										//verseText += temp.textContent;
+									}else{
+										verseText += temp.textContent;
+									}
+									temp = temp.nextSibling;
+								}
+								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: verseText});
 							}
 							currVerse = verseNodes.iterateNext();
 						}
@@ -203,12 +215,10 @@ class ProjectListRow extends React.Component {
 									}else{
 										currVerse.insertAdjacentText('afterend', verse.verse);
 									}
-                                
-							 	book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
-                                currVerse = verseNodes.snapshotItem(v);
+							 		book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
+                                	currVerse = verseNodes.snapshotItem(v);
 							}
                             try{
-                                console.log(xmlDoc)
                                 let uploadedRes = await _this.props.paratextObj.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
                                 fs.writeFileSync(`${app.getPath('userData')}/paratext/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
                                 swal("Success", "Successfully uploaded book.", "success");
@@ -234,43 +244,47 @@ class ProjectListRow extends React.Component {
 	}
 
     getBooks = async (projectId, projectName) => {
-        this.props.showLoader(true);
-		let _this = this;
-		try{
-			let booksList = await this.props.paratextObj.getBooksList(projectId);
-			booksList = booksList.map(book => {
-			 	if (booksCodes.includes(book.id)){
-			 		return book.id
-			 	}
-			}).filter(book => book);
-			await this.asyncForEach(booksList, async (book) => {
-				try{
-					let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
-					if (!fs.existsSync(dir)){
-					 	fs.mkdirSync(dir);
+		if(!this.state.open){
+			this.props.showLoader(true);
+			let _this = this;
+			try{
+				let booksList = await this.props.paratextObj.getBooksList(projectId);
+				booksList = booksList.map(book => {
+					if (booksCodes.includes(book.id)){
+						return book.id
 					}
-					if(bookData !== undefined || bookData !== null){
-					 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-					 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
-					 	}
-					 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-					 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
-					 	}
+				}).filter(book => book);
+				await this.asyncForEach(booksList, async (book) => {
+					try{
+						let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
+						if (!fs.existsSync(dir)){
+						 	fs.mkdirSync(dir);
+						}
+						if(bookData !== undefined || bookData !== null){
+						 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+						 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
+						 	}
+						 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+						 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
+						 	}
+						}
+					}catch(err){
+						console.log(err);
 					}
-				}catch(err){
-					console.log(err);
-				}
-			})
-			//fetching book data done  and hiding the loader
-			this.props.showLoader(false);
-			this.setState({bookList: booksList})
+				})
+				//fetching book data done  and hiding the loader
+				this.props.showLoader(false);
+				this.setState({bookList: booksList, open: true })
 
-		}catch(err){
+			}catch(err){
 
-		}
-		finally {
-			this.props.showLoader(false);
-		}		
+			}
+			finally {
+				this.props.showLoader(false);
+			}
+		}else{
+			this.setState({ open: false })
+		}	
     }
   	render (){
   		const {project, index} = this.props;
