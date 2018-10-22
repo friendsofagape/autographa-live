@@ -678,7 +678,7 @@ class SettingsModal extends React.Component {
         let paratextObj = new paratext(username, password);
 		if(paratextObj.accessToken){
 			try{
-                let projects = await paratextObj.getProjects();
+                let projects = await paratextObj.getProjects(3);
 			    refDb.get('paratext_credential').then((doc) => {
                     this.props.showLoader(false);
                     AutographaStore.username = username;
