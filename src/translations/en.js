@@ -42,6 +42,8 @@
 	"label-credentials": "Credentials",
 	"label-no-project" : "No projects to show.",
 	"label-paratext": "Paratext",
+	"label-warning": "Warning",
+	"label-override-text": "This will overwrite any existing text in the selected books.",
 	"placeholder-search-text" : "Search text",
 	"placeholder-replace-text" : "Replacement",
 	"placeholder-path-to-destination" : "Path to destination folder",

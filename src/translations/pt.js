@@ -123,6 +123,8 @@
 	"label-radio-enable": "Habilitar",
 	"label-radio-disable": "Desativar",
 	"label-please-wait": "Isso pode levar alguns minutos. <br/> Por favor, espere",
+	"label-warning": "Atenção",
+	"label-override-text": "Isso sobrescreverá qualquer texto existente nos livros selecionados",
 	"book-genesis" : "Gênesis",
 	"book-exodus" : "Êxodo",
 	"book-leviticus" : "Levítico",
