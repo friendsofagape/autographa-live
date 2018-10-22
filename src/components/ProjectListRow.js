@@ -162,10 +162,8 @@ class ProjectListRow extends React.Component {
 		this.props.showLoader(true);		  
   		AutographaStore.paratextBook[projectId].map(async(bookId) => {
 			
-  			//axios.get(`https://data-access.paratext.org/api8/revisions/${projectId}/${bookId}`, config).then((res) => {
                 let bookRevision = await _this.props.paratextObj.getBookRevision(projectId, bookId);
 				let parser = new xml2js.Parser();
-				
 	            parser.parseString(bookRevision, (err, result) => {
                     let revision = result.RevisionInfo.ChapterInfo[0].$.revision;
                     let bookIndex = booksCodes.findIndex((book) => book === bookId)
@@ -219,23 +217,13 @@ class ProjectListRow extends React.Component {
                             }finally{
                                 this.props.showLoader(false);
                             }
-
 						}
-						//let xmlBookUpdated = fs.readFileSync(`${app.getPath('userData')}/paratext_book/${bookId}.xml`, 'utf8');
-                        
-                        
-                    })
-            		// }).catch((err) => {
-					// 	console.log(err)
-					// 	this.props.showLoader(false);
-					// 	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
-            		// });
-	            });
-  			//}).catch((err) => {
-			//	console.log(err)
-			//	this.props.showLoader(false);
-			//	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
-  			//});
+            		}).catch((err) => {
+						this.props.showLoader(false);
+						swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
+            		});
+	        });
+  			
   		});
 	}
 	
@@ -255,25 +243,24 @@ class ProjectListRow extends React.Component {
 			 		return book.id
 			 	}
 			}).filter(book => book);
-			// await this.asyncForEach(booksList, async (book) => {
-			// 	try{
-			// 		let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
-			// 		if (!fs.existsSync(dir)){
-			// 		 	fs.mkdirSync(dir);
-			// 		}
-			// 		if(bookData !== undefined || bookData !== null){
-			// 		 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-			// 		 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
-			// 		 	}
-			// 		 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-			// 		 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
-			// 		 	}
-			// 		}
-			// 	}catch(err){
-			// 		console.log(err);
-			// 	}
-			// })
-			console.log('Done')
+			await this.asyncForEach(booksList, async (book) => {
+				try{
+					let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
+					if (!fs.existsSync(dir)){
+					 	fs.mkdirSync(dir);
+					}
+					if(bookData !== undefined || bookData !== null){
+					 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+					 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
+					 	}
+					 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+					 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
+					 	}
+					}
+				}catch(err){
+					console.log(err);
+				}
+			})
 			//fetching book data done  and hiding the loader
 			this.props.showLoader(false);
 			this.setState({bookList: booksList})
