@@ -52,7 +52,7 @@ export default class Paratext {
     * @param url the user who's projects will be listed. Requires token or username and password
     * @returns {Promise<array>} an array of projects objects
     */
-    async getProjects() {
+    async getProjects(n) {
         let token = await this.accessToken;
         let _this = this;
         let config = {
@@ -63,12 +63,11 @@ export default class Paratext {
         let response = await axios.get("https://data-access.paratext.org/api8/projects", config).then((res) => {
                 return res;
             }).catch((err) => {
-                let count = 0
-                if(err.response.data && err.response.data.includes("Invalid authorization token") && count < 3){
+                
+                if(err.response.data && err.response.data.includes("Invalid authorization token")){
+                    if (n === 1) throw err;
                     _this.getToken();
-                    _this.getProjects();
-                    console.log(count);
-                    count++;
+                    return _this.getProjects(n-1);
                 }
             })
         let projects = [];
