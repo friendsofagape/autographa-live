@@ -42,7 +42,7 @@ describe('Autographa Test', () => {
     
     it('tests the title', () => {
         return app.client.waitUntilWindowLoaded()
-            .getTitle().should.eventually.equal('Autographa Lite');
+            .getTitle().should.eventually.equal('Autographa Live');
     });
 
     it('should check empty chapter not found', () => {
@@ -352,4 +352,55 @@ describe('Autographa Test', () => {
       return app.client.waitUntilWindowLoaded()
       .getText(".multiple-space-report").should.eventually.equal('1:2');
     });
+
+    it('close the app', () => {
+      return app.stop();
+    });
+
+    it('open the app', () => {
+      return app.start();
+    });
+
+    it('should login to paratext and get projects list', () => {
+      return app.client.waitUntilWindowLoaded()
+      .keys('Escape')
+      .waitForEnabled("#btnSettings", 2000)
+      .click("#btnSettings")
+      .waitForVisible("#left-tabs-example-tab-seventh")
+      .click("#left-tabs-example-tab-seventh")
+      .waitForVisible(".panel-title > a")
+      .click(".panel-title > a")
+      .waitForVisible("#username")
+      .setValue("#username", 'Benjamin Autographa')
+      .setValue("#password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
+      .waitForVisible("#signin")
+      .click("#signin")
+      .waitForVisible("#credential-heading-1")
+      .waitForVisible("#credential-heading-1 > .panel-title > a")
+      .getText("#credential-heading-1 > .panel-title > a").should.eventually.equal('MAL10RO');
+
+    })
+
+    it('should get the list of projects', () => {
+        return app.client.waitUntilWindowLoaded()
+        .waitForVisible("#credential-heading-1 > .panel-title > a")
+        .click("#credential-heading-1 > .panel-title > a")
+        .waitForVisible("#project-list")
+        .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']")
+        .getValue("#project-list > .checkbox-inline > #GEN").should.eventually.equal('GEN')
+    })
+
+    it('should import the project', () => {
+        return app.client.waitUntilWindowLoaded()
+        .waitForVisible("#credential-heading-1 > .panel-title > a")
+        .click("#credential-heading-1 > .panel-title > a")
+        .waitForVisible("#project-list")
+        .waitForVisible("#project-list > .checkbox-inline > #GEN")
+        .waitForVisible(".panel-body > div > #btn-import", 2000)
+        .click("#project-list > .checkbox-inline > #GEN")
+        .click(".panel-body > div > #btn-import")
+    })
+
+    
+
 }); 
