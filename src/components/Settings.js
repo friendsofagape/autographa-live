@@ -1150,7 +1150,7 @@ class SettingsModal extends React.Component {
 								<Tab eventKey={1} title={`${AutographaStore.currentTrans["label-paratext"]}`}>
 									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}}  >
 										<Panel eventKey={0}>
-											<Panel.Heading>
+											<Panel.Heading id="credential-title">
 												<Panel.Title toggle onClick = {() => {this.editCredential()}}><FormattedMessage id="label-credentials"/></Panel.Title>
 											</Panel.Heading>
 											<Panel.Body collapsible>
@@ -1165,7 +1165,8 @@ class SettingsModal extends React.Component {
 																name="username"
 																className = "margin-top-24 textbox-width-70"
                                	 								value = {this.state.paratext.username}
-																onChange = {this.handleCredential.bind(this)}
+                                                                onChange = {this.handleCredential.bind(this)}
+                                                                id="username"
 															/>
 														}
 													</FormattedMessage>
@@ -1180,7 +1181,8 @@ class SettingsModal extends React.Component {
 																name="password"
 																className = "margin-top-24 textbox-width-70"
 																value = {this.state.paratext.password}
-																onChange = {this.handleCredential.bind(this)}
+                                                                onChange = {this.handleCredential.bind(this)}
+                                                                id = "password"
 															/>
 														}
 													</FormattedMessage>
@@ -1191,7 +1193,8 @@ class SettingsModal extends React.Component {
 													label="Signin"
 													primary={true}
 													onClick={() =>{this.signin("btn")}}
-													disabled = {this.state.btnDisabled}
+                                                    disabled = {this.state.btnDisabled}
+                                                    id="signin"
 												/>
 											</Panel.Body>
 										</Panel>

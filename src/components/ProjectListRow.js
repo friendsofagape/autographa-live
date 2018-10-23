@@ -254,24 +254,24 @@ class ProjectListRow extends React.Component {
 						return book.id
 					}
 				}).filter(book => book);
-				await this.asyncForEach(booksList, async (book) => {
-					try{
-						let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
-						if (!fs.existsSync(dir)){
-						 	fs.mkdirSync(dir);
-						}
-						if(bookData !== undefined || bookData !== null){
-						 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-						 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
-						 	}
-						 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
-						 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
-						 	}
-						}
-					}catch(err){
-						console.log(err);
-					}
-				})
+				// await this.asyncForEach(booksList, async (book) => {
+				// 	try{
+				// 		let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, book);
+				// 		if (!fs.existsSync(dir)){
+				// 		 	fs.mkdirSync(dir);
+				// 		}
+				// 		if(bookData !== undefined || bookData !== null){
+				// 		 	if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+				// 		 		fs.mkdirSync(path.join(app.getPath('userData'), 'paratext', projectName));
+				// 		 	}
+				// 		 	if(fs.existsSync(path.join(app.getPath('userData'), 'paratext', projectName))){
+				// 		 		fs.writeFileSync(path.join(app.getPath('userData'), 'paratext', projectName, `${book}.xml`), bookData, 'utf8');
+				// 		 	}
+				// 		}
+				// 	}catch(err){
+				// 		console.log(err);
+				// 	}
+				// })
 				//fetching book data done  and hiding the loader
 				this.props.showLoader(false);
 				this.setState({bookList: booksList, open: true })
@@ -295,15 +295,15 @@ class ProjectListRow extends React.Component {
                       {/*<Panel.Title toggle>{ project.proj[0] }</Panel.Title>*/}
 				    </Panel.Heading>
 				    <Panel.Body collapsible>
-				    	<FormGroup>
+				    	<FormGroup id="project-list">
 						    {
 						    	this.state.bookList.map((res, i) => {
-						    		return(<Checkbox inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res}</Checkbox>)
+						    		return(<Checkbox id={res} inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res}</Checkbox>)
 						    	})
 						    }
 				    	</FormGroup>
 						<div style={{float: "right"}}>
-				    		<Button type="button" className="margin-right-10 btn btn-success" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</Button>
+				    		<Button type="button" id="btn-import" className="margin-right-10 btn btn-success" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</Button>
 				    		<Button type="button" className = "margin-right-10 btn btn-success" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</Button>
 						</div>
 				    </Panel.Body>
