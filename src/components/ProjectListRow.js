@@ -113,6 +113,24 @@ class ProjectListRow extends React.Component {
 									}
 									temp = temp.nextSibling;
 								}
+								// for getting text from sibling of parent para tag
+								temp = currVerse.parentElement.nextElementSibling;
+								while(true){
+									if(!temp || temp.nodeName !== "para" ){
+										break;
+									}
+									let foundVerse = false;
+									for( let i = 0; i < temp.childNodes.length; i++){
+										if(temp.childNodes[i].nodeName === 'verse'){
+											foundVerse = true;
+										}
+									}
+									if(foundVerse) {
+										break;
+									}
+									verseText += " "+temp.textContent;
+									temp = temp.nextElementSibling;
+								}
 								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: verseText});
 							}
 							currVerse = verseNodes.iterateNext();
@@ -302,8 +320,8 @@ class ProjectListRow extends React.Component {
 						    	})
 						    }
 				    	</FormGroup>
-						<div style={{float: "right"}}>
-				    		<Button type="button" id="btn-import" className="margin-right-10 btn btn-success" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</Button>
+						<div style={{float: "right"}} className="btn-imp-group">
+				    		<Button type="button"  className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</Button>
 				    		<Button type="button" className = "margin-right-10 btn btn-success" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</Button>
 						</div>
 				    </Panel.Body>
