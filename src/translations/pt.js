@@ -125,6 +125,7 @@
 	"label-please-wait": "Isso pode levar alguns minutos. <br/> Por favor, espere",
 	"label-warning": "Atenção",
 	"label-override-text": "Isso sobrescreverá qualquer texto existente nos livros selecionados",
+	"label-selection": "Por favor, faça uma seleção para continuar",
 	"book-genesis" : "Gênesis",
 	"book-exodus" : "Êxodo",
 	"book-leviticus" : "Levítico",

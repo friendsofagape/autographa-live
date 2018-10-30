@@ -44,6 +44,7 @@
 	"label-paratext": "Paratext",
 	"label-warning": "Warning",
 	"label-override-text": "This will overwrite any existing text in the selected books.",
+	"label-selection": "Please make a selection to continue.",
 	"placeholder-search-text" : "Search text",
 	"placeholder-replace-text" : "Replacement",
 	"placeholder-path-to-destination" : "Path to destination folder",

@@ -127,6 +127,7 @@
 	"label-please-wait": "इसमें कुछ मिनट लग सकते हैं। <br/> कृपया प्रतीक्षा करें",
 	"label-warning": "चेतावनी",
 	"label-override-text": "यह चयनित पुस्तकों में किसी भी मौजूदा पाठ को ओवरराइट करेगा।",
+	"label-selection": "एक चयन जारी रखने के लिए करें।",
 	"book-genesis" : "उत्पाति",
 	"book-exodus" : "निर्गमन",
 	"book-leviticus" : "लैव्यव्यवस्थ",
