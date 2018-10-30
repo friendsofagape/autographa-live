@@ -380,7 +380,7 @@ describe('Autographa Test', () => {
 
     })
 
-    it('should get the list of projects', () => {
+    it('should get the list of projects and import book', () => {
         return app.client.waitUntilWindowLoaded()
         .waitForVisible("#credential-heading-1 > .panel-title > a", 5000)
         .click("#credential-heading-1 > .panel-title > a")
@@ -390,8 +390,8 @@ describe('Autographa Test', () => {
         .waitForSelected('#GEN', 5000)
         .waitForExist("a.btn-import", 60000)
         .click("a.btn-import")
-        .waitForExist(".swal-button", 60000)
-        .click(".swal-button", 20000)
+        .waitForExist(".swal-button--confirm", 60000)
+        .click(".swal-button--confirm", 20000)
         .waitForVisible("#versediv1", 60000)
         .waitForVisible("#loading-img", 60000)
         .waitForVisible(".swal-button--confirm", 60000)
@@ -399,37 +399,42 @@ describe('Autographa Test', () => {
         
     })
 
-    // it('should import the project', () => {
-    //     return app.client.waitUntilWindowLoaded()
-    //     .waitForVisible("#credential-heading-1 > .panel-title > a")
-    //     .click("#credential-heading-1 > .panel-title > a")
-    //     .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']", 5000)        
-    //     .keys('Tab')
-    //     .keys(' ')
-    //     .waitForSelected('#GEN', 5000)
-    //     .keys('Tab')
-        
-    //     //.selectorExecute("#GEN", (button) => {
-    //       //  console.log(button)
-    //         //button[0].click();
-    //     //})
-    //     .click("#credential-heading-1 > .panel-title > a")
-    //     .waitForVisible("button.btn-import", 60000)
-    //     .click("button.btn-import")
-    //     .waitForVisible(".swal-modal")
-        
-    //     // .selectorExecute("button.btn-import", (button) => {
-    //     //    button[0].click();
-    //     // })
-    // })
-
     it('close the app', () => {
         return app.stop();
     });
-  
     it('open the app', () => {
         return app.start();
     });
-    
-
+  
+    it('should login to paratext and get projects list', () => {
+        return app.client.waitUntilWindowLoaded()
+        .keys('Escape')
+        .waitForEnabled("#btnSettings", 2000)
+        .click("#btnSettings")
+        .waitForVisible("#left-tabs-example-tab-seventh")
+        .click("#left-tabs-example-tab-seventh")
+        .waitForVisible(".panel-title > a")
+        .click(".panel-title > a")
+        .waitForVisible("#username")
+        .setValue("#username", 'Benjamin Autographa')
+        .setValue("#password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
+        .waitForVisible("#signin")
+        .click("#signin")
+        .waitForVisible("#credential-heading-1 > .panel-title > a")
+        .getText("#credential-heading-1 > .panel-title > a").should.eventually.equal('MAL10RO')
+    })
+    it('should upload the project and upload book', () => {
+        return app.client.waitUntilWindowLoaded()
+        .waitForVisible("#credential-heading-1 > .panel-title > a")
+        .click("#credential-heading-1 > .panel-title > a")
+        .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']", 5000)        
+        .keys('Tab')
+        .keys(' ')
+        .waitForSelected('#GEN', 5000)
+        .waitForExist("a.btn-upload", 60000)
+        .click("a.btn-upload")
+        .waitForExist(".swal-button--confirm", 60000)
+        .click(".swal-button--confirm", 20000)
+        .waitForVisible("#loading-img", 60000)
+    })
 }); 
