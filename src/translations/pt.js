@@ -126,6 +126,7 @@
 	"label-warning": "Atenção",
 	"label-override-text": "Isso sobrescreverá qualquer texto existente nos livros selecionados",
 	"label-selection": "Por favor, faça uma seleção para continuar",
+	"label-uploading-warning": "O texto enviado sobrescreverá as alterações não sincronizadas em seu projeto na nuvem",
 	"book-genesis" : "Gênesis",
 	"book-exodus" : "Êxodo",
 	"book-leviticus" : "Levítico",

@@ -87,6 +87,7 @@
 	"label-warning": "تحذير",
 	"label-override-text": "سيؤدي هذا إلى استبدال أي نص موجود في الكتب المحددة",
 	"label-selection": "يرجى الاختيار للمتابعة",
+	"label-uploading-warning": "سيحل النص الذي تم تحميله محل أي تغييرات غير متزامنة في مشروعك على السحاب",
 	"export-html-1-column": "1-تخطيط العمود HTML",
 	"export-html-2-column": "2-تخطيط العمود HTML",
 	"tooltip-language-validation": "يجب أن يكون الطول بين 3 و 8 أحرف ولا يمكن البدء بالرقم.",

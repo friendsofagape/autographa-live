@@ -45,6 +45,7 @@
 	"label-warning": "Warning",
 	"label-override-text": "This will overwrite any existing text in the selected books.",
 	"label-selection": "Please make a selection to continue.",
+	"label-uploading-warning": "The uploaded text will overwrite any un-synced changes in your project on the cloud",
 	"placeholder-search-text" : "Search text",
 	"placeholder-replace-text" : "Replacement",
 	"placeholder-path-to-destination" : "Path to destination folder",
