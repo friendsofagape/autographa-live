@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import swal from 'sweetalert';
 import AutographaStore from "./AutographaStore";
 import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
-import axios from 'axios';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
@@ -317,13 +316,16 @@ class ProjectListRow extends React.Component {
 						    {
 						    	this.state.bookList.map((res, i) => {
 						    		return(<Checkbox id={res} inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res}</Checkbox>)
-						    	})
-						    }
+								})
+								
+							}
+							
 				    	</FormGroup>
 						<div style={{float: "right"}} className="btn-imp-group">
-				    		<Button type="button"  className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</Button>
-				    		<Button type="button" className = "margin-right-10 btn btn-success" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</Button>
+				    		<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
+				    		<a href="javascript:void(0)" className = "margin-right-10 btn btn-success" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>
 						</div>
+						
 				    </Panel.Body>
 				</Panel>
 			);
