@@ -375,32 +375,61 @@ describe('Autographa Test', () => {
       .setValue("#password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
       .waitForVisible("#signin")
       .click("#signin")
-      .waitForVisible("#credential-heading-1")
       .waitForVisible("#credential-heading-1 > .panel-title > a")
-      .getText("#credential-heading-1 > .panel-title > a").should.eventually.equal('MAL10RO');
+      .getText("#credential-heading-1 > .panel-title > a").should.eventually.equal('MAL10RO')
 
     })
 
     it('should get the list of projects', () => {
         return app.client.waitUntilWindowLoaded()
-        .waitForVisible("#credential-heading-1 > .panel-title > a")
+        .waitForVisible("#credential-heading-1 > .panel-title > a", 5000)
         .click("#credential-heading-1 > .panel-title > a")
-        .waitForVisible("#project-list")
-        .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']")
-        .getValue("#project-list > .checkbox-inline > #GEN").should.eventually.equal('GEN')
+        .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']", 5000)
+        .keys('Tab')
+        .keys(' ')
+        .waitForSelected('#GEN', 5000)
+        .waitForExist("a.btn-import", 60000)
+        .click("a.btn-import")
+        .waitForExist(".swal-button", 60000)
+        .click(".swal-button", 20000)
+        .waitForVisible("#versediv1", 60000)
+        .waitForVisible("#loading-img", 60000)
+        .waitForVisible(".swal-button--confirm", 60000)
+        .click(".swal-button--confirm")
+        
     })
 
-    it('should import the project', () => {
-        return app.client.waitUntilWindowLoaded()
-        .waitForVisible("#credential-heading-1 > .panel-title > a")
-        .click("#credential-heading-1 > .panel-title > a")
-        .waitForVisible("#project-list")
-        .waitForVisible("#project-list > .checkbox-inline > #GEN")
-        .waitForVisible(".panel-body > div > #btn-import", 2000)
-        .click("#project-list > .checkbox-inline > #GEN")
-        .click(".panel-body > div > #btn-import")
-    })
+    // it('should import the project', () => {
+    //     return app.client.waitUntilWindowLoaded()
+    //     .waitForVisible("#credential-heading-1 > .panel-title > a")
+    //     .click("#credential-heading-1 > .panel-title > a")
+    //     .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']", 5000)        
+    //     .keys('Tab')
+    //     .keys(' ')
+    //     .waitForSelected('#GEN', 5000)
+    //     .keys('Tab')
+        
+    //     //.selectorExecute("#GEN", (button) => {
+    //       //  console.log(button)
+    //         //button[0].click();
+    //     //})
+    //     .click("#credential-heading-1 > .panel-title > a")
+    //     .waitForVisible("button.btn-import", 60000)
+    //     .click("button.btn-import")
+    //     .waitForVisible(".swal-modal")
+        
+    //     // .selectorExecute("button.btn-import", (button) => {
+    //     //    button[0].click();
+    //     // })
+    // })
 
+    it('close the app', () => {
+        return app.stop();
+    });
+  
+    it('open the app', () => {
+        return app.start();
+    });
     
 
 }); 
