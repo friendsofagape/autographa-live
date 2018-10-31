@@ -1,7 +1,7 @@
 [{
 	
 	"label-translation": "ترجمة",	
-	"app-name-Autographa-Lite" : "أوتوغرافا ليت",
+        "app-name": "أوتوغرافا ليت",
 	"btn-switch-off": "إيقاف",
 	"btn-switch-on": "على",
 	"btn-all" : "الكل",
