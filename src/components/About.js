@@ -34,26 +34,33 @@ var AboutUsModel = function(props) {
                             <img src="../assets/images/autographa_lite_large.png" className="img-circle" alt="Cinque Terre" width="215" height="200" />
                         </div>
         <div className="col-xs-6" style={{padding:"5px"}}>
-                            <h3><FormattedMessage id="app-name-Autographa-Lite" /></h3>
-                            <p><FormattedMessage id="label-version" /> <span>1.2.3</span></p>
+                            <h3><FormattedMessage id="app-name" /></h3>
+                            <p><FormattedMessage id="label-version" /> <span>0.1.0</span></p>
         <p><FormattedMessage id="label-hosted-url" /></p>
-	<p>https://github.com/friendsofagape/autographa-lite.git</p>
+	<p>https://github.com/friendsofagape/autographa-live.git</p>
                         </div>
                     </div>
                 </Tab>
                 <Tab eventKey={2} title={<FormattedMessage id="label-license-tab"/>}>
-                    <div style={{overflowY: "scroll", height: "255px"}}>
-                        <h4> The MIT License (MIT)</h4>
-                        <p>Released in 2018 by Friends of Agape (www.friendsofagape.org) in partnership with RUN Ministries (www.runministries.org). </p>
-                        <br />
-                        <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-                        <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-                        <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
-                    </div>
-                </Tab>
-            </Tabs>
+        <div style={{overflowY: "scroll", height: "255px"}}>
+        <h4>GNU General Public License v3.0</h4>
+	<p>Autographa Live, A Bible translation editor for everyone.<br />
+	Copyright (C) 2018  Friends of Agape</p>
+      <p>This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.</p>
+	<p>This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.</p>
+	<p>see https://www.gnu.org/licenses/.</p>
+	<p>You may contact us via issues on GitHub.</p>
+	</div>
+      </Tab>
+        </Tabs>
         </Modal.Body>
-    </Modal>
+	</Modal>
     )
 }
 

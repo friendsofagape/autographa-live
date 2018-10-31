@@ -1,7 +1,7 @@
 [{
 	
 	"label-translation": "अनुवाद",	
-	"app-name-Autographa-Lite" : "औटोग्रफा लाईट",
+	"app-name" : "औटोग्रफा लाइव",
 	"btn-switch-off": "ऑफ़",
 	"btn-switch-on": "ऑन",
 	"btn-all" : "सब",

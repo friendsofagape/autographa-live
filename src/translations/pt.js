@@ -1,7 +1,7 @@
 [{
 	
 	"label-translation": "Tradução",	
-	"app-name-Autographa-Lite" : "Autographa Lite",
+	"app-name" : "Autographa Live",
 	"btn-switch-off": "DESLIGADO",
 	"btn-switch-on": "LIGADO",
 	"btn-all" : "TODOS",
