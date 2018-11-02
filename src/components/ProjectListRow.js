@@ -266,7 +266,7 @@ class ProjectListRow extends React.Component {
 									try{
 										let uploadedRes = await _this.props.paratextObj.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
 										fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
-										swal("Success", "Successfully uploaded book.", "success");
+										swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
 									}catch(err){
 										swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
 									}finally{
@@ -290,6 +290,7 @@ class ProjectListRow extends React.Component {
 	}
 
     getBooks = async (projectId, projectName) => {
+		console.log(this.state.open)
 		if(!this.state.open){
 			this.props.showLoader(true);
 			let _this = this;
@@ -318,7 +319,7 @@ class ProjectListRow extends React.Component {
   		const {project, index} = this.props;
 	  		return (
 	  			<Panel eventKey={index+1}>
-				    <Panel.Heading>
+				    <Panel.Heading >
                       <Panel.Title toggle onClick = {() => {this.getBooks(project.projid[0],  project.proj[0])}}>{ project.proj[0] }</Panel.Title>
                       {/*<Panel.Title toggle>{ project.proj[0] }</Panel.Title>*/}
 				    </Panel.Heading>
@@ -330,12 +331,14 @@ class ProjectListRow extends React.Component {
 								})
 								
 							}
-							
 				    	</FormGroup>
-						<div style={{float: "right"}} className="btn-imp-group">
-				    		<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
-				    		<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>
-						</div>
+						{
+							Object.keys(this.state.bookList).length > 0 &&
+							<div style={{float: "right"}} className="btn-imp-group">
+				    			<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
+				    			<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>
+							</div>
+						}
 						
 				    </Panel.Body>
 				</Panel>
