@@ -247,7 +247,7 @@ describe('Autographa Test', () => {
 
     it('Should keep newly saved text viewable when layout changes to 4x', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1+1}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
