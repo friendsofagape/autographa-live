@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import xml2js from 'xml2js'
 dotenv.config({path: path.join(__dirname, '..', '.env')});
+const ENDPOINT = "https://data-access.paratext.org";
 export default class Paratext {
     /**
      * 
@@ -52,7 +53,7 @@ export default class Paratext {
     * @param url the user who's projects will be listed. Requires token or username and password
     * @returns {Promise<array>} an array of projects objects
     */
-    async getProjects(n) {
+    async getProjects(attempt = 1) {
         let token = await this.accessToken;
         let _this = this;
         let config = {
@@ -60,14 +61,14 @@ export default class Paratext {
                 Authorization: `Bearer ${token}`
             }
         }
-        let response = await axios.get("https://data-access.paratext.org/api8/projects", config).then((res) => {
+        let response = await axios.get(`${ENDPOINT}/api8/projects`, config).then((res) => {
                 return res;
             }).catch((err) => {
                 
                 if(err.response.data && err.response.data.includes("Invalid authorization token")){
-                    if (n === 1) throw err;
+                    if (attempt === 3) throw err;
                     _this.getToken();
-                    return _this.getProjects(n-1);
+                    return _this.getProjects(attempt + 1);
                 }
             })
         let projects = [];
@@ -80,15 +81,20 @@ export default class Paratext {
         }
         return projects;
     }
-    async getBooksList(projectId) {
+    async getBooksList(projectId, attempt = 1) {
         let token = await this.accessToken;
         let config = {headers: {
             Authorization: `Bearer ${token}`
         }}
         let books = [];
-        let response = await axios.get(`https://data-access.paratext.org/api8/books/${projectId}`, config).then((res) => {
+        let response = await axios.get(`${ENDPOINT}/api8/books/${projectId}`, config).then((res) => {
             return res;
         }).catch((err) => {
+            if(err.response.data && err.response.data.includes("Invalid authorization token")){
+                if (attempt === 3) throw err;
+                _this.getToken();
+                return _this.getBooksList(projectId, attempt + 1);
+            }
             return {status: 400};
         });
         if(response && response.status == 200 ){
@@ -104,32 +110,42 @@ export default class Paratext {
     }
     
     //importing
-    async getUsxBookData(projectId, bookId){
+    async getUsxBookData(projectId, bookId, attempt = 1){
         let token = await this.accessToken;
         let config = {headers: {
             Authorization: `Bearer ${token}`
         }}
-        return await axios.get(`https://data-access.paratext.org/api8/text/${projectId}/${bookId}`, config).then((res) => {
+        return await axios.get(`${ENDPOINT}/api8/text/${projectId}/${bookId}`, config).then((res) => {
             return res.data;
         }).catch((err) =>{
+            if(err.response.data && err.response.data.includes("Invalid authorization token")){
+                if (attempt === 3) throw err;
+                _this.getToken();
+                return _this.getUsxBookData(projectId, bookId, attempt + 1);
+            }
             throw new Error("Fetch bookdata issue");
         })
     }
     //Revision
-    async getBookRevision(projectId, bookId){
+    async getBookRevision(projectId, bookId, attempt = 1){
         let token = await this.accessToken;
         let config = {headers: {
             Authorization: `Bearer ${token}`
         }}
-        return await axios.get(`https://data-access.paratext.org/api8/revisions/${projectId}/${bookId}`, config).then((res) => {
+        return await axios.get(`${ENDPOINT}/api8/revisions/${projectId}/${bookId}`, config).then((res) => {
             return res.data;
         }).catch((err) =>{
+            if(err.response.data && err.response.data.includes("Invalid authorization token")){
+                if (attempt === 3) throw err;
+                _this.getToken();
+                return _this.getBookRevision(projectId, bookId, attempt + 1);
+            }
             throw new Error("Fetch bookdata issue");
         })
     }
 
     //exporting to paratext
-    async updateBookData(projectId, bookId, revision, bookXmldoc){
+    async updateBookData(projectId, bookId, revision, bookXmldoc, attempt = 1){
         //convert in usx
         //send to the paratext API
         let token = await this.accessToken;
@@ -137,10 +153,14 @@ export default class Paratext {
             Authorization: `Bearer ${token}`,
             'Content-Type': "application/x-www-form-urlencoded"
         }}
-        return await axios.post(`https://data-access.paratext.org/api8/text/${projectId}/${revision}/${bookId}`, bookXmldoc, config).then((res) => {
+        return await axios.post(`${ENDPOINT}/api8/text/${projectId}/${revision}/${bookId}`, bookXmldoc, config).then((res) => {
             return res.data;
         }).catch((err) =>{
-            console.log(err)
+            if(err.response.data && err.response.data.includes("Invalid authorization token")){
+                if (attempt === 3) throw err;
+                _this.getToken();
+                return _this.updateBookData(projectId, bookId, revision, bookXmldoc, attempt + 1);
+            }
             throw new Error("upload bookdata issue");
         })
     }
