@@ -66,7 +66,8 @@ class SettingsModal extends React.Component {
 				password: ""
 			},
 			projectData: [],
-			paratextObj: null
+            paratextObj: null,
+            activeKey: -1
 
 		};
 		db.get('targetBible').then((doc) => {
@@ -685,7 +686,8 @@ class SettingsModal extends React.Component {
                     AutographaStore.password = password;
                     this.setState({
                         projectData: projects,
-                        paratextObj: paratextObj
+                        paratextObj: paratextObj,
+                        activeKey: -1
                     })
                     let newdoc = {
                         _id: 'paratext_credential',
@@ -704,7 +706,8 @@ class SettingsModal extends React.Component {
 					    this.props.showLoader(false);
 					    this.setState({
 						    projectData: projects,
-						    paratextObj: paratextObj
+                            paratextObj: paratextObj,
+                            activeKey: -1
 					    })
 				    }).catch((err) => {
 					    console.log(err)
@@ -731,7 +734,10 @@ class SettingsModal extends React.Component {
 		this.setState({
 			paratext: this.state.paratext
 		})
-	}
+    }
+    handleSelect = (activeKey) => {
+        this.setState({ activeKey });
+    }
 
   	render(){
     var errorStyle = {
@@ -1144,18 +1150,17 @@ class SettingsModal extends React.Component {
                             </div>
                             <button className="btn btn-success btn-save" id="btnSaveLang" onClick = {this.saveAppLanguage}><FormattedMessage id="btn-save" /></button>
                         </div>
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="seventh">
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="seventh">
 							<Tabs id="projectList">
 								<Tab eventKey={1} title={`${AutographaStore.currentTrans["label-paratext"]}`}>
-									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}}  >
+									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										<Panel eventKey={0}>
 											<Panel.Heading id="credential-title">
 												<Panel.Title toggle onClick = {() => {this.editCredential()}}><FormattedMessage id="label-credentials"/></Panel.Title>
 											</Panel.Heading>
 											<Panel.Body collapsible>
 												<div>
-													
 													<label><FormattedMessage id="label-username"/></label>
 													<br />
 													<FormattedMessage id="label-username">
