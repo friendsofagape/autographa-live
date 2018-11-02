@@ -83,7 +83,7 @@ describe('Autographa Test', () => {
 
     it('should save the target text', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .keys('Tab')
             .waitForVisible("#versediv1", 20000)
@@ -106,7 +106,7 @@ describe('Autographa Test', () => {
 
     it('should check the verse in translation panel', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
@@ -123,7 +123,7 @@ describe('Autographa Test', () => {
 
     it('After ref change should check the verse again in translation panel', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
@@ -169,7 +169,7 @@ describe('Autographa Test', () => {
 
     it('should check the saved target verse', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
@@ -215,7 +215,7 @@ describe('Autographa Test', () => {
 
     it('Should keep newly saved text viewable when layout changes to 3x', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
@@ -247,7 +247,7 @@ describe('Autographa Test', () => {
 
     it('Should keep newly saved text viewable when layout changes to 4x', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
             .getText("#v1").should.eventually.equal(input);
@@ -453,7 +453,7 @@ describe('Autographa Test', () => {
 
     it('should check the imported text', () => {
         let date = new Date();
-        const input = `this is a test ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .keys('Tab')
             .waitForVisible("#versediv1", 20000)
