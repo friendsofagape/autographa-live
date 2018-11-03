@@ -245,7 +245,6 @@ class ProjectListRow extends React.Component {
 											book[currChapter.attributes["number"].value-1] = [];
 										}
 										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[currVerse.attributes["number"].value-1];
-											console.log(currVerse)
 											if(!currVerse.nextSibling){
 												currVerse.insertAdjacentText('afterend',verse.verse);
 											}
