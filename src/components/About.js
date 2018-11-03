@@ -37,7 +37,7 @@ var AboutUsModel = function(props) {
                             <h3><FormattedMessage id="app-name" /></h3>
                             <p><FormattedMessage id="label-version" /> <span>0.1.0-beta.1</span></p>
         <p><FormattedMessage id="label-hosted-url" /></p>
-	<a href="https://github.com/friendsofagape/autographa-live.git">https://github.com/friendsofagape/autographa-live.git</a>
+	<p>https://github.com/friendsofagape/autographa-live.git</p>
                         </div>
                     </div>
                 </Tab>
