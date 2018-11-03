@@ -7,7 +7,7 @@ import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore";
 import ReferencePanel from './ReferencePanel';
 const { dialog, getCurrentWindow } = require('electron').remote;
-const { Tabs, Tab, Modal, Button, Col, Row, Grid, Nav, NavItem } = require('react-bootstrap/lib');
+const { Tabs, Tab, Modal, Button, Col, Row, Grid, Nav, NavItem, Panel, PanelGroup } = require('react-bootstrap/lib');
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const lookupsDb = require(`${__dirname}/../util/data-provider`).lookupsDb();
@@ -18,560 +18,728 @@ const session = require('electron').remote.session;
 const path = require("path");
 const Promise = require("bluebird");
 var fs = Promise.promisifyAll(require('fs'));
+
 import { FormattedMessage } from 'react-intl';
 import Loader from './Loader';
+import paratext from "../helpers/paratextAdapter";
+import ProjectList from "./ProjectList";
+
 
 @observer
 class SettingsModal extends React.Component {
-  constructor(props){
-    super(props);
+	constructor(props) {
+		super(props);
 
-    this.state = {
-      settingData: {langCodeValue: "", langCode: "", langVersion: "", folderPath: ""},
-      refSetting: {bibleName: "", refLangCodeValue: "", refLangCode: "", refVersion: "", refFolderPath: ""},
-      folderPathImport: "",
-      refList: [],
-      refListEdit: [],
-      bibleReference: true,
-      visibleList: true,
-      myBible: "",
-      appLang: "en",
-      message: "",
-      hideAlert: "hidemessage",
-      showLoader: false,
-      refIndex: 0,
-      refName: "",
-      showMsg: false,
-      msgId: "",
-      filepath: "",
-      modalBody: "",
-      title: ""
+		this.state = {
+			settingData: {
+				langCodeValue: "",
+				langCode: "",
+				langVersion: "",
+				folderPath: ""
+			},
+			refSetting: {
+				bibleName: "",
+				refLangCodeValue: "",
+				refLangCode: "",
+				refVersion: "",
+				refFolderPath: ""
+			},
+			folderPathImport: "",
+			refList: [],
+			refListEdit: [],
+			bibleReference: true,
+			visibleList: true,
+			myBible: "",
+			appLang: "en",
+			message: "",
+			hideAlert: "hidemessage",
+			showLoader: false,
+			refIndex: 0,
+			refName: "",
+			showMsg: false,
+			msgId: "",
+			filepath: "",
+			modalBody: "",
+			title: "",
+			paratext: {
+				username: "",
+				password: ""
+			},
+			projectData: [],
+            paratextObj: null,
+            activeKey: -1
 
-    };
-    db.get('targetBible').then((doc) => {
-      AutographaStore.scriptDirection = doc.langScript.toUpperCase();
-    }, (err) => {
-      AutographaStore.scriptDirection = "LTR";
-    })
-    AutographaStore.refList = []
-    this.loadSetting();
-  }
+		};
+		db.get('targetBible').then((doc) => {
+			AutographaStore.scriptDirection = doc.langScript.toUpperCase();
+		}, (err) => {
+			AutographaStore.scriptDirection = "LTR";
+		})
+		AutographaStore.refList = [];
+		refDb.get('paratext_credential').then((doc) => {
+			AutographaStore.username = doc.username;
+			AutographaStore.password = doc.password;
+		}).catch((err) => {
+			console.log(err);
+		})
+		this.loadSetting();
+	}
 
-  getStuffAsync = (param) => {
-    return new Promise(function(resolve,reject){
-         bibUtil_to_json.toJson(param, function(err, data){
-            if(err !== null) return reject(err);
-             resolve(data);
-         });
-    });
-  }
+	getStuffAsync = (param) => {
+		return new Promise(function(resolve,reject){
+			bibUtil_to_json.toJson(param, function(err, data){
+				if(err !== null) return reject(err);
+				resolve(data);
+			});
+		});
+	}
 
-  loadSetting = () => {
-    const settingData = this.state.settingData;
-    db.get('targetBible').then((doc) =>{
-      settingData.langCode = doc.targetLang;
-      settingData.langCodeValue = doc.targetLang;
-      settingData.langVersion = doc.targetVersion;
-      settingData.folderPath = doc.targetPath;
-    }, (err) => {
-      // console.log(err);
-    });
-  }
+	loadSetting = () => {
+		const settingData = this.state.settingData;
+		db.get('targetBible').then((doc) =>{
+		settingData.langCode = doc.targetLang;
+		settingData.langCodeValue = doc.targetLang;
+		settingData.langVersion = doc.targetVersion;
+		settingData.folderPath = doc.targetPath;
+		}, (err) => {
+		// console.log(err);
+		});
+	}
 
-  loadReference = () => {
-    AutographaStore.refListExist = [];
-    AutographaStore.refListEdit = [];
-    AutographaStore.refList = [];
-     refDb.get('refs').then((doc) => {
-      doc.ref_ids.forEach((ref_doc) => {
-        AutographaStore.refList.push( {value: ref_doc.ref_id, option: ref_doc.ref_name } );
-        let ref_id = ref_doc.ref_id;
-        if(Constant.defaultReferences.indexOf(ref_doc.ref_id) >= 0) {
-          AutographaStore.refListExist.push(ref_doc); 
-        } else {
-          AutographaStore.refListEdit.push(ref_doc);
-        }
-      });
-    })
-  }
+	loadReference = () => {
+		AutographaStore.refListExist = [];
+		AutographaStore.refListEdit = [];
+		AutographaStore.refList = [];
+		refDb.get('refs').then((doc) => {
+		doc.ref_ids.forEach((ref_doc) => {
+			AutographaStore.refList.push( {value: ref_doc.ref_id, option: ref_doc.ref_name } );
+			let ref_id = ref_doc.ref_id;
+			if(Constant.defaultReferences.indexOf(ref_doc.ref_id) >= 0) {
+			AutographaStore.refListExist.push(ref_doc); 
+			} else {
+			AutographaStore.refListEdit.push(ref_doc);
+			}
+		});
+		})
+	}
 
-  onChange = (event) => {
-    let settingData = Object.assign({}, this.state.settingData);
-        settingData[event.target.name] = event.target.value;
-        this.setState({settingData});
-  }
+	onChange = (event) => {
+		let settingData = Object.assign({}, this.state.settingData);
+			settingData[event.target.name] = event.target.value;
+			this.setState({settingData});
+	}
 
-  onChangeList = (event) => {
-    let settingData = Object.assign({}, this.state.settingData);
-        settingData.langCode = event.target.value;
-        settingData.langCodeValue = event.target.value;
-        this.setState({ settingData, visibleList: true });
-        this.listLanguage(event.target.value);
-        this.setState({});
-  }
+	onChangeList = (event) => {
+		let settingData = Object.assign({}, this.state.settingData);
+			settingData.langCode = event.target.value;
+			settingData.langCodeValue = event.target.value;
+			this.setState({ settingData, visibleList: true });
+			this.listLanguage(event.target.value);
+			this.setState({});
+	}
 
-  matchCode = (input) => {
-    var filteredResults = {};
-    return lookupsDb.allDocs({
-        startkey: input.toLowerCase(),
-        endkey: input.toLowerCase() + '\uffff',
-        include_docs: true
-    }).then(function(response) {
-        var data = ""
-        if (response != undefined && response.rows.length > 0) {
-          Object.keys(response.rows).map((index, value) => {
-            if (response.rows) {
-              if (!filteredResults.hasOwnProperty(response.rows[index].doc['lang_code'])) {
-                filteredResults[response.rows[index].doc['lang_code']] = response.rows[index].doc['name'];
-              } else {
-                let existingValue = filteredResults[response.rows[index].doc['lang_code']]
-                filteredResults[response.rows[index].doc['lang_code']] = (existingValue + " , " + response.rows[index].doc['name']);
-              }
-            }
-            return null;
-          })
-          return filteredResults
-        } else {
-            return [];
-        }
-    }).catch(function(err) {
-      console.log(err);
-    })
-  }
+	matchCode = (input) => {
+		var filteredResults = {};
+		return lookupsDb.allDocs({
+			startkey: input.toLowerCase(),
+			endkey: input.toLowerCase() + '\uffff',
+			include_docs: true
+		}).then(function(response) {
+			var data = ""
+			if (response != undefined && response.rows.length > 0) {
+			Object.keys(response.rows).map((index, value) => {
+				if (response.rows) {
+				if (!filteredResults.hasOwnProperty(response.rows[index].doc['lang_code'])) {
+					filteredResults[response.rows[index].doc['lang_code']] = response.rows[index].doc['name'];
+				} else {
+					let existingValue = filteredResults[response.rows[index].doc['lang_code']]
+					filteredResults[response.rows[index].doc['lang_code']] = (existingValue + " , " + response.rows[index].doc['name']);
+				}
+				}
+				return null;
+			})
+			return filteredResults
+			} else {
+				return [];
+			}
+		}).catch(function(err) {
+		console.log(err);
+		})
+	}
 
-  listLanguage = (val) => {
-    if (val.length >= 2) {
-     var autoCompleteResult = this.matchCode(val)
-      autoCompleteResult.then((res)  => {
-        if (res != null) {
-          this.setState({_listArray: res})
-          document.addEventListener('click', this.handleOutsideClick, false);
-        }else{
-          document.removeEventListener('click', this.handleOutsideClick, false);
-        }
-      });  
-    }
-  }
+	listLanguage = (val) => {
+		if (val.length >= 2) {
+		var autoCompleteResult = this.matchCode(val)
+		autoCompleteResult.then((res)  => {
+			if (res != null) {
+			this.setState({_listArray: res})
+			document.addEventListener('click', this.handleOutsideClick, false);
+			}else{
+			document.removeEventListener('click', this.handleOutsideClick, false);
+			}
+		});  
+		}
+	}
 
-  onReferenceChange = (event) => {
-    let refSetting = Object.assign({}, this.state.refSetting);
-        refSetting[event.target.name] = event.target.value;
-        this.setState({refSetting});
-  }
+	onReferenceChange = (event) => {
+		let refSetting = Object.assign({}, this.state.refSetting);
+			refSetting[event.target.name] = event.target.value;
+			this.setState({refSetting});
+	}
 
-  onReferenceChangeList = (event) => {
-    let refSetting = Object.assign({}, this.state.refSetting);
-        refSetting.refLangCode = event.target.value;
-        refSetting.refLangCodeValue = event.target.value;
-        this.setState({ refSetting, visibleList: true });
-        this.listLanguage(event.target.value);
-        this.setState({});
-  }
+	onReferenceChangeList = (event) => {
+		let refSetting = Object.assign({}, this.state.refSetting);
+			refSetting.refLangCode = event.target.value;
+			refSetting.refLangCodeValue = event.target.value;
+			this.setState({ refSetting, visibleList: true });
+			this.listLanguage(event.target.value);
+			this.setState({});
+	}
 
-  setMessage = (msgid, isValid) => {
-    this.setState({ message: msgid, hideAlert: 'failure' });
-    setTimeout(() => {
-      this.setState({hideAlert: 'hidemessage'})
-    }, 2000);
-    return isValid;
-  }
+	setMessage = (msgid, isValid) => {
+		this.setState({ message: msgid, hideAlert: 'failure' });
+		setTimeout(() => {
+		this.setState({hideAlert: 'hidemessage'})
+		}, 2000);
+		return isValid;
+	}
 
-  target_setting = () => {
-    const {langCode, langVersion, folderPath} = this.state.settingData;
-    let version = langVersion;
-    let path = folderPath;
-    let isValid = true;
-    if (langCode === null || langCode == "") {
-      isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
-    } else if(langCode.match(/^\d/)) {      
-      isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
-    } else if((/^([a-zA-Z0-9_-]){3,8}$/).test(langCode) === false){
-      isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
-    } else if (version === null || version === "") {
-      isValid = this.setMessage('dynamic-msg-bib-version-validation', false);
-    } else if (path === null || path === "") {
-      isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
-    } else {
-      isValid = true;
-    }
-    return isValid;
-  }
+	target_setting = () => {
+		const {langCode, langVersion, folderPath} = this.state.settingData;
+		let version = langVersion;
+		let path = folderPath;
+		let isValid = true;
+		if (langCode === null || langCode == "") {
+		isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
+		} else if(langCode.match(/^\d/)) {      
+		isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
+		} else if((/^([a-zA-Z0-9_-]){3,8}$/).test(langCode) === false){
+		isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
+		} else if (version === null || version === "") {
+		isValid = this.setMessage('dynamic-msg-bib-version-validation', false);
+		} else if (path === null || path === "") {
+		isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
+		} else {
+		isValid = true;
+		}
+		return isValid;
+	}
 
-  saveSetting = () => {
-    if (this.target_setting() == false) return;
-    const currentTrans = AutographaStore.currentTrans;
-    const {langCodeValue, langCode, langVersion, folderPath} = this.state.settingData;
-    const settingData = { 
-      _id: 'targetBible',
-      targetLang: langCode,
-      targetVersion: langVersion,
-      targetPath: folderPath,
-      langScript: AutographaStore.scriptDirection.toUpperCase()
-    }
-    db.get('targetBible').then((doc) => {
-      settingData._rev = doc._rev;
-      db.put(settingData).then((res) => {
-        swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-saved-change"], "success");
-      }); 
-    }, (err) => {
-      db.put(settingData).then((res) => {
-        swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-saved-change"], "success");
-      }, (err) => {
-        swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-went-wrong"], "success");
-      });
-    });
-  }
+	saveSetting = () => {
+		if (this.target_setting() == false) return;
+		const currentTrans = AutographaStore.currentTrans;
+		const {langCodeValue, langCode, langVersion, folderPath} = this.state.settingData;
+		const settingData = { 
+		_id: 'targetBible',
+		targetLang: langCode,
+		targetVersion: langVersion,
+		targetPath: folderPath,
+		langScript: AutographaStore.scriptDirection.toUpperCase()
+		}
+		db.get('targetBible').then((doc) => {
+		settingData._rev = doc._rev;
+		db.put(settingData).then((res) => {
+			swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-saved-change"], "success");
+		}); 
+		}, (err) => {
+		db.put(settingData).then((res) => {
+			swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-saved-change"], "success");
+		}, (err) => {
+			swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-went-wrong"], "success");
+		});
+		});
+	}
 
-  openFileDialogSettingData = (event) => {
-    dialog.showOpenDialog(getCurrentWindow(), {
-        properties: ['openDirectory'],
-        filters: [{ name: 'All Files', extensions: ['*'] }],
-        title: "Export Location"
-    }, (selectedDir) => {
-        if (selectedDir != null) {
-          this.state.settingData["folderPath"] = selectedDir;
-          this.setState({});
-        }
-    });
-  }
+	openFileDialogSettingData = (event) => {
+		dialog.showOpenDialog(getCurrentWindow(), {
+			properties: ['openDirectory'],
+			filters: [{ name: 'All Files', extensions: ['*'] }],
+			title: "Export Location"
+		}, (selectedDir) => {
+			if (selectedDir != null) {
+			this.state.settingData["folderPath"] = selectedDir;
+			this.setState({});
+			}
+		});
+	}
 
-  openFileDialogImportTrans = (event) => {
-    dialog.showOpenDialog(getCurrentWindow(), {
-        properties: ['openDirectory'],
-        filters: [{ name: 'All Files', extensions: ['*'] }],
-      title: "Import Translation"
-    }, (selectedDir) => {
-        if (selectedDir != null) {
-          this.setState({folderPathImport: selectedDir});
-        }
-    });
-  }
+	openFileDialogImportTrans = (event) => {
+		dialog.showOpenDialog(getCurrentWindow(), {
+			properties: ['openDirectory'],
+			filters: [{ name: 'All Files', extensions: ['*'] }],
+		title: "Import Translation"
+		}, (selectedDir) => {
+			if (selectedDir != null) {
+			this.setState({folderPathImport: selectedDir});
+			}
+		});
+	}
 
-  openFileDialogRefSetting = (event) => {
-    dialog.showOpenDialog(getCurrentWindow(), {
-        properties: ['openDirectory'],
-        filters: [{ name: 'All Files', extensions: ['*'] }],
-        title: "Import Reference"
-    }, (selectedDir) => {
-        if (selectedDir != null) {
-          this.state.refSetting["refFolderPath"] = selectedDir;
-          this.setState({});
-        }
-    });
-  }
+	openFileDialogRefSetting = (event) => {
+		dialog.showOpenDialog(getCurrentWindow(), {
+			properties: ['openDirectory'],
+			filters: [{ name: 'All Files', extensions: ['*'] }],
+			title: "Import Reference"
+		}, (selectedDir) => {
+			if (selectedDir != null) {
+			this.state.refSetting["refFolderPath"] = selectedDir;
+			this.setState({});
+			}
+		});
+	}
 
-  import_sync_setting = () => {
-    let targetImportPath = this.state.folderPathImport;
-    let isValid = true;
-    if (targetImportPath === undefined ||targetImportPath === null || targetImportPath === "") {
-      isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
-    }
-    return isValid;
-  }
+	import_sync_setting = () => {
+		let targetImportPath = this.state.folderPathImport;
+		let isValid = true;
+		if (targetImportPath === undefined ||targetImportPath === null || targetImportPath === "") {
+		isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
+		}
+		return isValid;
+	}
 
-  importTranslation = () => {
-    let that = this;
-    if (this.import_sync_setting() == false) return;
-    this.setState({showLoader: true})
-    
-    const {langCode, langVersion} = this.state.settingData;
-    let inputPath = this.state.folderPathImport;
-    var files = fs.readdirSync(inputPath[0]);
-    Promise.map(files, (file) => {
-      var filePath = path.join(inputPath[0], file);
-      if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
-        var options = {
-          lang: langCode.toLowerCase(),
-          version: langVersion.toLowerCase(),
-          usfmFile: filePath,
-          targetDb: 'target',
-          scriptDirection: AutographaStore.refScriptDirection
-        }
-        return that.getStuffAsync(options);
-      }
-    }).catch((err) => {
-      const currentTrans = AutographaStore.currentTrans;
-      console.log(err)
-      that.setState({showLoader: false});
-      return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-    }).finally(() => window.location.reload())
-  }
+	importTranslation = () => {
+		let that = this;
+		if (this.import_sync_setting() == false) return;
+		this.setState({
+			showLoader: true
+		})
 
-  reference_setting() {
-    const {bibleName, refVersion, refLangCodeValue, refLangCode, refFolderPath} = this.state.refSetting;
-    let name = bibleName;
-    let langCode = refLangCode;
-    let version = refVersion;
-    let path = refFolderPath;
-    let isValid = true;
-    if (name == "") {
-      isValid = this.setMessage('dynamic-msg-bib-name-validation', false);
-    } else if (langCode === null || langCode === "") {
-      isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
-    } else if(langCode.match(/^\d/)) {      
-      isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
-    } else if (version === null || version === "") {
-      isValid = this.setMessage('dynamic-msg-bib-version-validation', false);
-    } else if (path === null || path === "") {
-      isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
-    } else {
-        isValid = true;
-    }
-    return isValid;
-  }
+		const {
+			langCode,
+			langVersion
+		} = this.state.settingData;
+		let inputPath = this.state.folderPathImport;
+		var files = fs.readdirSync(inputPath[0]);
+		Promise.map(files, (file) => {
+			var filePath = path.join(inputPath[0], file);
+			if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
+				var options = {
+					lang: langCode.toLowerCase(),
+					version: langVersion.toLowerCase(),
+					usfmFile: filePath,
+					targetDb: 'target',
+					scriptDirection: AutographaStore.refScriptDirection
+				}
+				return that.getStuffAsync(options);
+			}
+		}).catch((err) => {
+			const currentTrans = AutographaStore.currentTrans;
+			console.log(err)
+			that.setState({
+				showLoader: false
+			});
+			return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+		}).finally(() => window.location.reload())
+	}
 
-  importReference = () => {
-    if (this.reference_setting() == false)
-    return;
-    this.setState({showLoader: true})
-    let {bibleName, refVersion, refLangCodeValue, refLangCode, refFolderPath} = this.state.refSetting;
-    if(refLangCodeValue === null){
-      refLangCodeValue = refLangCode
-    }
-    var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
-        ref_entry = {},
-        ref_arr = [],
-        files = fs.readdirSync(refFolderPath[0]);
-        ref_entry.ref_id = ref_id_value;
-        ref_entry.ref_name = bibleName;
-        ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
-        ref_entry.isDefault = false;
-        ref_arr.push(ref_entry);
-        refDb.get('refs').then((doc) => {
-          ref_entry = {}
-          var refExistsFlag = false;
-          var updatedDoc = doc.ref_ids.forEach((ref_doc) => {
-            if (ref_doc.ref_id === ref_id_value) {
-              refExistsFlag = true;
-              // return
-            }
-            ref_entry.ref_id = ref_doc.ref_id;
-            ref_entry.ref_name = ref_doc.ref_name;
-            ref_entry.ref_lang_code = ref_doc.ref_lang_code;
-            ref_entry.isDefault = ref_doc.isDefault;
-            ref_arr.push(ref_entry)
-            ref_entry= {};
-          });
-          doc.ref_ids = ref_arr;
-          refDb.put(doc).then((res)=> {
-            this.saveJsonToDB(files);
-          });
-          // if (!refExistsFlag) {
-          //     doc.ref_ids = ref_arr;
-          //     refDb.put(doc).then((res)=> {
-          //         this.saveJsonToDB(files);
-          //     });
-          // } else {
-          //     this.saveJsonToDB(files);
-          // }
-        },(err) => {
-          if (err.message === 'missing') {
-              var refs = {
-                _id: 'refs',
-                ref_ids: []
-              };
-              ref_entry.isDefault = true;
-              refs.ref_ids.push(ref_entry);
-              refDb.put(refs).then((res) => {
-                  this.saveJsonToDB(files);
-              },(internalErr) => {
-                console.log(internalErr)
-              });
-          } else if (err.message === 'usfm parser error') {
-          } else {
-          }
-        });
-  }
+	reference_setting() {
+		const {
+			bibleName,
+			refVersion,
+			refLangCodeValue,
+			refLangCode,
+			refFolderPath
+		} = this.state.refSetting;
+		let name = bibleName;
+		let langCode = refLangCode;
+		let version = refVersion;
+		let path = refFolderPath;
+		let isValid = true;
+		if (name == "") {
+			isValid = this.setMessage('dynamic-msg-bib-name-validation', false);
+		} else if (langCode === null || langCode === "") {
+			isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
+		} else if (langCode.match(/^\d/)) {
+			isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
+		} else if (version === null || version === "") {
+			isValid = this.setMessage('dynamic-msg-bib-version-validation', false);
+		} else if (path === null || path === "") {
+			isValid = this.setMessage('dynamic-msg-bib-path-validation', false);
+		} else {
+			isValid = true;
+		}
+		return isValid;
+	}
 
-  saveJsonToDB = (files) => {
-    const {bibleName, refVersion, refLangCodeValue, refFolderPath} = this.state.refSetting;
-    const that = this;
-    Promise.map(files, (file) => {
-      const filePath = path.join(refFolderPath[0], file);
-      if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
-        const options = {
-          bibleName: bibleName,
-          lang: refLangCodeValue.toLowerCase(),
-          version: refVersion.toLowerCase(),
-          usfmFile: filePath,
-          targetDb: 'refs',
-          scriptDirection: AutographaStore.refScriptDirection
-        }
-        return that.getStuffAsync(options);
-      }
-    }).catch((err) => {
-      const currentTrans = AutographaStore.currentTrans;
-      console.log(err)
-      that.setState({showLoader: false});
-      return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-    }).finally(() => window.location.reload())
-  }
+	importReference = () => {
+		if (this.reference_setting() == false)
+			return;
+		this.setState({
+			showLoader: true
+		})
+		let {
+			bibleName,
+			refVersion,
+			refLangCodeValue,
+			refLangCode,
+			refFolderPath
+		} = this.state.refSetting;
+		if (refLangCodeValue === null) {
+			refLangCodeValue = refLangCode
+		}
+		var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
+			ref_entry = {},
+			ref_arr = [],
+			files = fs.readdirSync(refFolderPath[0]);
+		ref_entry.ref_id = ref_id_value;
+		ref_entry.ref_name = bibleName;
+		ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
+		ref_entry.isDefault = false;
+		ref_arr.push(ref_entry);
+		refDb.get('refs').then((doc) => {
+			ref_entry = {}
+			var refExistsFlag = false;
+			var updatedDoc = doc.ref_ids.forEach((ref_doc) => {
+				if (ref_doc.ref_id === ref_id_value) {
+					refExistsFlag = true;
+					// return
+				}
+				ref_entry.ref_id = ref_doc.ref_id;
+				ref_entry.ref_name = ref_doc.ref_name;
+				ref_entry.ref_lang_code = ref_doc.ref_lang_code;
+				ref_entry.isDefault = ref_doc.isDefault;
+				ref_arr.push(ref_entry)
+				ref_entry = {};
+			});
+			doc.ref_ids = ref_arr;
+			refDb.put(doc).then((res) => {
+				this.saveJsonToDB(files);
+			});
+			// if (!refExistsFlag) {
+			//     doc.ref_ids = ref_arr;
+			//     refDb.put(doc).then((res)=> {
+			//         this.saveJsonToDB(files);
+			//     });
+			// } else {
+			//     this.saveJsonToDB(files);
+			// }
+		}, (err) => {
+			if (err.message === 'missing') {
+				var refs = {
+					_id: 'refs',
+					ref_ids: []
+				};
+				ref_entry.isDefault = true;
+				refs.ref_ids.push(ref_entry);
+				refDb.put(refs).then((res) => {
+					this.saveJsonToDB(files);
+				}, (internalErr) => {
+					console.log(internalErr)
+				});
+			} else if (err.message === 'usfm parser error') {} else {}
+		});
+	}
 
-  clickListSettingData = (evt, obj) => {
-    let settingData = Object.assign({}, this.state.settingData);
-        settingData.langCodeValue = evt + " " + obj;
-        settingData.langCode = obj.slice(1,-1);
-    this.setState({ 
-      settingData,
-      visibleList: false
-    });
-  }
-
-  clickListrefSetting = (evt, obj) => {
-    let refSetting = Object.assign({}, this.state.refSetting);
-        refSetting.refLangCode = evt + " " + obj;
-        refSetting.refLangCodeValue = obj.slice(1,-1);
-    this.setState({ 
-      refSetting,
-      visibleList: false
-    });
-  }
-
-  //Rename
-  onReferenceRename = (name, index, e) => {
-    this.setState({bibleReference: !this.state.bibleReference, refIndex: index})
-  }
-
-  //Remove
-  onReferenceRemove = (element) => {
-    var ref_ids = [];
-    const currentTrans = AutographaStore.currentTrans;
-    swal({
-        title: currentTrans["label-heading-confirmation"],
-        text: currentTrans["dynamic-msg-del-ref-text"],
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      })
-      .then((willDelete) => {
-        if (willDelete) {
-          refDb.get('refs').then((doc) => {
-              doc.ref_ids.forEach((ref_doc) => {
-                  if (ref_doc.ref_id != element) {
-                      ref_ids.push({ ref_id: ref_doc.ref_id, ref_name: ref_doc.ref_name, isDefault: ref_doc.isDefault });
-                  }
-              })
-              doc.ref_ids = ref_ids;
-              return refDb.put(doc);
-          },(err) => {
-            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-del-unable"], "error");
-          }).then((res) => {
-              window.location.reload();
-          });
-        }
-      });
-  }
-  //Save
-  onReferenceSave = (docId, e) => {
-    // this.setState({bibleReference: !this.state.bibleReference});
-    const currentTrans = AutographaStore.currentTrans;
-    let bibleNameLen = this.state.refName.length;
-    if( bibleNameLen > 10 ){
-      swal(currentTrans["label-bible-name"], currentTrans["ref_name_max_valid"], "error")
-      return
-    }
-    else if(bibleNameLen < 3){
-      swal(currentTrans["label-bible-name"], currentTrans["ref_name_min_valid"], "error")
-      return
-    }
-    else if(bibleNameLen == 0){
-      swal(currentTrans["label-bible-name"], currentTrans["ref_name_blank"], "error")
-      return
-    }
-    let ref_ids = [];
-    let result = false;
-     refDb.get('refs').then((doc) => {
-        doc.ref_ids.forEach((ref_doc) => {
-            if ((ref_doc.ref_id != docId) && (ref_doc.ref_name.toLowerCase() === this.state.refName.toLowerCase())) {
-                result = true;
-                return
-            }
-            if (ref_doc.ref_id != docId) {
-                ref_ids.push({ ref_id: ref_doc.ref_id, ref_name: ref_doc.ref_name, isDefault: ref_doc.isDefault });
-            } else {
-                ref_ids.push({ ref_id: ref_doc.ref_id, ref_name: this.state.refName, isDefault: ref_doc.isDefault })
-            }
-        })
-        if (result == true) {
-          return true;
-        } else {
-            doc.ref_ids = ref_ids;
-            return refDb.put(doc);
-        }  
-        
-    }).then((res) => {
-        if (res == true) {
-          swal(currentTrans["label-bible-name"], currentTrans["dynamic-msg-name-taken"], "success");
-        } else {
-            this.loadReference();
-            this.setState({bibleReference: !this.state.bibleReference, refName: ""});
-        }
-    }, (err) => {
-      swal(currentTrans["label-bible-name"], currentTrans["dynamic-msg-ren-unable"], "error")
-    })
-  }
-
-  //Cancel
-  onReferenceCancel = (e) => {
-    this.setState({bibleReference: !this.state.bibleReference});
-  }
-
-  //onChange Bible
-  onChangeBible = (e) => {
-    this.setState({refName: e.target.value});
-  }
-
-  changeLangauge = (event, index, value) => {
-    AutographaStore.appLang = value;
-  }
-
-  saveAppLanguage = (e) => {
-    const currentTrans = AutographaStore.currentTrans;
-    refDb.get('app_locale').then((doc) => {
-      doc.appLang = AutographaStore.appLang;
-      refDb.put(doc);
-      this.setState({message: 'dynamic-msg-save-language', hideAlert: 'success' });
-      setTimeout(() => {
-        this.setState({hideAlert: 'hidemessage'})
-      }, 2000);
-    }).catch((err) => {
-      if (err.message === 'missing') {
-        var locale = {
-            _id: 'app_locale',
-            appLang: AutographaStore.appLang
-        };
-        refDb.put(locale).then(function(res) {
-          swal(currentTrans["btn-save-changes"], currentTrans["dynamic-msg-save-language"], "success")
-        }).catch(function(internalErr) {
-          swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "success")
-        });
-      } 
-    });
-  }
-
-  onChangeScriptDir = (value) => {
-    AutographaStore.scriptDirection = value;
-  }
-  onChangeRefScriptDir = (value) => {
-    AutographaStore.refScriptDirection = value;
-  }
-  hideCodeList = () => {
-   this.setState({_listArray: []}) 
-  }
-
-  handleOutsideClick = (e) => {
-      // ignore clicks on the component itself
-      if (this.node && this.node.contains(e.target)) {
-        return;
-      }
-      this.hideCodeList();
-  }
-  clearList = () => {
-    this.hideCodeList();
-  }
+	saveJsonToDB = (files) => {
+		const {
+			bibleName,
+			refVersion,
+			refLangCodeValue,
+			refFolderPath
+		} = this.state.refSetting;
+		const that = this;
+		Promise.map(files, (file) => {
+			const filePath = path.join(refFolderPath[0], file);
+			if (fs.statSync(filePath).isFile() && !file.startsWith('.')) {
+				const options = {
+					bibleName: bibleName,
+					lang: refLangCodeValue.toLowerCase(),
+					version: refVersion.toLowerCase(),
+					usfmFile: filePath,
+					targetDb: 'refs',
+					scriptDirection: AutographaStore.refScriptDirection
+				}
+				return that.getStuffAsync(options);
+			}
+		}).catch((err) => {
+			const currentTrans = AutographaStore.currentTrans;
+			console.log(err)
+			that.setState({
+				showLoader: false
+			});
+			return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+		}).finally(() => window.location.reload())
+	}
   
- 
-  render(){
+	clickListSettingData = (evt, obj) => {
+		let settingData = Object.assign({}, this.state.settingData);
+		settingData.langCodeValue = evt + " " + obj;
+		settingData.langCode = obj.slice(1, -1);
+		this.setState({
+			settingData,
+			visibleList: false
+		});
+	}
+
+	clickListrefSetting = (evt, obj) => {
+		let refSetting = Object.assign({}, this.state.refSetting);
+		refSetting.refLangCode = evt + " " + obj;
+		refSetting.refLangCodeValue = obj.slice(1, -1);
+		this.setState({
+			refSetting,
+			visibleList: false
+		});
+	}
+
+	//Rename
+	onReferenceRename = (name, index, e) => {
+		this.setState({bibleReference: !this.state.bibleReference, refIndex: index})
+	}
+
+	//Remove
+	onReferenceRemove = (element) => {
+		var ref_ids = [];
+		const currentTrans = AutographaStore.currentTrans;
+		swal({
+				title: currentTrans["label-heading-confirmation"],
+				text: currentTrans["dynamic-msg-del-ref-text"],
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			})
+			.then((willDelete) => {
+				if (willDelete) {
+					refDb.get('refs').then((doc) => {
+						doc.ref_ids.forEach((ref_doc) => {
+							if (ref_doc.ref_id != element) {
+								ref_ids.push({
+									ref_id: ref_doc.ref_id,
+									ref_name: ref_doc.ref_name,
+									isDefault: ref_doc.isDefault
+								});
+							}
+						})
+						doc.ref_ids = ref_ids;
+						return refDb.put(doc);
+					}, (err) => {
+						swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-del-unable"], "error");
+					}).then((res) => {
+						window.location.reload();
+					});
+				}
+			});
+	}
+	//Save
+	onReferenceSave = (docId, e) => {
+		// this.setState({bibleReference: !this.state.bibleReference});
+		const currentTrans = AutographaStore.currentTrans;
+		let bibleNameLen = this.state.refName.length;
+		if (bibleNameLen >= 10) {
+			swal(currentTrans["label-bible-name"], currentTrans["ref_name_max_valid"], "error")
+			return
+		} else if (bibleNameLen < 3) {
+			swal(currentTrans["label-bible-name"], currentTrans["ref_name_min_valid"], "error")
+			return
+		} else if (bibleNameLen == 0) {
+			swal(currentTrans["label-bible-name"], currentTrans["ref_name_blank"], "error")
+			return
+		}
+		let ref_ids = [];
+		let result = false;
+		refDb.get('refs').then((doc) => {
+			doc.ref_ids.forEach((ref_doc) => {
+				if ((ref_doc.ref_id != docId) && (ref_doc.ref_name.toLowerCase() === this.state.refName.toLowerCase())) {
+					result = true;
+					return
+				}
+				if (ref_doc.ref_id != docId) {
+					ref_ids.push({
+						ref_id: ref_doc.ref_id,
+						ref_name: ref_doc.ref_name,
+						isDefault: ref_doc.isDefault
+					});
+				} else {
+					ref_ids.push({
+						ref_id: ref_doc.ref_id,
+						ref_name: this.state.refName,
+						isDefault: ref_doc.isDefault
+					})
+				}
+			})
+			if (result == true) {
+				return true;
+			} else {
+				doc.ref_ids = ref_ids;
+				return refDb.put(doc);
+			}
+
+		}).then((res) => {
+			if (res == true) {
+				swal(currentTrans["label-bible-name"], currentTrans["dynamic-msg-name-taken"], "success");
+			} else {
+				this.loadReference();
+				this.setState({
+					bibleReference: !this.state.bibleReference,
+					refName: ""
+				});
+			}
+		}, (err) => {
+			swal(currentTrans["label-bible-name"], currentTrans["dynamic-msg-ren-unable"], "error")
+		})
+	}
+
+	//Cancel
+	onReferenceCancel = (e) => {
+		this.setState({bibleReference: !this.state.bibleReference});
+	}
+
+	//onChange Bible
+	onChangeBible = (e) => {
+		this.setState({refName: e.target.value});
+	}
+
+	changeLangauge = (event, index, value) => {
+		AutographaStore.appLang = value;
+	}
+
+	saveAppLanguage = (e) => {
+		const currentTrans = AutographaStore.currentTrans;
+		refDb.get('app_locale').then((doc) => {
+			doc.appLang = AutographaStore.appLang;
+			refDb.put(doc);
+			this.setState({
+				message: 'dynamic-msg-save-language',
+				hideAlert: 'success'
+			});
+			setTimeout(() => {
+				this.setState({
+					hideAlert: 'hidemessage'
+				})
+			}, 2000);
+		}).catch((err) => {
+			if (err.message === 'missing') {
+				var locale = {
+					_id: 'app_locale',
+					appLang: AutographaStore.appLang
+				};
+				refDb.put(locale).then(function (res) {
+					swal(currentTrans["btn-save-changes"], currentTrans["dynamic-msg-save-language"], "success")
+				}).catch(function (internalErr) {
+					swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "success")
+				});
+			}
+		});
+	}
+
+	onChangeScriptDir = (value) => {
+		AutographaStore.scriptDirection = value;
+	}
+	onChangeRefScriptDir = (value) => {
+		AutographaStore.refScriptDirection = value;
+	}
+	hideCodeList = () => {
+		this.setState({
+			_listArray: []
+		})
+	}
+
+	handleOutsideClick = (e) => {
+		// ignore clicks on the component itself
+		if (this.node && this.node.contains(e.target)) {
+			return;
+		}
+		this.hideCodeList();
+	}
+	clearList = () => {
+		this.hideCodeList();
+	}
+
+	editCredential = () => {
+		this.state.paratext["username"] = AutographaStore.username;
+		this.state.paratext["password"] =  AutographaStore.password;
+		this.setState({
+			paratext: this.state.paratext
+		})
+	}
+	signin = (clickSrc) => {
+		if (clickSrc == "btn") {
+			let userName = this.state.paratext.username;
+			let password = this.state.paratext.password;
+			let isValid = false;
+			if (userName === null || userName == "") {
+				isValid = this.setMessage("username-req", false);
+			} else if (password === null || password == "") {
+				isValid = this.setMessage("password-req", false);
+			} else {
+				isValid = true
+			}
+			if (!isValid) {
+				return
+			}
+			this.importParaTextProject(userName, password);
+		} else {
+			if (AutographaStore.username && AutographaStore.password){
+				this.importParaTextProject(AutographaStore.username, AutographaStore.password);
+			}
+		}
+	}
+
+	importParaTextProject = async (username, password) => {
+		this.props.showLoader(true);
+        let paratextObj = new paratext(username, password);
+		if(paratextObj.accessToken){
+			try{
+                let projects = await paratextObj.getProjects(3);
+			    refDb.get('paratext_credential').then((doc) => {
+                    this.props.showLoader(false);
+                    AutographaStore.username = username;
+                    AutographaStore.password = password;
+                    this.setState({
+                        projectData: projects,
+                        paratextObj: paratextObj,
+                        activeKey: -1
+                    })
+                    let newdoc = {
+                        _id: 'paratext_credential',
+                        _rev: doc._rev,
+					    username: username,
+					    password: password
+				    }
+                    refDb.put(newdoc);
+			    }).catch((err) => {
+				    let doc = {
+					    _id: 'paratext_credential',
+					    username: username,
+					    password: password
+				    }
+				    refDb.put(doc).then((res) => {
+					    this.props.showLoader(false);
+					    this.setState({
+						    projectData: projects,
+                            paratextObj: paratextObj,
+                            activeKey: -1
+					    })
+				    }).catch((err) => {
+					    console.log(err)
+					    this.props.showLoader(false);
+					    swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+				    });
+			    })
+			}catch(err){
+                swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+			}finally{
+                this.props.showLoader(false);
+			}
+			
+		}else{
+			this.props.showLoader(false);
+			console.log("error")
+			swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+		}
+		
+		
+	}
+	handleCredential = (event) => {
+		this.state.paratext[event.target.name] = event.target.value
+		this.setState({
+			paratext: this.state.paratext
+		})
+    }
+    handleSelect = (activeKey) => {
+        this.setState({ activeKey });
+    }
+
+  	render(){
     var errorStyle = {
       margin: 'auto',
       textAlign: 'center',
@@ -624,6 +792,9 @@ class SettingsModal extends React.Component {
                     </NavItem>
                     <NavItem eventKey="fifth">
                     <FormattedMessage id="label-language" />
+                    </NavItem>
+                    <NavItem eventKey="seventh" onClick={() => {this.signin("tab")}}>
+                    <FormattedMessage id="label-sync" />
                     </NavItem>
                   </Nav>
                 </Col>
@@ -979,13 +1150,72 @@ class SettingsModal extends React.Component {
                             </div>
                             <button className="btn btn-success btn-save" id="btnSaveLang" onClick = {this.saveAppLanguage}><FormattedMessage id="btn-save" /></button>
                         </div>
-                      </Tab.Pane>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="seventh">
+							<Tabs id="projectList">
+								<Tab eventKey={1} title={`${AutographaStore.currentTrans["label-paratext"]}`}>
+									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
+										<Panel eventKey={0}>
+											<Panel.Heading id="credential-title">
+												<Panel.Title toggle onClick = {() => {this.editCredential()}}><FormattedMessage id="label-credentials"/></Panel.Title>
+											</Panel.Heading>
+											<Panel.Body collapsible>
+												<div>
+													<label><FormattedMessage id="label-username"/></label>
+													<br />
+													<FormattedMessage id="label-username">
+														{(message) => 
+															<TextField
+																hintText={message}
+																name="username"
+																className = "margin-top-24 textbox-width-70"
+                               	 								value = {this.state.paratext.username}
+                                                                onChange = {this.handleCredential.bind(this)}
+                                                                id="username"
+															/>
+														}
+													</FormattedMessage>
+												</div>
+												<div>
+													<label><FormattedMessage id="label-pwd"/></label>
+													<br />
+													<FormattedMessage id="label-pwd">
+														{(message) => 
+															<TextField
+																hintText={message}
+																name="password"
+																className = "margin-top-24 textbox-width-70"
+																value = {this.state.paratext.password}
+                                                                onChange = {this.handleCredential.bind(this)}
+                                                                id = "password"
+															/>
+														}
+													</FormattedMessage>
+												</div>
+												<br/>
+												<RaisedButton
+													style={{marginTop: "27px", float: 'right', 'marginRight': '33px'}}
+													label={AutographaStore.currentTrans["label-sign-in"]}
+													primary={true}
+													onClick={() =>{this.signin("btn")}}
+                                                    disabled = {this.state.btnDisabled}
+                                                    id="signin"
+												/>
+											</Panel.Body>
+										</Panel>
+										{
+											<ProjectList projects={this.state.projectData} showLoader = {this.props.showLoader} paratextObj = {this.state.paratextObj}/> 
+										}
+									</PanelGroup> 
+								</Tab>
+							</Tabs>
+                    	</Tab.Pane>
                   </Tab.Content>
                 </Col>
               </Row>
             </Tab.Container>
           </Modal.Body>
-      </Modal>
+      	</Modal>
     )
   }
 }
