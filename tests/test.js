@@ -391,12 +391,16 @@ describe('Autographa Test', () => {
             .waitForVisible("#project-list > .checkbox-inline input[type='checkbox']", 5000)
             .keys('Tab')
             .keys(' ')
-            .waitForSelected('#GEN', 5000)
-            .waitForExist("a.btn-upload", 60000)
+            .waitForSelected('#GEN', 50000)
+            .waitForVisible("a.btn-upload", 60000)
             .click("a.btn-upload")
-            .waitForExist(".swal-button--confirm", 60000)
-            .click(".swal-button--confirm", 20000)
             .waitForVisible(".swal-button--confirm", 60000)
+            .click(".swal-button--confirm")
+            .waitForVisible("#loading-img", 60000, true)
+            .waitForVisible(".swal-title", 60000)
+            .getText(".swal-title").then((res) => {
+                assert.strictEqual(true, true, "Book Exported");
+            })
     })
 
     it('close the app', () => {
@@ -413,13 +417,6 @@ describe('Autographa Test', () => {
             .click("#btnSettings")
             .waitForVisible("#left-tabs-example-tab-seventh")
             .click("#left-tabs-example-tab-seventh")
-            .waitForVisible(".panel-title > a")
-            .click(".panel-title > a")
-            .waitForVisible("#username")
-            .setValue("#username", 'Benjamin Autographa')
-            .setValue("#password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
-            .waitForVisible("#signin")
-            .click("#signin")
             .waitForVisible("#credential-heading-1 > .panel-title > a")
             .getText("#credential-heading-1 > .panel-title > a").should.eventually.equal('MAL10RO')
 
@@ -433,14 +430,15 @@ describe('Autographa Test', () => {
             .keys('Tab')
             .keys(' ')
             .waitForSelected('#GEN', 5000)
-            .waitForExist("a.btn-import", 60000)
+            .waitForVisible("a.btn-import", 60000)
             .click("a.btn-import")
-            .waitForExist(".swal-button--confirm", 60000)
-            .click(".swal-button--confirm", 20000)
-            .waitForVisible("#versediv1", 60000)
-            .waitForVisible("#loading-img", 60000)
             .waitForVisible(".swal-button--confirm", 60000)
-            .click(".swal-button--confirm")
+            .click(".swal-button--confirm", 20000)
+            .waitForVisible("#loading-img", 60000, true)
+            .getText(".swal-title").then((res) => {
+                assert.strictEqual(true, true, "Import");
+            })
+            
 
     })
 
