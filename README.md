@@ -39,6 +39,11 @@ yarn install
 yarn start
 ```
 
+#### Known Issues
+Autographa Live (as of now) supports minimal tags and therefore is not ideal for importing heavily tagged data, as these would be ignored and would not be recoverable later. Therefore, importing from Paratext Cloud should be done with this in mind as it may cause data loss and unwanted changes in formatting. 
+
+The intended workflow is for users to start drafting in Autogrpaha Live and then upload/export these in to more feature-rich/heavy editors like Paratext and should not be done the other way round unless for minor updates.
+
 ## Contributing
 If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
 Please read the [CONTRIBUTE](https://github.com/friendsofagape/autographa-live/blob/master/CONTRIBUTE.md) page for details on our code of conduct, and the process for submitting pull requests.
