@@ -1195,7 +1195,7 @@ class SettingsModal extends React.Component {
 												<br/>
 												<RaisedButton
 													style={{marginTop: "27px", float: 'right', 'marginRight': '33px'}}
-													label="Signin"
+													label={AutographaStore.currentTrans["label-sign-in"]}
 													primary={true}
 													onClick={() =>{this.signin("btn")}}
                                                     disabled = {this.state.btnDisabled}
