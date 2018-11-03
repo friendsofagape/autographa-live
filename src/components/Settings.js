@@ -460,7 +460,7 @@ class SettingsModal extends React.Component {
 			return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
 		}).finally(() => window.location.reload())
 	}
-
+  
 	clickListSettingData = (evt, obj) => {
 		let settingData = Object.assign({}, this.state.settingData);
 		settingData.langCodeValue = evt + " " + obj;

@@ -23,9 +23,11 @@ It is relatively easy to setup the application locally for development.
 #### Mac and *nix (tested on MacOS Sierra 10.14 and Ubuntu 18.04)  
 In Bash-like shell:
 
-```% export ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true ```     
-```% cd autographa-live && yarn install ```     
-```% yarn start```
+```
+export ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true    
+cd autographa-live && yarn install    
+yarn start
+```
 
 #### Windows (tested on Windows 10)  
 In Command Prompt:
