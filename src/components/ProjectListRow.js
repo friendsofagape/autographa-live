@@ -1,6 +1,9 @@
 import React, { PropTypes } from 'react';
 import swal from 'sweetalert';
 import AutographaStore from "./AutographaStore";
+import * as usfm_export from "../util/json_to_usfm";
+import * as usfm_import from "../util/usfm_import";
+import Wacs from "../helpers/wacsAdapter"
 import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
@@ -53,8 +56,17 @@ class ProjectListRow extends React.Component {
 	resetLoader = () => {
 		this.props.showLoader(false);						
 	    this.setState({importText: AutographaStore.currentTrans["btn-import"], isImporting: false})
-    }
-  	importBook = (projectId) => {
+    };
+
+	importBook = (projectId) => {
+		if (this.props.paratextObj instanceof Wacs) {
+			return this.importBookWacs(projectId);
+		} else {
+			return this.importBookParatext(projectId);
+		}
+	};
+
+  	importBookParatext = (projectId) => {
   		if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length == 0){
         	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["label-selection"], "error");
   			return
@@ -179,8 +191,92 @@ class ProjectListRow extends React.Component {
  	        	})
 	        }
 	    });
-  	}
-  	uploadBook = async(projectId, projectName) => {
+  	};
+
+    importBookWacs = async (projectId) => {
+        const langCode = 'NA';
+        const langVersion = 'NA';
+        const currentTrans = AutographaStore.currentTrans;
+
+        if (await swal({
+            title: currentTrans["label-warning"],
+            text: currentTrans["label-override-text"],
+            icon: "warning",
+            buttons: [currentTrans["btn-ok"], currentTrans["btn-cancel"]],
+            dangerMode: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false
+        })) {
+            return;
+        }
+
+        this.props.showLoader(true);
+
+        try {
+            const localPath = await this.props.paratextObj.clone(projectId);
+
+            await usfm_import.importTranslation(localPath, langCode, langVersion);
+
+            this.resetLoader();
+            await swal({
+                title: currentTrans["btn-import"],
+                text:  currentTrans["label-imported-book"],
+                icon: "success",
+                dangerMode: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false
+            });
+        } catch(err) {
+            console.log(err);
+            this.resetLoader();
+            await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+        }
+
+        window.location.reload();
+    };
+
+    uploadBook = async(projectId, projectName) => {
+        if (this.props.paratextObj instanceof Wacs) {
+            return await this.uploadBookWacs(projectId, projectName);
+        } else {
+            return await this.uploadBookParatext(projectId, projectName);
+        }
+    };
+
+    uploadBookWacs = async(projectId, projectName) => {
+        const currentTrans = AutographaStore.currentTrans;
+
+        if (await swal({
+            title: currentTrans["label-warning"],
+            text: currentTrans["label-uploading-warning"],
+            icon: "warning",
+            buttons: [currentTrans["btn-ok"], currentTrans["btn-cancel"]],
+            dangerMode: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false
+        })) {
+            return;
+        }
+
+        this.props.showLoader(true);
+
+        try {
+            const localPath = await this.props.paratextObj.clone(projectId);
+
+            const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
+
+            const pushResult = await this.props.paratextObj.commitAndPush(localPath);
+
+            this.resetLoader();
+            await swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
+        } catch(err) {
+            console.log(err);
+            this.resetLoader();
+            await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+        }
+    }
+
+    uploadBookParatext = async(projectId, projectName) => {
 		let currentTrans = AutographaStore.currentTrans;
         let book = {};
         let _this = this;
@@ -332,7 +428,7 @@ class ProjectListRow extends React.Component {
 							}
 				    	</FormGroup>
 						{
-							Object.keys(this.state.bookList).length > 0 &&
+							(this.props.paratextObj instanceof Wacs || Object.keys(this.state.bookList).length > 0) &&
 							<div style={{float: "right"}} className="btn-imp-group">
 				    			<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
 				    			<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>
