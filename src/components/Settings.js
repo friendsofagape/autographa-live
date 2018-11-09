@@ -662,7 +662,7 @@ class SettingsModal extends React.Component {
 			if (clickSrc == "btn") this.setMessage("password-req", false);
 			return;
 		}
-		return this.listParatextProjects(config.username, config.password, config.syncProvider, config.endpoint);
+		this.listParatextProjects(config.username, config.password, config.syncProvider, config.endpoint);
 	};
 
 	listParatextProjects = async (username, password, syncProvider, endpoint=null) => {
@@ -1149,27 +1149,24 @@ class SettingsModal extends React.Component {
                         </div>
                       </Tab.Pane>
                       <Tab.Pane eventKey="seventh">
-							<Tabs id="projectList" onSelect={this.setSyncProvider} defaultActiveKey={this.getSyncProvider()}>
+							<Tabs id="syncProvider" onSelect={this.setSyncProvider} defaultActiveKey={this.getSyncProvider()}>
 								<Tab eventKey="paratext" title={`${AutographaStore.currentTrans["label-paratext"]}`}>
-									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
-										{ <CredentialPanel settings={this} /> }
-										{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
-									</PanelGroup> 
+									<PanelGroup accordion id = "paratext-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
+										{ <CredentialPanel settings={this} idPrefix="paratext" /> }
+									</PanelGroup>
 								</Tab>
 								<Tab eventKey="door43" title={`${AutographaStore.currentTrans["label-door43"]}`}>
-									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
-										{ <CredentialPanel settings={this} /> }
-										{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
+									<PanelGroup accordion id = "door43-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
+										{ <CredentialPanel settings={this} idPrefix="door43" /> }
 									</PanelGroup>
 								</Tab>
 								<Tab eventKey="wacs" title={`${AutographaStore.currentTrans["label-wacs"]}`}>
-									<PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
-										{ <CredentialPanel settings={this} /> }
-										{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
-									</PanelGroup> 
+									<PanelGroup accordion id = "wacs-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
+										{ <CredentialPanel settings={this} idPrefix="wacs" /> }
+									</PanelGroup>
 								</Tab>
                                 <Tab eventKey="other" title={`${AutographaStore.currentTrans["label-other"]}`}>
-                                    <PanelGroup accordion id = "credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
+                                    <PanelGroup accordion id = "other-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
                                         <Panel eventKey="endpoint">
                                             <Panel.Body>
                                                 <div>
@@ -1182,7 +1179,7 @@ class SettingsModal extends React.Component {
                                                                 name="endpoint"
                                                                 className="margin-top-24 textbox-width-70"
                                                                 value={this.state.paratext.endpoint || AutographaStore.endpoint}
-                                                                onChange={this.handleParatextSetting.bind(this)}
+                                                                onChange={this.handleParatextSetting}
                                                                 id="endpoint"
                                                             />
                                                         }
@@ -1190,11 +1187,11 @@ class SettingsModal extends React.Component {
                                                 </div>
                                             </Panel.Body>
                                         </Panel>
-										{ <CredentialPanel settings={this} /> }
-                                        { <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
+										{ <CredentialPanel settings={this} idPrefix="other" /> }
                                     </PanelGroup>
                                 </Tab>
 							</Tabs>
+							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
                     	</Tab.Pane>
                   </Tab.Content>
                 </Col>
@@ -1207,13 +1204,23 @@ class SettingsModal extends React.Component {
 }
 
 class CredentialPanel extends React.Component {
+    shouldComponentUpdate(nextProps) {
+        return nextProps !== this.props;
+    }
+
     render() {
+    	const idPrefix = this.props.idPrefix;
         const settings = this.props.settings;
+        const username = settings.state.paratext.username;
+        const password = settings.state.paratext.password;
+        const btnDisabled = settings.state.btnDisabled;
+        const onChange = settings.handleParatextSetting;
+        const onButtonClick = () => settings.signin("btn");
+        const onHeaderClick = () => settings.editCredential();
+
         return <Panel eventKey="creds">
             <Panel.Heading id="credential-title">
-                <Panel.Title toggle onClick={() => {
-                    settings.editCredential()
-                }}><FormattedMessage id="label-credentials"/></Panel.Title>
+                <Panel.Title toggle onClick={onHeaderClick}><FormattedMessage id="label-credentials"/></Panel.Title>
             </Panel.Heading>
             <Panel.Body collapsible>
                 <div>
@@ -1225,9 +1232,9 @@ class CredentialPanel extends React.Component {
                                 hintText={message}
                                 name="username"
                                 className="margin-top-24 textbox-width-70"
-                                value={settings.state.paratext.username}
-                                onChange={settings.handleParatextSetting.bind(settings)}
-                                id="username"
+                                value={username}
+                                onChange={onChange}
+                                id={idPrefix+"-username"}
                             />
                         }
                     </FormattedMessage>
@@ -1241,9 +1248,9 @@ class CredentialPanel extends React.Component {
                                 hintText={message}
                                 name="password"
                                 className="margin-top-24 textbox-width-70"
-                                value={settings.state.paratext.password}
-                                onChange={settings.handleParatextSetting.bind(settings)}
-                                id="password"
+                                value={password}
+                                onChange={onChange}
+                                id={idPrefix+"-password"}
                             />
                         }
                     </FormattedMessage>
@@ -1253,11 +1260,9 @@ class CredentialPanel extends React.Component {
                     style={{marginTop: "27px", float: 'right', 'marginRight': '33px'}}
                     label={AutographaStore.currentTrans["label-sign-in"]}
                     primary={true}
-                    onClick={() => {
-                        settings.signin("btn")
-                    }}
-                    disabled={settings.state.btnDisabled}
-                    id="signin"
+                    onClick={onButtonClick}
+                    disabled={btnDisabled}
+                    id={idPrefix+"-signin"}
                 />
             </Panel.Body>
         </Panel>
