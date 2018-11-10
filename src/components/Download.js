@@ -1,15 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { RaisedButton } from 'material-ui';
 import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore";
-import { remote } from 'electron';
+import * as bibUtil from "../util/json_to_usfm.js";
 import swal from 'sweetalert';
 import { Modal, NavDropdown, MenuItem } from 'react-bootstrap';
 import { FormattedMessage } from 'react-intl';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const constants = require("../util/constants");
-let bibUtil = require("../util/json_to_usfm.js");
 
 
 @observer

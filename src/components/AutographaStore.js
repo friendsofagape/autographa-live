@@ -62,6 +62,8 @@ export class AutographaStore {
   @observable incompleteVerse = {}
   @observable multipleSpaces = {}
   @observable setDiff = false
+  @observable syncProvider = ""
+  @observable endpoint = ""
   @observable username = ""
   @observable password = ""
   @observable paratextBook = {}
