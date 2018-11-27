@@ -3,7 +3,7 @@ import swal from 'sweetalert';
 import AutographaStore from "./AutographaStore";
 import * as usfm_export from "../util/json_to_usfm";
 import * as usfm_import from "../util/usfm_import";
-import Wacs from "../helpers/wacsAdapter"
+import Gitea from "../helpers/giteaAdapter"
 import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
@@ -59,8 +59,8 @@ class ProjectListRow extends React.Component {
     };
 
 	importBook = (projectId) => {
-		if (this.props.paratextObj instanceof Wacs) {
-			return this.importBookWacs(projectId);
+		if (this.props.paratextObj instanceof Gitea) {
+			return this.importBookGitea(projectId);
 		} else {
 			return this.importBookParatext(projectId);
 		}
@@ -193,7 +193,7 @@ class ProjectListRow extends React.Component {
 	    });
   	};
 
-    importBookWacs = async (projectId) => {
+    importBookGitea = async (projectId) => {
         const langCode = 'NA';
         const langVersion = 'NA';
         const currentTrans = AutographaStore.currentTrans;
@@ -236,14 +236,14 @@ class ProjectListRow extends React.Component {
     };
 
     uploadBook = async(projectId, projectName) => {
-        if (this.props.paratextObj instanceof Wacs) {
-            return await this.uploadBookWacs(projectId, projectName);
+        if (this.props.paratextObj instanceof Gitea) {
+            return await this.uploadBookGitea(projectId, projectName);
         } else {
             return await this.uploadBookParatext(projectId, projectName);
         }
     };
 
-    uploadBookWacs = async(projectId, projectName) => {
+    uploadBookGitea = async(projectId, projectName) => {
         const currentTrans = AutographaStore.currentTrans;
 
         if (await swal({
@@ -428,7 +428,7 @@ class ProjectListRow extends React.Component {
 							}
 				    	</FormGroup>
 						{
-							(this.props.paratextObj instanceof Wacs || Object.keys(this.state.bookList).length > 0) &&
+							(this.props.paratextObj instanceof Gitea || Object.keys(this.state.bookList).length > 0) &&
 							<div style={{float: "right"}} className="btn-imp-group">
 				    			<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
 				    			<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>

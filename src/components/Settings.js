@@ -6,7 +6,7 @@ import AutographaStore from "./AutographaStore";
 import {FormattedMessage} from 'react-intl';
 import Loader from './Loader';
 import paratext from "../helpers/paratextAdapter";
-import wacs from "../helpers/wacsAdapter";
+import gitea from "../helpers/giteaAdapter";
 import * as usfm_import from "../util/usfm_import";
 import ProjectList from "./ProjectList";
 
@@ -640,13 +640,13 @@ class SettingsModal extends React.Component {
 		}
 	};
 
-	newParatextObj = (syncProvider, username, password, endpoint=null) => {
-		switch (syncProvider) {
+	newParatextObj = (syncProviderName, username, password, endpoint=null) => {
+		switch (syncProviderName) {
 			case "wacs":
 			case "door43":
-				return new wacs(username, password, ENDPOINTS[syncProvider]);
+				return new gitea(username, password, ENDPOINTS[syncProviderName]);
 			case "other":
-				return new wacs(username, password, endpoint);
+				return new gitea(username, password, endpoint);
 			default:
 				return new paratext(username, password);
 		}

@@ -1,8 +1,8 @@
-import * as wacs from "wacs-client"
-import tmp from "tmp"
+import * as wacs from "wacs-client";
+import tmp from "tmp";
 
 
-export default class Wacs {
+export default class Gitea {
     constructor(username, password, endpoint) {
         this.endpoint = endpoint;
         this.accessToken = {username: username, password: password};
