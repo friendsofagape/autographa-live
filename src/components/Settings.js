@@ -78,7 +78,7 @@ class SettingsModal extends React.Component {
 			AutographaStore.scriptDirection = "LTR";
 		})
 		AutographaStore.refList = [];
-		refDb.get('paratext_credential').then((doc) => {
+		refDb.get('sync_credential').then((doc) => {
 			AutographaStore.syncProvider = doc.syncProvider;
 			AutographaStore.endpoint = doc.endpoint;
 			AutographaStore.username = doc.username;
@@ -671,7 +671,7 @@ class SettingsModal extends React.Component {
 		if(syncAdapter.accessToken){
 			try{
                 let projects = await syncAdapter.getProjects(3);
-			    refDb.get('paratext_credential').then((doc) => {
+			    refDb.get('sync_credential').then((doc) => {
                     this.props.showLoader(false);
                     AutographaStore.syncProvider = syncProvider;
                     AutographaStore.endpoint = endpoint;
@@ -683,7 +683,7 @@ class SettingsModal extends React.Component {
                         activeKey: -1
                     })
                     let newdoc = {
-                        _id: 'paratext_credential',
+                        _id: 'sync_credential',
                         _rev: doc._rev,
 					    syncProvider: syncProvider,
 					    endpoint: endpoint,
@@ -693,7 +693,7 @@ class SettingsModal extends React.Component {
                     refDb.put(newdoc);
 			    }).catch((err) => {
 				    let doc = {
-					    _id: 'paratext_credential',
+					    _id: 'sync_credential',
                         syncProvider: syncProvider,
                         endpoint: endpoint,
 					    username: username,

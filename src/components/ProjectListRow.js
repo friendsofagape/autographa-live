@@ -11,7 +11,6 @@ const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
 const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
-const dir = path.join(app.getPath('userData'), 'paratext_projects');
 
 
 class ProjectListRow extends React.Component {
@@ -277,6 +276,7 @@ class ProjectListRow extends React.Component {
     }
 
     uploadBookParatext = async(projectId, projectName) => {
+        const dir = path.join(app.getPath('userData'), 'paratext_projects');
 		let currentTrans = AutographaStore.currentTrans;
         let book = {};
         let _this = this;
