@@ -61,7 +61,7 @@ class SettingsModal extends React.Component {
 			filepath: "",
 			modalBody: "",
 			title: "",
-			paratext: {
+			sync: {
 				syncProvider: "",
 				endpoint: "",
 				username: "",
@@ -618,23 +618,23 @@ class SettingsModal extends React.Component {
 	}
 
 	editCredential = () => {
-		this.state.paratext["username"] = AutographaStore.username;
-		this.state.paratext["password"] =  AutographaStore.password;
+		this.state.sync["username"] = AutographaStore.username;
+		this.state.sync["password"] =  AutographaStore.password;
 		this.setState({
-			paratext: this.state.paratext
+			sync: this.state.sync
 		})
 	};
 
 	getSyncProvider = () => {
-		return (this.state.paratext && this.state.paratext.syncProvider) || AutographaStore.syncProvider || "paratext";
+		return (this.state.sync && this.state.sync.syncProvider) || AutographaStore.syncProvider || "paratext";
 	};
 
 	setSyncProvider = (providerName) => {
-		const oldVal = this.state.paratext && this.state.paratext.syncProvider;
+		const oldVal = this.state.sync && this.state.sync.syncProvider;
 		if (providerName && providerName != oldVal) {
 			const state = {
 				projectData: [], // clears UI project list
-				paratext: {syncProvider: providerName}
+				sync: {syncProvider: providerName}
 			};
 			this.setState(state, () => AutographaStore.syncProvider = providerName);
 		}
@@ -653,7 +653,7 @@ class SettingsModal extends React.Component {
 	};
 
 	signin = (clickSrc) => {
-		const config = (clickSrc == "btn") ? this.state.paratext : AutographaStore;
+		const config = (clickSrc == "btn") ? this.state.sync : AutographaStore;
 		if (!config.username) {
 			if (clickSrc == "btn") this.setMessage("username-req", false);
 			return;
@@ -726,9 +726,9 @@ class SettingsModal extends React.Component {
 	};
 
 	handleParatextSetting = (event) => {
-		this.state.paratext[event.target.name] = event.target.value
+		this.state.sync[event.target.name] = event.target.value
 		this.setState({
-			paratext: this.state.paratext
+			sync: this.state.sync
 		})
     };
 
@@ -1178,7 +1178,7 @@ class SettingsModal extends React.Component {
                                                                 hintText={message}
                                                                 name="endpoint"
                                                                 className="margin-top-24 textbox-width-70"
-                                                                value={this.state.paratext.endpoint || AutographaStore.endpoint}
+                                                                value={this.state.sync.endpoint || AutographaStore.endpoint}
                                                                 onChange={this.handleParatextSetting}
                                                                 id="endpoint"
                                                             />
@@ -1211,8 +1211,8 @@ class CredentialPanel extends React.Component {
     render() {
     	const idPrefix = this.props.idPrefix;
         const settings = this.props.settings;
-        const username = settings.state.paratext.username;
-        const password = settings.state.paratext.password;
+        const username = settings.state.sync.username;
+        const password = settings.state.sync.password;
         const btnDisabled = settings.state.btnDisabled;
         const onChange = settings.handleParatextSetting;
         const onButtonClick = () => settings.signin("btn");
