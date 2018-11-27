@@ -662,10 +662,10 @@ class SettingsModal extends React.Component {
 			if (clickSrc == "btn") this.setMessage("password-req", false);
 			return;
 		}
-		this.listParatextProjects(config.username, config.password, config.syncProvider, config.endpoint);
+		this.listSyncProjects(config.username, config.password, config.syncProvider, config.endpoint);
 	};
 
-	listParatextProjects = async (username, password, syncProvider, endpoint=null) => {
+	listSyncProjects = async (username, password, syncProvider, endpoint=null) => {
 		this.props.showLoader(true);
 		const syncAdapter = this.newSyncAdapter(syncProvider, username, password, endpoint);
 		if(syncAdapter.accessToken){
@@ -725,7 +725,7 @@ class SettingsModal extends React.Component {
 		}
 	};
 
-	handleParatextSetting = (event) => {
+	handleSyncSetting = (event) => {
 		this.state.sync[event.target.name] = event.target.value
 		this.setState({
 			sync: this.state.sync
@@ -1179,7 +1179,7 @@ class SettingsModal extends React.Component {
                                                                 name="endpoint"
                                                                 className="margin-top-24 textbox-width-70"
                                                                 value={this.state.sync.endpoint || AutographaStore.endpoint}
-                                                                onChange={this.handleParatextSetting}
+                                                                onChange={this.handleSyncSetting}
                                                                 id="endpoint"
                                                             />
                                                         }
@@ -1214,7 +1214,7 @@ class CredentialPanel extends React.Component {
         const username = settings.state.sync.username;
         const password = settings.state.sync.password;
         const btnDisabled = settings.state.btnDisabled;
-        const onChange = settings.handleParatextSetting;
+        const onChange = settings.handleSyncSetting;
         const onButtonClick = () => settings.signin("btn");
         const onHeaderClick = () => settings.editCredential();
 
