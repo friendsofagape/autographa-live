@@ -68,7 +68,7 @@ class SettingsModal extends React.Component {
 				password: ""
 			},
 			projectData: [],
-            paratextObj: null,
+            syncAdapter: null,
             activeKey: -1
 
 		};
@@ -640,7 +640,7 @@ class SettingsModal extends React.Component {
 		}
 	};
 
-	newParatextObj = (syncProviderName, username, password, endpoint=null) => {
+	newSyncAdapter = (syncProviderName, username, password, endpoint=null) => {
 		switch (syncProviderName) {
 			case "wacs":
 			case "door43":
@@ -667,10 +667,10 @@ class SettingsModal extends React.Component {
 
 	listParatextProjects = async (username, password, syncProvider, endpoint=null) => {
 		this.props.showLoader(true);
-		const paratextObj = this.newParatextObj(syncProvider, username, password, endpoint);
-		if(paratextObj.accessToken){
+		const syncAdapter = this.newSyncAdapter(syncProvider, username, password, endpoint);
+		if(syncAdapter.accessToken){
 			try{
-                let projects = await paratextObj.getProjects(3);
+                let projects = await syncAdapter.getProjects(3);
 			    refDb.get('paratext_credential').then((doc) => {
                     this.props.showLoader(false);
                     AutographaStore.syncProvider = syncProvider;
@@ -679,7 +679,7 @@ class SettingsModal extends React.Component {
                     AutographaStore.password = password;
                     this.setState({
                         projectData: projects,
-                        paratextObj: paratextObj,
+                        syncAdapter: syncAdapter,
                         activeKey: -1
                     })
                     let newdoc = {
@@ -703,7 +703,7 @@ class SettingsModal extends React.Component {
 					    this.props.showLoader(false);
 					    this.setState({
 						    projectData: projects,
-                            paratextObj: paratextObj,
+                            syncAdapter: syncAdapter,
                             activeKey: -1
 					    })
 				    }).catch((err) => {
@@ -1191,7 +1191,7 @@ class SettingsModal extends React.Component {
                                     </PanelGroup>
                                 </Tab>
 							</Tabs>
-							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
+							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} syncAdapter={this.state.syncAdapter} /> }
                     	</Tab.Pane>
                   </Tab.Content>
                 </Col>
