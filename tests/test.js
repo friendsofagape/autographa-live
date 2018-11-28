@@ -345,6 +345,7 @@ describe('Autographa Test', () => {
 
     it('should check empty chapter report', () => {
         return app.client.waitUntilWindowLoaded()
+            .waitForVisible(".translation > a")
             .click(".translation > a")
             .getText(".empty-chapter-report").should.eventually.equal('2-50')
     });
