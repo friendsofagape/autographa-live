@@ -6,7 +6,7 @@ import AutographaStore from "./AutographaStore";
 import {FormattedMessage} from 'react-intl';
 import Loader from './Loader';
 import paratext from "../helpers/paratextAdapter";
-import wacs from "../helpers/wacsAdapter";
+import gitea from "../helpers/giteaAdapter";
 import * as usfm_import from "../util/usfm_import";
 import ProjectList from "./ProjectList";
 
@@ -61,14 +61,14 @@ class SettingsModal extends React.Component {
 			filepath: "",
 			modalBody: "",
 			title: "",
-			paratext: {
+			sync: {
 				syncProvider: "",
 				endpoint: "",
 				username: "",
 				password: ""
 			},
 			projectData: [],
-            paratextObj: null,
+            syncAdapter: null,
             activeKey: -1
 
 		};
@@ -78,7 +78,7 @@ class SettingsModal extends React.Component {
 			AutographaStore.scriptDirection = "LTR";
 		})
 		AutographaStore.refList = [];
-		refDb.get('paratext_credential').then((doc) => {
+		refDb.get('sync_credential').then((doc) => {
 			AutographaStore.syncProvider = doc.syncProvider;
 			AutographaStore.endpoint = doc.endpoint;
 			AutographaStore.username = doc.username;
@@ -618,42 +618,42 @@ class SettingsModal extends React.Component {
 	}
 
 	editCredential = () => {
-		this.state.paratext["username"] = AutographaStore.username;
-		this.state.paratext["password"] =  AutographaStore.password;
+		this.state.sync["username"] = AutographaStore.username;
+		this.state.sync["password"] =  AutographaStore.password;
 		this.setState({
-			paratext: this.state.paratext
+			sync: this.state.sync
 		})
 	};
 
 	getSyncProvider = () => {
-		return (this.state.paratext && this.state.paratext.syncProvider) || AutographaStore.syncProvider || "paratext";
+		return (this.state.sync && this.state.sync.syncProvider) || AutographaStore.syncProvider || "paratext";
 	};
 
 	setSyncProvider = (providerName) => {
-		const oldVal = this.state.paratext && this.state.paratext.syncProvider;
+		const oldVal = this.state.sync && this.state.sync.syncProvider;
 		if (providerName && providerName != oldVal) {
 			const state = {
 				projectData: [], // clears UI project list
-				paratext: {syncProvider: providerName}
+				sync: {syncProvider: providerName}
 			};
 			this.setState(state, () => AutographaStore.syncProvider = providerName);
 		}
 	};
 
-	newParatextObj = (syncProvider, username, password, endpoint=null) => {
-		switch (syncProvider) {
+	newSyncAdapter = (syncProviderName, username, password, endpoint=null) => {
+		switch (syncProviderName) {
 			case "wacs":
 			case "door43":
-				return new wacs(username, password, ENDPOINTS[syncProvider]);
+				return new gitea(username, password, ENDPOINTS[syncProviderName]);
 			case "other":
-				return new wacs(username, password, endpoint);
+				return new gitea(username, password, endpoint);
 			default:
 				return new paratext(username, password);
 		}
 	};
 
 	signin = (clickSrc) => {
-		const config = (clickSrc == "btn") ? this.state.paratext : AutographaStore;
+		const config = (clickSrc == "btn") ? this.state.sync : AutographaStore;
 		if (!config.username) {
 			if (clickSrc == "btn") this.setMessage("username-req", false);
 			return;
@@ -662,16 +662,16 @@ class SettingsModal extends React.Component {
 			if (clickSrc == "btn") this.setMessage("password-req", false);
 			return;
 		}
-		this.listParatextProjects(config.username, config.password, config.syncProvider, config.endpoint);
+		this.listSyncProjects(config.username, config.password, config.syncProvider, config.endpoint);
 	};
 
-	listParatextProjects = async (username, password, syncProvider, endpoint=null) => {
+	listSyncProjects = async (username, password, syncProvider, endpoint=null) => {
 		this.props.showLoader(true);
-		const paratextObj = this.newParatextObj(syncProvider, username, password, endpoint);
-		if(paratextObj.accessToken){
+		const syncAdapter = this.newSyncAdapter(syncProvider, username, password, endpoint);
+		if(syncAdapter.accessToken){
 			try{
-                let projects = await paratextObj.getProjects(3);
-			    refDb.get('paratext_credential').then((doc) => {
+                let projects = await syncAdapter.getProjects(3);
+			    refDb.get('sync_credential').then((doc) => {
                     this.props.showLoader(false);
                     AutographaStore.syncProvider = syncProvider;
                     AutographaStore.endpoint = endpoint;
@@ -679,11 +679,11 @@ class SettingsModal extends React.Component {
                     AutographaStore.password = password;
                     this.setState({
                         projectData: projects,
-                        paratextObj: paratextObj,
+                        syncAdapter: syncAdapter,
                         activeKey: -1
                     })
                     let newdoc = {
-                        _id: 'paratext_credential',
+                        _id: 'sync_credential',
                         _rev: doc._rev,
 					    syncProvider: syncProvider,
 					    endpoint: endpoint,
@@ -693,7 +693,7 @@ class SettingsModal extends React.Component {
                     refDb.put(newdoc);
 			    }).catch((err) => {
 				    let doc = {
-					    _id: 'paratext_credential',
+					    _id: 'sync_credential',
                         syncProvider: syncProvider,
                         endpoint: endpoint,
 					    username: username,
@@ -703,7 +703,7 @@ class SettingsModal extends React.Component {
 					    this.props.showLoader(false);
 					    this.setState({
 						    projectData: projects,
-                            paratextObj: paratextObj,
+                            syncAdapter: syncAdapter,
                             activeKey: -1
 					    })
 				    }).catch((err) => {
@@ -725,10 +725,10 @@ class SettingsModal extends React.Component {
 		}
 	};
 
-	handleParatextSetting = (event) => {
-		this.state.paratext[event.target.name] = event.target.value
+	handleSyncSetting = (event) => {
+		this.state.sync[event.target.name] = event.target.value
 		this.setState({
-			paratext: this.state.paratext
+			sync: this.state.sync
 		})
     };
 
@@ -1178,8 +1178,8 @@ class SettingsModal extends React.Component {
                                                                 hintText={message}
                                                                 name="endpoint"
                                                                 className="margin-top-24 textbox-width-70"
-                                                                value={this.state.paratext.endpoint || AutographaStore.endpoint}
-                                                                onChange={this.handleParatextSetting}
+                                                                value={this.state.sync.endpoint || AutographaStore.endpoint}
+                                                                onChange={this.handleSyncSetting}
                                                                 id="endpoint"
                                                             />
                                                         }
@@ -1191,7 +1191,7 @@ class SettingsModal extends React.Component {
                                     </PanelGroup>
                                 </Tab>
 							</Tabs>
-							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} paratextObj={this.state.paratextObj} /> }
+							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} syncAdapter={this.state.syncAdapter} /> }
                     	</Tab.Pane>
                   </Tab.Content>
                 </Col>
@@ -1211,10 +1211,10 @@ class CredentialPanel extends React.Component {
     render() {
     	const idPrefix = this.props.idPrefix;
         const settings = this.props.settings;
-        const username = settings.state.paratext.username;
-        const password = settings.state.paratext.password;
+        const username = settings.state.sync.username;
+        const password = settings.state.sync.password;
         const btnDisabled = settings.state.btnDisabled;
-        const onChange = settings.handleParatextSetting;
+        const onChange = settings.handleSyncSetting;
         const onButtonClick = () => settings.signin("btn");
         const onHeaderClick = () => settings.editCredential();
 

@@ -3,7 +3,7 @@ import swal from 'sweetalert';
 import AutographaStore from "./AutographaStore";
 import * as usfm_export from "../util/json_to_usfm";
 import * as usfm_import from "../util/usfm_import";
-import Wacs from "../helpers/wacsAdapter"
+import Gitea from "../helpers/giteaAdapter"
 import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
@@ -11,7 +11,6 @@ const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
 const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
-const dir = path.join(app.getPath('userData'), 'paratext_projects');
 
 
 class ProjectListRow extends React.Component {
@@ -59,8 +58,8 @@ class ProjectListRow extends React.Component {
     };
 
 	importBook = (projectId) => {
-		if (this.props.paratextObj instanceof Wacs) {
-			return this.importBookWacs(projectId);
+		if (this.props.syncAdapter instanceof Gitea) {
+			return this.importBookGitea(projectId);
 		} else {
 			return this.importBookParatext(projectId);
 		}
@@ -85,7 +84,7 @@ class ProjectListRow extends React.Component {
 	        if (action) {
 				this.props.showLoader(true)
 	        	AutographaStore.paratextBook[projectId].map(async(bookId) => {
- 	        		let bookData = await this.props.paratextObj.getUsxBookData(projectId, bookId);
+ 	        		let bookData = await this.props.syncAdapter.getUsxBookData(projectId, bookId);
 		            let book = {};
                 	let verse = [];
                 	let chapters = {};
@@ -193,7 +192,7 @@ class ProjectListRow extends React.Component {
 	    });
   	};
 
-    importBookWacs = async (projectId) => {
+    importBookGitea = async (projectId) => {
         const langCode = 'NA';
         const langVersion = 'NA';
         const currentTrans = AutographaStore.currentTrans;
@@ -213,7 +212,7 @@ class ProjectListRow extends React.Component {
         this.props.showLoader(true);
 
         try {
-            const localPath = await this.props.paratextObj.clone(projectId);
+            const localPath = await this.props.syncAdapter.clone(projectId);
 
             await usfm_import.importTranslation(localPath, langCode, langVersion);
 
@@ -236,14 +235,14 @@ class ProjectListRow extends React.Component {
     };
 
     uploadBook = async(projectId, projectName) => {
-        if (this.props.paratextObj instanceof Wacs) {
-            return await this.uploadBookWacs(projectId, projectName);
+        if (this.props.syncAdapter instanceof Gitea) {
+            return await this.uploadBookGitea(projectId, projectName);
         } else {
             return await this.uploadBookParatext(projectId, projectName);
         }
     };
 
-    uploadBookWacs = async(projectId, projectName) => {
+    uploadBookGitea = async(projectId, projectName) => {
         const currentTrans = AutographaStore.currentTrans;
 
         if (await swal({
@@ -261,11 +260,11 @@ class ProjectListRow extends React.Component {
         this.props.showLoader(true);
 
         try {
-            const localPath = await this.props.paratextObj.clone(projectId);
+            const localPath = await this.props.syncAdapter.clone(projectId);
 
             const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
 
-            const pushResult = await this.props.paratextObj.commitAndPush(localPath);
+            const pushResult = await this.props.syncAdapter.commitAndPush(localPath);
 
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
@@ -277,6 +276,7 @@ class ProjectListRow extends React.Component {
     }
 
     uploadBookParatext = async(projectId, projectName) => {
+        const dir = path.join(app.getPath('userData'), 'paratext_projects');
 		let currentTrans = AutographaStore.currentTrans;
         let book = {};
         let _this = this;
@@ -299,7 +299,7 @@ class ProjectListRow extends React.Component {
 				await this.asyncForEach(AutographaStore.paratextBook[projectId], async (bookId) => {
 					console.log(book)
 					try{
-						let bookData =  await _this.props.paratextObj.getUsxBookData(projectId, bookId);
+						let bookData =  await _this.props.syncAdapter.getUsxBookData(projectId, bookId);
 						if (!fs.existsSync(dir)){
 							fs.mkdirSync(dir);
 						}
@@ -315,7 +315,7 @@ class ProjectListRow extends React.Component {
 						console.log(err);
 						return false
 					}
-					let bookRevision = await _this.props.paratextObj.getBookRevision(projectId, bookId);
+					let bookRevision = await _this.props.syncAdapter.getBookRevision(projectId, bookId);
 						let parser = new xml2js.Parser();
 						parser.parseString(bookRevision, (err, result) => {
 							let revision = result.RevisionInfo.ChapterInfo[0].$.revision;
@@ -359,7 +359,7 @@ class ProjectListRow extends React.Component {
 											currVerse = verseNodes.snapshotItem(v);
 									}
 									try{
-										let uploadedRes = await _this.props.paratextObj.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
+										let uploadedRes = await _this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
 										fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
 										swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
 									}catch(err){
@@ -390,7 +390,7 @@ class ProjectListRow extends React.Component {
 			this.props.showLoader(true);
 			let _this = this;
 			try{
-				let booksList = await this.props.paratextObj.getBooksList(projectId);
+				let booksList = await this.props.syncAdapter.getBooksList(projectId);
 				booksList = booksList.map(book => {
 					if (booksCodes.includes(book.id)){
 						return book.id
@@ -428,7 +428,7 @@ class ProjectListRow extends React.Component {
 							}
 				    	</FormGroup>
 						{
-							(this.props.paratextObj instanceof Wacs || Object.keys(this.state.bookList).length > 0) &&
+							(this.props.syncAdapter instanceof Gitea || Object.keys(this.state.bookList).length > 0) &&
 							<div style={{float: "right"}} className="btn-imp-group">
 				    			<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
 				    			<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>
