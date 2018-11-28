@@ -398,9 +398,7 @@ describe('Autographa Test', () => {
             .click(".swal-button--confirm")
             .waitForVisible("#loading-img", 60000, true)
             .waitForVisible(".swal-title", 60000)
-            .getText(".swal-title").then((res) => {
-                assert.strictEqual(true, true, "Book Exported");
-            })
+            .getText(".swal-title").should.eventually.equal("Book Exported");
     })
 
     it('close the app', () => {
