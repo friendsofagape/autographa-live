@@ -249,7 +249,7 @@ class Navbar extends React.Component {
     }
 
     onItemClick(bookName) {
-        this.goToTab(2)
+        
         AutographaStore.bookName = bookName;
         AutographaStore.chapterActive = 0;
         
@@ -696,7 +696,7 @@ class Navbar extends React.Component {
                                 </div>
                                  ) : ''
                             }
-                            <Tab eventKey={1} title="Book">
+                            <Tab eventKey={1} title="Book" onClick={() => this.goToTab(2)}>
                                 <div className="wrap-center"></div>
                                 <div className="row books-li" id="bookdata">
                                     <ul id="books-pane">
