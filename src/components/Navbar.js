@@ -249,7 +249,6 @@ class Navbar extends React.Component {
     }
 
     onItemClick(bookName) {
-        this.goToTab(2)
         AutographaStore.bookName = bookName;
         AutographaStore.chapterActive = 0;
         
@@ -259,6 +258,7 @@ class Navbar extends React.Component {
         AutographaStore.bookActive = bookIndex+1
         AutographaStore.bookChapter["chapterLength"] = bookSkel.chapters.length;
         AutographaStore.bookChapter["bookId"] = bookIndex+1;
+        this.goToTab(2)
     }
 
      
