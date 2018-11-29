@@ -87,7 +87,7 @@
     "sweetalert-react": "^0.4.11",
     "tmp": "0.0.33",
     "transform-runtime": "0.0.0",
-    "wacs-client": "0.1.0",
+    "wacs-client": "0.1.1",
     "webpack": "^4.5.0",
     "xml2js": "^0.4.19"
   },
