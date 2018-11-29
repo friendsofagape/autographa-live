@@ -383,12 +383,12 @@ describe('Autographa Test', () => {
             .waitForVisible("#paratext-signin")
             .click("#paratext-signin")
             .waitForVisible("#projectList .panel-title > a")
-            .getText("#projectList .panel-title > a").should.eventually.equal('MAL10RO')
+            .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
     })
     it('should select book and upload to paratext', () => {
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#projectList .panel-title > a")
-            .click("#projectList .panel-title > a")
+            .click("#projectList .panel-default:last-child .panel-title a")
             .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
             .keys('Tab')
             .keys(' ')
@@ -417,14 +417,14 @@ describe('Autographa Test', () => {
             .waitForVisible("#left-tabs-example-tab-seventh")
             .click("#left-tabs-example-tab-seventh")
             .waitForVisible("#projectList .panel-title > a")
-            .getText("#projectList .panel-title > a").should.eventually.equal('MAL10RO')
+            .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
 
     })
 
     it('should get the list of projects and import book', () => {
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#projectList .panel-title > a", 5000)
-            .click("#projectList .panel-title > a")
+            .click("#projectList .panel-default:last-child .panel-title a")
             .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
             .keys('Tab')
             .keys(' ')
