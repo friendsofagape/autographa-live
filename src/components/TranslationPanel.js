@@ -491,6 +491,7 @@ class TranslationPanel extends React.Component {
             case 6:{
                 return <h6 {...attributes}>{headString}</h6>
             }
+
         }
     }
     
@@ -505,10 +506,8 @@ class TranslationPanel extends React.Component {
             }else if(children.props.children.startsWith("__")){
                 return <strong {...attributes}>{children.props.children.match(/\_{2}(.*?)\_{2}/)[1]}</strong>
             }
-
           case 'code':
-            return <code {...attributes}>{children}</code>
-    
+            return <code {...attributes}>{children.props.children.match(/\`{1}(.*?)\`{1}/)[1]}</code>
           case 'italic':
             if(children.props.children.startsWith("*")){
                 return <em {...attributes}>{children.props.children.match(/\*{1}(.*?)\*{1}/)[1]}</em>
