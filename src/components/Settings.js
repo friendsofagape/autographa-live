@@ -8,6 +8,7 @@ import Loader from './Loader';
 import paratext from "../helpers/paratextAdapter";
 import gitea from "../helpers/giteaAdapter";
 import * as usfm_import from "../util/usfm_import";
+import {ProjectCreate} from "./ProjectCreate";
 import ProjectList from "./ProjectList";
 
 const { dialog, getCurrentWindow } = require('electron').remote;
@@ -1149,6 +1150,7 @@ class SettingsModal extends React.Component {
                         </div>
                       </Tab.Pane>
                       <Tab.Pane eventKey="seventh">
+						  <div style={{height: "530px", display: "flex", flexDirection: "column"}}>
 							<Tabs id="syncProvider" onSelect={this.setSyncProvider} defaultActiveKey={this.getSyncProvider()}>
 								<Tab eventKey="paratext" title={`${AutographaStore.currentTrans["label-paratext"]}`}>
 									<PanelGroup accordion id = "paratext-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
@@ -1191,7 +1193,20 @@ class SettingsModal extends React.Component {
                                     </PanelGroup>
                                 </Tab>
 							</Tabs>
-							{ <ProjectList projects={this.state.projectData} showLoader={this.props.showLoader} syncAdapter={this.state.syncAdapter} /> }
+							{
+								<ProjectCreate
+								  syncAdapter={this.state.syncAdapter}
+								  onCreate={newProj => this.setState({projectData: [newProj, ...this.state.projectData]})}
+								/>
+							}
+							{
+								<ProjectList
+									projects={this.state.projectData}
+									showLoader={this.props.showLoader}
+									syncAdapter={this.state.syncAdapter}
+								/>
+							}
+						  </div>
                     	</Tab.Pane>
                   </Tab.Content>
                 </Col>
