@@ -2,6 +2,7 @@ import React from 'react';
 import {MenuItem, RadioButton, RadioButtonGroup, RaisedButton, SelectField, TextField} from 'material-ui';
 import swal from 'sweetalert';
 import {observer} from "mobx-react"
+import {Ahref} from "./Ahref";
 import AutographaStore from "./AutographaStore";
 import {FormattedMessage} from 'react-intl';
 import Loader from './Loader';
@@ -1153,16 +1154,19 @@ class SettingsModal extends React.Component {
 						  <div style={{height: "530px", display: "flex", flexDirection: "column"}}>
 							<Tabs id="syncProvider" onSelect={this.setSyncProvider} defaultActiveKey={this.getSyncProvider()}>
 								<Tab eventKey="paratext" title={`${AutographaStore.currentTrans["label-paratext"]}`}>
+									{ <Ahref i18n="text-info-paratext" href="https://registry.paratext.org" /> }
 									<PanelGroup accordion id = "paratext-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="paratext" /> }
 									</PanelGroup>
 								</Tab>
 								<Tab eventKey="door43" title={`${AutographaStore.currentTrans["label-door43"]}`}>
+									{ <Ahref i18n="text-info-door43" href="https://git.door43.org" /> }
 									<PanelGroup accordion id = "door43-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="door43" /> }
 									</PanelGroup>
 								</Tab>
 								<Tab eventKey="wacs" title={`${AutographaStore.currentTrans["label-wacs"]}`}>
+									{ <Ahref i18n="text-info-wacs" href="https://content.bibletranslationtools.org" /> }
 									<PanelGroup accordion id = "wacs-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="wacs" /> }
 									</PanelGroup>
