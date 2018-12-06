@@ -12,7 +12,7 @@ export default class Gitea {
 
     async getProjects() {
         const repos = await wacs.listMyRepos(this.accessToken, this.endpoint);
-        return repos.map(r => ({proj: [r.name], projid: [r.clone_url]}));
+        return repos.map(repoToProject);
     }
 
     async getBooksList(projectId) {
@@ -30,6 +30,12 @@ export default class Gitea {
         return result;
     }
 
+    async create(projectName) {
+        const newRepo = await wacs.create(this.accessToken, projectName, this.endpoint);
+        const project = repoToProject(newRepo);
+        return project;
+    }
+
     //importing
     async getUsxBookData(projectId, bookId) {
         throw new Error("Not implemented.");
@@ -39,4 +45,8 @@ export default class Gitea {
     updateBookData(projectId, bookId, bookData) {
         throw new Error("Not implemented.");
     }
+}
+
+function repoToProject(r) {
+    return ({proj: [r.name], projid: [r.clone_url]});
 }
