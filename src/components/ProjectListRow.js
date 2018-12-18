@@ -197,11 +197,11 @@ class ProjectListRow extends React.Component {
         const langVersion = 'NA';
         const currentTrans = AutographaStore.currentTrans;
 
-        if (await swal({
+        if (!await swal({
             title: currentTrans["label-warning"],
             text: currentTrans["label-override-text"],
             icon: "warning",
-            buttons: [currentTrans["btn-ok"], currentTrans["btn-cancel"]],
+            buttons: [currentTrans["btn-cancel"], currentTrans["btn-ok"]],
             dangerMode: false,
             closeOnClickOutside: false,
             closeOnEsc: false
@@ -245,11 +245,11 @@ class ProjectListRow extends React.Component {
     uploadBookGitea = async(projectId, projectName) => {
         const currentTrans = AutographaStore.currentTrans;
 
-        if (await swal({
+        if (!await swal({
             title: currentTrans["label-warning"],
             text: currentTrans["label-uploading-warning"],
             icon: "warning",
-            buttons: [currentTrans["btn-ok"], currentTrans["btn-cancel"]],
+            buttons: [currentTrans["btn-cancel"], currentTrans["btn-ok"]],
             dangerMode: false,
             closeOnClickOutside: false,
             closeOnEsc: false
