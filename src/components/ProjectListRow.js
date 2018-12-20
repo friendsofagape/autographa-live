@@ -8,6 +8,7 @@ import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
+const booksNames = require(`${__dirname}/../util/constants.js`).booksList;
 const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
@@ -214,17 +215,11 @@ class ProjectListRow extends React.Component {
         try {
             const localPath = await this.props.syncAdapter.clone(projectId);
 
-            await usfm_import.importTranslation(localPath, langCode, langVersion);
+            const results = await usfm_import.importTranslation(localPath, langCode, langVersion);
+            const importedBooks = results.map(r => r.id);
 
             this.resetLoader();
-            await swal({
-                title: currentTrans["btn-import"],
-                text:  currentTrans["label-imported-book"],
-                icon: "success",
-                dangerMode: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false
-            });
+            await swal(currentTrans["btn-import"], this.makeSyncReport(importedBooks), "success");
         } catch(err) {
             console.log(err);
             this.resetLoader();
@@ -263,17 +258,17 @@ class ProjectListRow extends React.Component {
             const localPath = await this.props.syncAdapter.clone(projectId);
 
             const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
-
+            const writtenBookIds = writtenBooks.map(b => b.bookNumber);
             const pushResult = await this.props.syncAdapter.commitAndPush(localPath);
 
             this.resetLoader();
-            await swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
+            await swal(currentTrans["dynamic-msg-book-exported"], this.makeSyncReport(writtenBookIds), "success");
         } catch(err) {
             console.log(err);
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
         }
-    }
+    };
 
     uploadBookParatext = async(projectId, projectName) => {
         const dir = path.join(app.getPath('userData'), 'paratext_projects');
@@ -376,15 +371,29 @@ class ProjectListRow extends React.Component {
 				})
 			}
 		  })
-	}
+	};
 	
 	asyncForEach = async (array, callback) => {
 		for (let index = 0; index < array.length; index++) {
 			await callback(array[index], index, array)
 		}
-	}
+	};
 
-    getBooks = async (projectId, projectName) => {
+	makeSyncReport = bookIdList => {
+		const justShowCount = bookIdList.length > 4;
+		const form = justShowCount
+			? "dynamic-msg-sync-book-count"
+			: "dynamic-msg-sync-book-list";
+		const param = justShowCount
+			? bookIdList.length
+			: bookIdList
+				.sort()
+				.map(id => booksNames[id - 1])
+				.join("\n");
+		return AutographaStore.currentTrans[form].replace('$', param);
+	};
+
+	getBooks = async (projectId, projectName) => {
 		console.log(this.state.open)
 		if(!this.state.open){
 			this.props.showLoader(true);
@@ -409,7 +418,8 @@ class ProjectListRow extends React.Component {
 		}else{
 			this.setState({ open: false })
 		}	
-    }
+    };
+
   	render (){
   		const {project, index} = this.props;
 	  		return (
@@ -440,7 +450,9 @@ class ProjectListRow extends React.Component {
 			);
 	};
 }
+
 ProjectListRow.propTypes = {
   project: PropTypes.object.isRequired
 };
+
 export default ProjectListRow;
