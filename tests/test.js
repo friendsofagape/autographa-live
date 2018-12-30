@@ -458,7 +458,7 @@ describe('Autographa Test', () => {
                 .keys('Tab')
                 .waitForVisible("#versediv1", 20000)
                 .click("#versediv1")
-                .getText("#v1").should.eventually.equal(timestampedSampleText);
+                .getText("#v1").should.eventually.include(timestampedSampleText);
         });
 
         it('close the app', () => {
