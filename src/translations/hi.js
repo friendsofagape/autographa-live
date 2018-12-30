@@ -118,6 +118,8 @@
 	"dynamic-msg-name-taken" : "वह नाम पहले ही चुना गया है कृपया दूसरा नाम चुनें",
 	"dynamic-msg-ref-name-validation" : "सन्दर्भ नाम की आवशयकता है",
 	"dynamic-msg-book" : "पुस्तक",
+	"dynamic-msg-sync-book-list" : "पुस्तकों को सफलतापूर्वक सिंक्रनाइज़ किया गया:\n$",
+	"dynamic-msg-sync-book-count" : "सफलतापूर्वक $ किताबें सिंक्रनाइज़।",
 	"dynamic-msg-save-language": "सफलतापूर्वक बदलाव संचित किए. एप्लीकेशन के प्रचालित होने के लिए दोबारा शुरू करें",
 	"ref_name_max_valid": "नाम 10 से अधिक वर्ण नहीं कर सकते",
 	"ref_name_min_valid": "नाम 3 वर्णों से कम नहीं हो सकता",
