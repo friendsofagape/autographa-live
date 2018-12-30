@@ -51,6 +51,7 @@ export class ProjectCreate extends React.Component {
                             className="margin-right-10 btn btn-success"
                             onClick={this.onButtonClick}
                             disabled={!this.state.projectName}
+                            id="newProjectBtn"
                         >
                             {`${AutographaStore.currentTrans["btn-create"]}`}
                         </a>

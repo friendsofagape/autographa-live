@@ -38,7 +38,8 @@ export const importTranslation = (importDir, langCode, langVersion) =>
                 targetDb: 'target',
                 scriptDirection: AutographaStore.refScriptDirection
             })
-        ));
+        ))
+        .then(ps => Promise.all(ps));
 
 const getNonDotFiles = (dir) =>
     readdir(dir)

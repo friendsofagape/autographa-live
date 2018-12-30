@@ -643,12 +643,17 @@ class SettingsModal extends React.Component {
 	};
 
 	newSyncAdapter = (syncProviderName, username, password, endpoint=null) => {
+		const onFailure = err => {
+			console.log(err);
+			swal(AutographaStore.currentTrans["dynamic-msg-error"], "Something went wrong", "error");
+		};
+
 		switch (syncProviderName) {
 			case "wacs":
 			case "door43":
-				return new gitea(username, password, ENDPOINTS[syncProviderName]);
+				return new gitea(username, password, ENDPOINTS[syncProviderName], onFailure);
 			case "other":
-				return new gitea(username, password, endpoint);
+				return new gitea(username, password, endpoint, onFailure);
 			default:
 				return new paratext(username, password);
 		}

@@ -55,7 +55,9 @@ class TranslationPanel extends React.Component {
         	};
         	if( refContent[l])
           		refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
-      	}
+        }
+        let focusIn = document.getElementById(vId);
+        focusIn.focus();
   	}
 
 	handleKeyUp =(e)=> {
@@ -115,7 +117,7 @@ class TranslationPanel extends React.Component {
 
 		for (let i = 0; i < AutographaStore.chunkGroup.length; i++) {
 		let vid="v"+(i+1);
-		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)}>
+		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
 			<span className='verse-num' key={i}>{(i+1)}</span>
 			<span contentEditable={true} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}

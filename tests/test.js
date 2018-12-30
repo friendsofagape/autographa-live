@@ -1,23 +1,28 @@
 const Application = require('spectron').Application;
 const path = require('path');
 const chai = require('chai');
-var assert = require('assert')
+var assert = require('assert');
 const chaiAsPromised = require('chai-as-promised');
 const fs = require("fs");
 
-
-var electronPath = path.join(__dirname, '..', 'node_modules', '.bin', 'electron');
 const electron = require('spectron').remote;
-if (process.platform === 'win32') {
-    electronPath += '.cmd';
-}
 
-var appPath = path.join(__dirname, '..');
+const electronPath = path.join(__dirname, '..', 'node_modules', '.bin', 'electron')
+    + (process.platform === 'win32' ? '.cmd' : "");
 
-var app = new Application({
+const appPath = path.join(__dirname, '..');
+
+const app = new Application({
     path: electronPath,
     args: [appPath]
 });
+
+const now = new Date();
+const wacsRepoId = `e2e_${now.getTime()}`;
+const timestampedSampleText = `this is a test ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getTime()}`;
+const wacsUsername = process.env.WACS_USERNAME;
+const wacsPassword = process.env.WACS_PASSWORD;
+
 
 global.before(function () {
     chai.should();
@@ -26,7 +31,6 @@ global.before(function () {
 
 
 describe('Autographa Test', () => {
-
     before(function () {
         return app.start();
     });
@@ -82,20 +86,18 @@ describe('Autographa Test', () => {
     });
 
     it('should save the target text', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .keys('Tab')
             .waitForVisible("#versediv1", 20000)
             .click("#versediv1")
-            .keys(input)
+            .keys(timestampedSampleText)
             .click("#versediv2")
             .keys('check    for spaces')
             .click("#versediv3")
             .keys('incompleteVerse')
             .waitForExist("#save-btn", 20000)
             .click('#save-btn')
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
     it('should click the ref drop down', () => {
@@ -105,11 +107,9 @@ describe('Autographa Test', () => {
     });
 
     it('should check the verse in translation panel', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
 
@@ -122,18 +122,17 @@ describe('Autographa Test', () => {
 
 
     it('After ref change should check the verse again in translation panel', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
     it('should check highlight verse on 2x', () => {
         return app.client.waitUntilWindowLoaded()
             .waitForExist("#v1", 20000)
             .click("#versediv1")
-            .getAttribute("div[data-verse='r1']", 'style').should.eventually.equal('background-color: rgba(11, 130, 255, 0.1); padding-left: 10px; padding-right: 10px; border-radius: 10px;')
+            .getAttribute("div[data-verse='r1']", 'style').should.eventually.equal(
+                'background-color: rgba(11, 130, 255, 0.1); padding-left: 10px; padding-right: 10px; border-radius: 10px;')
     });
 
     it('should change the ref drop down text eng_ult', () => {
@@ -168,11 +167,9 @@ describe('Autographa Test', () => {
     });
 
     it('should check the saved target verse', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
     it('should click the diff button and count addition', () => {
@@ -180,7 +177,7 @@ describe('Autographa Test', () => {
             .waitForEnabled('#diff', 20000)
             .click('#diff')
             .waitForExist("#tIns", 20000)
-            .getText("#tIns").should.eventually.equal('12');
+            .getText("#tIns").should.eventually.equal('13');
     });
 
     it('should click off the diff button', () => {
@@ -214,11 +211,9 @@ describe('Autographa Test', () => {
     });
 
     it('Should keep newly saved text viewable when layout changes to 3x', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
 
@@ -246,11 +241,9 @@ describe('Autographa Test', () => {
     });
 
     it('Should keep newly saved text viewable when layout changes to 4x', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
         return app.client.waitUntilWindowLoaded()
             .waitForVisible("#v1", 20000)
-            .getText("#v1").should.eventually.equal(input);
+            .getText("#v1").should.eventually.equal(timestampedSampleText);
     });
 
 
@@ -340,6 +333,7 @@ describe('Autographa Test', () => {
                 assert.strictEqual(true, false, "file doesn't exported at saved location");
             })
             .keys('Escape')
+            .waitForVisible("#tab-search", 2000, true)
     });
 
 
@@ -364,98 +358,205 @@ describe('Autographa Test', () => {
         return app.stop();
     });
 
-    it('open the app', () => {
-        return app.start();
+    describe('paratext', () => {
+        it('open the app', () => {
+            return app.start();
+        });
+
+        it('should login to paratext and get projects list', () => {
+            return app.client.waitUntilWindowLoaded()
+                .keys('Escape')
+                .waitForEnabled("#btnSettings", 2000)
+                .click("#btnSettings")
+
+                .waitForVisible("#loading-img", 10000, true)
+                .waitForVisible("#left-tabs-example-tab-seventh")
+                .click("#left-tabs-example-tab-seventh")
+
+                .waitForVisible(".panel-title > a")
+                .click(".panel-title > a")
+
+                .waitForVisible("#paratext-username")
+                .setValue("#paratext-username", 'Benjamin Autographa')
+                .setValue("#paratext-password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
+                .waitForVisible("#paratext-signin")
+                .click("#paratext-signin")
+
+                .waitForVisible("#projectList .panel-title > a")
+                .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
+        });
+
+        it('should select book and upload to paratext', () => {
+            return app.client.waitUntilWindowLoaded()
+                .waitForVisible("#projectList .panel-title > a")
+                .click("#projectList .panel-default:last-child .panel-title a")
+                .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
+                .keys('Tab')
+                .keys(' ')
+                .waitForSelected('#GEN', 50000)
+                .waitForVisible("a.btn-upload", 60000)
+                .click("a.btn-upload")
+                .waitForVisible(".swal-button--confirm", 60000)
+                .click(".swal-button--confirm")
+                .waitForVisible("#loading-img", 60000, true)
+                .waitForVisible(".swal-title", 60000)
+                .getText(".swal-title").should.eventually.equal("Book Exported");
+        });
+
+        it('close the app', () => {
+            return app.stop();
+        });
+
+        it('open the app', () => {
+            return app.start();
+        });
+
+        it('should login to paratext and get projects list', () => {
+            return app.client.waitUntilWindowLoaded()
+                .keys('Escape')
+                .waitForEnabled("#btnSettings", 2000)
+                .click("#btnSettings")
+
+                .waitForVisible("#loading-img", 10000, true)
+                .waitForVisible("#left-tabs-example-tab-seventh")
+                .click("#left-tabs-example-tab-seventh")
+
+                .waitForVisible("#projectList .panel-title > a")
+                .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
+        });
+
+        it('should get the list of projects and import book', () => {
+            return app.client.waitUntilWindowLoaded()
+                .waitForVisible("#projectList .panel-title > a", 5000)
+                .click("#projectList .panel-default:last-child .panel-title a")
+                .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
+                .keys('Tab')
+                .keys(' ')
+                .waitForSelected('#GEN', 5000)
+                .waitForVisible("a.btn-import", 60000)
+                .click("a.btn-import")
+                .waitForVisible(".swal-button--confirm", 60000)
+                .click(".swal-button--confirm", 20000)
+                .waitForVisible("#loading-img", 60000, true)
+                .getText(".swal-title").then((res) => {
+                    assert.strictEqual(true, true, "Import");
+                })
+
+
+        });
+
+        it('close the app', () => {
+            return app.stop();
+        });
+
+        it('open the app', () => {
+            return app.start();
+        });
+
+        it('should check the imported text', () => {
+            return app.client.waitUntilWindowLoaded()
+                .keys('Tab')
+                .waitForVisible("#versediv1", 20000)
+                .click("#versediv1")
+                .getText("#v1").should.eventually.include(timestampedSampleText);
+        });
+
+        it('close the app', () => {
+            return app.stop();
+        });
     });
 
-    it('should login to paratext and get projects list', () => {
-        return app.client.waitUntilWindowLoaded()
-            .keys('Escape')
-            .waitForEnabled("#btnSettings", 2000)
-            .click("#btnSettings")
-            .waitForVisible("#left-tabs-example-tab-seventh")
-            .click("#left-tabs-example-tab-seventh")
-            .waitForVisible(".panel-title > a")
-            .click(".panel-title > a")
-            .waitForVisible("#paratext-username")
-            .setValue("#paratext-username", 'Benjamin Autographa')
-            .setValue("#paratext-password", "XG5MNJ-P8M1XG-03H274-Y8G0KP-BKG4FW")
-            .waitForVisible("#paratext-signin")
-            .click("#paratext-signin")
-            .waitForVisible("#projectList .panel-title > a")
-            .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
-    })
-    it('should select book and upload to paratext', () => {
-        return app.client.waitUntilWindowLoaded()
-            .waitForVisible("#projectList .panel-title > a")
-            .click("#projectList .panel-default:last-child .panel-title a")
-            .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
-            .keys('Tab')
-            .keys(' ')
-            .waitForSelected('#GEN', 50000)
-            .waitForVisible("a.btn-upload", 60000)
-            .click("a.btn-upload")
-            .waitForVisible(".swal-button--confirm", 60000)
-            .click(".swal-button--confirm")
-            .waitForVisible("#loading-img", 60000, true)
-            .waitForVisible(".swal-title", 60000)
-            .getText(".swal-title").should.eventually.equal("Book Exported");
-    })
+    describe('wacs', () => {
+        before(() => {
+            const should = chai.should();
+            should.exist(wacsUsername, "WACS_USERNAME environment variable isn't set");
+            should.exist(wacsPassword, "WACS_PASSWORD environment variable isn't set");
+            return app.start();
+        });
 
-    it('close the app', () => {
-        return app.stop();
+        it('should login to wacs and get projects list', () => {
+            return app.client.waitUntilWindowLoaded()
+                .waitForEnabled("#btnSettings", 2000)
+                .click("#btnSettings")
+
+                .waitForVisible("#loading-img", 10000, true)
+                .waitForVisible("#left-tabs-example-tab-seventh")
+                .click("#left-tabs-example-tab-seventh")
+
+                .waitForVisible("#loading-img", 10000, true)
+                .waitForVisible("#syncProvider-tab-wacs")
+                .click("#syncProvider-tab-wacs")
+
+                .waitForVisible("#wacs-credential-heading-creds > .panel-title > a")
+                .click("#wacs-credential-heading-creds > .panel-title > a")
+
+                .waitForVisible("#wacs-username")
+                .setValue("#wacs-username", wacsUsername)
+                .setValue("#wacs-password", wacsPassword)
+                .waitForVisible("#wacs-signin")
+                .click("#wacs-signin")
+                .waitForVisible("#projectList , #label-no-project")
+        });
+
+        it('should create repo and upload to wacs', () => {
+            return app.client.waitUntilWindowLoaded()
+                .waitForVisible("#newProjectName")
+                .setValue("#newProjectName", wacsRepoId)
+                .click("#newProjectBtn")
+                .waitForVisible(`a=${wacsRepoId}`, 5000)
+                .click(`a=${wacsRepoId}`)
+                .waitForVisible("a.btn-upload")
+                .click("a.btn-upload")
+                .waitForVisible(".swal-button--confirm", 60000)
+                .click(".swal-button--confirm")
+                .waitForVisible("#loading-img", 60000, true)
+                .waitForVisible(".swal-title", 60000)
+                .getText(".swal-title").should.eventually.equal("Book Exported")
+        });
+
+        it('should login to wacs and get projects list', () => {
+            return app.client.waitUntilWindowLoaded()
+                .keys('Escape')
+                .waitForVisible(".swal-title", 2000, true)
+                .keys('Escape')
+                .waitForVisible("#tab-settings", 2000, true)
+
+                .waitForEnabled("#btnSettings", 2000)
+                .click("#btnSettings")
+
+                .waitForVisible("#loading-img", 10000, true)
+                .waitForVisible("#left-tabs-example-tab-seventh")
+                .click("#left-tabs-example-tab-seventh")
+
+                .waitForVisible("#projectList .panel-title > a", 5000)
+                .getText("#projectList .panel-title > a").should.eventually.contain(wacsRepoId)
+        });
+
+        it('should select the project from the list and import', () => {
+            return app.client.waitUntilWindowLoaded()
+                .scroll(`a=${wacsRepoId}`)
+                .click(`a=${wacsRepoId}`)
+                .waitForVisible("a.btn-import")
+                .click("a.btn-import")
+                .waitForVisible(".swal-button--confirm", 60000)
+                .click(".swal-button--confirm", 20000)
+                .waitForVisible("#loading-img", 60000, true)
+                .getText(".swal-title").should.eventually.equal("Import")
+                .then(() =>
+                    app.client
+                        .click(".swal-button--confirm")
+                        .waitForVisible(".swal-title", 1000, true));
+        });
+
+        it('should check the imported text', () => {
+            return app.client.waitUntilWindowLoaded()
+                .keys('Escape')
+                .waitForVisible("#tab-settings", 2000, true)
+
+                .keys('Tab')
+                .waitForVisible("#versediv1", 20000)
+                .click("#versediv1")
+                .getText("#v1").should.eventually.equal(timestampedSampleText);
+        });
     });
-    it('open the app', () => {
-        return app.start();
-    });
-
-    it('should login to paratext and get projects list', () => {
-        return app.client.waitUntilWindowLoaded()
-            .keys('Escape')
-            .waitForEnabled("#btnSettings", 2000)
-            .click("#btnSettings")
-            .waitForVisible("#left-tabs-example-tab-seventh")
-            .click("#left-tabs-example-tab-seventh")
-            .waitForVisible("#projectList .panel-title > a")
-            .getText("#projectList .panel-title > a").should.eventually.contain('MAL10AUT')
-
-    })
-
-    it('should get the list of projects and import book', () => {
-        return app.client.waitUntilWindowLoaded()
-            .waitForVisible("#projectList .panel-title > a", 5000)
-            .click("#projectList .panel-default:last-child .panel-title a")
-            .waitForVisible("#project-list .checkbox-inline input[type='checkbox']", 5000)
-            .keys('Tab')
-            .keys(' ')
-            .waitForSelected('#GEN', 5000)
-            .waitForVisible("a.btn-import", 60000)
-            .click("a.btn-import")
-            .waitForVisible(".swal-button--confirm", 60000)
-            .click(".swal-button--confirm", 20000)
-            .waitForVisible("#loading-img", 60000, true)
-            .getText(".swal-title").then((res) => {
-                assert.strictEqual(true, true, "Import");
-            })
-            
-
-    })
-
-    it('close the app', () => {
-        return app.stop();
-    });
-    it('open the app', () => {
-        return app.start();
-    });
-
-    it('should check the imported text', () => {
-        let date = new Date();
-        const input = `this is a test ${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-        return app.client.waitUntilWindowLoaded()
-            .keys('Tab')
-            .waitForVisible("#versediv1", 20000)
-            .click("#versediv1")
-            .getText("#v1").should.eventually.equal(input);
-    });
-
 });
