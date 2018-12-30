@@ -3,11 +3,12 @@ import tmp from "tmp";
 
 
 export default class Gitea {
-    constructor(username, password, endpoint) {
+    constructor(username, password, endpoint, onFailure) {
         this.endpoint = endpoint;
         this.accessToken = {username: username, password: password};
         wacs.login(this.accessToken, this.endpoint)
-            .then(withToken => this.accessToken = withToken);
+            .then(withToken => this.accessToken = withToken)
+            .catch(onFailure);
     }
 
     async getProjects() {
