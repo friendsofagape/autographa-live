@@ -7,7 +7,7 @@ The crucial difference with [Autographa Lite](https://github.com/friendsofagape/
 **Both 'Lite' and 'Live' versions will continue being supported and developed.**
 
 ## Developer Setup
-It is relatively easy to setup the application locally for development.
+It is relatively easy to setup the application locally for development. You will need API keys/credentials for running the full test-suite. Please email [joelthe1](https://github.com/joelthe1) for more information.
 
 ### Prerequisites
 [Node JS 8.9.3](https://nodejs.org/download/release/v8.9.3/)    
@@ -48,10 +48,7 @@ The intended workflow is for users to start drafting in Autogrpaha Live and then
 If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
 Please read the [CONTRIBUTE](https://github.com/friendsofagape/autographa-live/blob/master/CONTRIBUTE.md) page for details on our code of conduct, and the process for submitting pull requests.
 
-We really value our contributors whether they helped fix a bug, built a feature, tested out the app or made some meaningful impact. Here are our heroes in alphabetical order of first name/username:
-- [aunger](https://github.com/aunger)
-- [joelthe1](https://github.com/joelthe1)
-- [sandeeponrails](https://github.com/sandeeponrails)
+We really value our contributors whether they helped fix a bug, built a feature, tested out the app or contributed in some other way.
 
 ## License
 This project is licensed under the GNU GENERAL PUBLIC LICENSE (Version 3) License. See [LICENSE](https://github.com/friendsofagape/autographa-live/blob/master/LICENSE) for more details.
