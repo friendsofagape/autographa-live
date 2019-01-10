@@ -35,7 +35,7 @@ var AboutUsModel = function(props) {
                         </div>
         <div className="col-xs-6" style={{padding:"5px"}}>
                             <h3><FormattedMessage id="app-name" /></h3>
-                            <p><FormattedMessage id="label-version" /> <span>0.1.0-beta.1</span></p>
+                            <p><FormattedMessage id="label-version" /> <span>0.1.0-beta.2</span></p>
         <p><FormattedMessage id="label-hosted-url" /></p>
 	<p>https://github.com/friendsofagape/autographa-live.git</p>
                         </div>
@@ -45,7 +45,7 @@ var AboutUsModel = function(props) {
         <div style={{overflowY: "scroll", height: "255px"}}>
         <h4>GNU General Public License v3.0</h4>
 	<p>Autographa Live, A Bible translation editor for everyone.<br />
-	Copyright (C) 2018  Friends of Agape</p>
+	Copyright (C) 2019  Friends of Agape</p>
       <p>This program is free software: you can redistribute it and/or modify
       it under the terms of the GNU General Public License as published by
       the Free Software Foundation, either version 3 of the License, or
