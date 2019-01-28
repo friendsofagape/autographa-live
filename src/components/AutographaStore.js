@@ -67,6 +67,7 @@ export class AutographaStore {
   @observable username = ""
   @observable password = ""
   @observable paratextBook = {}
+  @observable backupOption = "current"
 
 
 
