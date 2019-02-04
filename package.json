@@ -2,7 +2,7 @@
   "name": "Autographa",
   "productName": "Autographa Live",
   "description": "A Bible translation editor for everyone. Now live.",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0-beta.4",
   "main": "src/app.js",
   "author": "Friends of Agape <mathew.joel@protonmail.com>",
   "license": "MIT",
