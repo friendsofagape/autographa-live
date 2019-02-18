@@ -20,7 +20,6 @@ const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const Constant = require("../util/constants");
 const session = require('electron').remote.session;
 const path = require("path");
-const Promise = require("bluebird");
 
 const ENDPOINTS = {
 	wacs: "https://content.bibletranslationtools.org/api/v1",
@@ -262,8 +261,8 @@ class SettingsModal extends React.Component {
 
 	openFileDialogImportTrans = (event) => {
 		dialog.showOpenDialog(getCurrentWindow(), {
-			properties: ['openDirectory'],
-			filters: [{ name: 'All Files', extensions: ['*'] }],
+			properties: ['openFile', 'multiSelections'],
+			filters: [{ name: 'USFM Files', extensions: ['usfm'] }],
 		title: "Import Translation"
 		}, (selectedDir) => {
 			if (selectedDir != null) {
@@ -295,28 +294,20 @@ class SettingsModal extends React.Component {
 	}
 
 	importTranslation = () => {
-		let that = this;
 		if (!this.import_sync_setting()) return;
-		this.setState({
-			showLoader: true
-		});
-
+        this.props.showLoader(true);
 		const {
 			langCode,
 			langVersion
 		} = this.state.settingData;
-		const importDir = this.state.folderPathImport[0];
-
+        const importDir = this.state.folderPathImport;
         usfm_import.importTranslation(importDir, langCode, langVersion)
-			.catch((err) => {
-				const currentTrans = AutographaStore.currentTrans;
-				console.log(err)
-				that.setState({
-					showLoader: false
-				});
-				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-			})
-			.finally(() => window.location.reload())
+        .then((res) => window.location.reload())
+        .catch((err) => {
+            const currentTrans = AutographaStore.currentTrans;
+            this.props.showLoader(false);
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+        })
 	}
 
 	reference_setting() {
@@ -350,10 +341,8 @@ class SettingsModal extends React.Component {
 
 	importReference = () => {
 		if (this.reference_setting() == false)
-			return;
-		this.setState({
-			showLoader: true
-		})
+            return;
+        this.props.showLoader(true);
 		let {
 			bibleName,
 			refVersion,
@@ -424,16 +413,16 @@ class SettingsModal extends React.Component {
 			refLangCodeValue,
 			refFolderPath
 		} = this.state.refSetting;
-		const that = this;
-		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+        const currentTrans = AutographaStore.currentTrans;
+        usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+            .then((res) => {
+                swal(currentTrans["label-imported-book"], currentTrans["dynamic-msg-imp-ref-text"], "success");
+                window.location.reload();
+            })
 			.catch((err) => {
-				const currentTrans = AutographaStore.currentTrans;
-				console.log(err)
-				that.setState({
-					showLoader: false
-				});
+				this.props.showLoader(false);
 				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-			}).finally(() => window.location.reload())
+			}) 
 	}
   
 	clickListSettingData = (evt, obj) => {
