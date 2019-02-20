@@ -20,8 +20,8 @@ const app = new Application({
 const now = new Date();
 const wacsRepoId = `e2e_${now.getTime()}`;
 const timestampedSampleText = `this is a test ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getTime()}`;
-const wacsUsername = "autographa-test" //process.env.WACS_USERNAME;
-const wacsPassword = "MBvWy7eK^&c#XQ^kNLe" //process.env.WACS_PASSWORD;
+const wacsUsername = process.env.WACS_USERNAME;
+const wacsPassword = process.env.WACS_PASSWORD;
 const importfile = `${appPath}/public/gen.usfm`;
 const importdir = appPath + "/public";
 
