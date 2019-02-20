@@ -15,7 +15,7 @@ export const getStuffAsync = (param) =>
     });
 
 export const saveJsonToDb = (importDir, bibleName, refLangCodeValue, refVersion) =>
-    getNonDotFilesDir(importDir)
+    getNonDotFiles(importDir)
         .then(filePaths => filePaths.map((filePath) =>
             getStuffAsync({
                 bibleName: bibleName,
@@ -39,8 +39,21 @@ fs.readFileAsync = function(filename, enc) {
     });
 };
 
-export const importTranslation = (importFiles, langCode, langVersion) => {
-    return Promise.all(getNonDotFiles(importFiles).map((filePath) => {
+export const importTranslation = (importDir, langCode, langVersion) =>
+    getNonDotFiles(importDir)
+        .then(filePaths => filePaths.map((filePath) =>
+            getStuffAsync({
+                lang: langCode.toLowerCase(),
+                version: langVersion.toLowerCase(),
+                usfmFile: filePath,
+                targetDb: 'target',
+                scriptDirection: AutographaStore.refScriptDirection
+            })
+        ))
+        .then(ps => Promise.all(ps));
+
+export const importTranslationFiles = (importFiles, langCode, langVersion) => {
+    return Promise.all(filterFiles(importFiles).map((filePath) => {
             return getStuffAsync({
                 lang: langCode.toLowerCase(),
                 version: langVersion.toLowerCase(),
@@ -48,16 +61,16 @@ export const importTranslation = (importFiles, langCode, langVersion) => {
                 targetDb: 'target',
                 scriptDirection: AutographaStore.refScriptDirection
             })
-        }))
+        }));
 }
 
-const getNonDotFilesDir = (dir) =>
+const getNonDotFiles = (dir) =>
     readdir(dir)
         .then(files => files.filter(f => !f.startsWith('.')))
         .then(files => files.map(relPath => path.join(dir, relPath)))
         .then(files => files.filter(f => fs.statSync(f).isFile()));
 
-const getNonDotFiles = (files) => {
+const filterFiles = (files) => {
     files = files.filter(f => !f.startsWith('.'));
     return files.filter(f => fs.statSync(f).isFile())
 }
