@@ -64,12 +64,14 @@ export const importTranslationFiles = (importFiles, langCode, langVersion) => {
         }));
 }
 
+/* filter out nondot files from the directory and its return promise  */
 const getNonDotFiles = (dir) =>
     readdir(dir)
         .then(files => files.filter(f => !f.startsWith('.')))
         .then(files => files.map(relPath => path.join(dir, relPath)))
         .then(files => files.filter(f => fs.statSync(f).isFile()));
 
+/* filter out nondot files from list of files */
 const filterFiles = (files) => {
     files = files.filter(f => !f.startsWith('.'));
     return files.filter(f => fs.statSync(f).isFile())
