@@ -1,6 +1,7 @@
 const {BrowserWindow} = require('electron');
 const path = require('path');
 
+
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 // global reference to windows (necessary to prevent windows from being garbage collected)

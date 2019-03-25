@@ -1,5 +1,4 @@
-import { computed, observable } from "mobx"
-const session =  require('electron').remote.session
+import { observable } from "mobx"
 const Constant = require("../util/constants");
 
 export class AutographaStore {
@@ -71,8 +70,6 @@ export class AutographaStore {
 
 
 
-  constructor(bookId, chapterId, bookChapter, activeTab, showModalBooks, bookChapterContent, chunkGroup, content, currentRef, booksList, selectId){
-
-  }  
+   
 }
-export default new AutographaStore
+export default new AutographaStore();

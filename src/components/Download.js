@@ -158,5 +158,5 @@ class DownloadModal extends React.Component {
         )
     }
 }
-        
-export default DownloadModal;
+
+export default  DownloadModal;

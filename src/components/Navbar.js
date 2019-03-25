@@ -6,34 +6,23 @@ import AboutUsModal from "./About"
 import SearchModal from "./Search"
 import DownloadModal from "./Download"
 import TranslationPanel  from '../components/TranslationPanel';
-// const injectTapEventPlugin = require("react-tap-event-plugin");
 import  ReferencePanel  from '../components/ReferencePanel';
 import  Footer  from '../components/Footer';
 import Reference from "./Reference";
 import { FormattedMessage } from 'react-intl';
 import { Toggle } from 'material-ui';
 import Loader from './Loader';
-import TranslationHelp from "./TranslationHelp";
 import swal from 'sweetalert';
-
-const { 
-    Modal, 
-    Tabs, 
-    Tab, 
-    NavDropdown, 
-    MenuItem 
-} = require('react-bootstrap/lib');
+const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
 const session = require('electron').remote.session;
 const DiffMatchPatch = require('diff-match-patch');
 const dmp_diff = new DiffMatchPatch();
 let exportHtml = require(`${__dirname}/../util/export_html.js`);
-let currentBook, book;
 const bibleJson = require(`${__dirname}/../lib/full_bible_skel.json`);
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
-// injectTapEventPlugin();
 
 @observer
 class Navbar extends React.Component {
@@ -116,7 +105,7 @@ class Navbar extends React.Component {
             let i;
             return refDb.get(id2).then((doc) => {
                 for ( i = 0; i < doc.chapters.length; i++) {
-                    if (doc.chapters[i].chapter == parseInt(chapter, 10)) {
+                    if (doc.chapters[i].chapter === parseInt(chapter, 10)) {
                         break;
                     }
                 }
@@ -175,7 +164,6 @@ class Navbar extends React.Component {
         }
 
         for (i = 1; i <= verses.length; i++) {
-            var spanVerseNum = '';
             if (i > chunkVerseEnd) {
                 chunkVerseStart = parseInt(chunks[chunkIndex].firstvs, 10);
                 if (chunkIndex === chunks.length - 1 || parseInt((chunks[chunkIndex + 1].chp), 10) != chapter) {
@@ -411,10 +399,10 @@ class Navbar extends React.Component {
             doc.activeRefs = Object.assign(doc.activeRefs, AutographaStore.activeRefs);
             refDb.put(doc);
         }, (err) => {
-            // refDb.put({_id: "activeRefs" , activeRefs: activeRefs}).then((res) => {
-            // }, (err) => {
-            //     console.log(err);
-            // });
+            refDb.put({_id: "activeRefs" , activeRefs: AutographaStore.activeRefs}).then((res) => {
+            }, (err) => {
+                console.log(err);
+            });
         });
         AutographaStore.selectId = event.target.id;
         AutographaStore.layoutContent = parseInt(event.currentTarget.dataset.layout);
@@ -594,7 +582,6 @@ class Navbar extends React.Component {
                     }
                     let book_verses = refdoc.chapters[i].verses;
                     for (i = 1; i <= AutographaStore.verses.length; i++) {
-                        var spanVerseNum = '';
                         if (i > chunkVerseEnd) {
                             chunkVerseStart = parseInt(chunks[chunkIndex].firstvs, 10);
                             if (chunkIndex === chunks.length - 1 || parseInt((chunks[chunkIndex + 1].chp), 10) != chapter) {
@@ -645,7 +632,6 @@ class Navbar extends React.Component {
         const bookData = AutographaStore.bookData;
         const refContent = AutographaStore.content; 
         const refContentOne = AutographaStore.contentOne;
-        const refContentCommon = AutographaStore.contentCommon;
         const refContentTwo = AutographaStore.contentTwo;
         const bookName = Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1]
         let close = () => AutographaStore.showModalBooks = false;
@@ -860,31 +846,11 @@ class Navbar extends React.Component {
                         <div className="layout3x"><Reference onClick={this.handleRefChange.bind(this, 2)} refIds={AutographaStore.activeRefs[2]} id={33} layout = {3} /><ReferencePanel refContent ={refContentTwo} refIds={AutographaStore.activeRefs[2]} tIns = {AutographaStore.tIns[2]} tDel = {AutographaStore.tDel[2]}/></div>
                         <div style={{ padding: "10px"}} className="layout3x"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
-                }
-                {
-                    AutographaStore.layout == 4 &&
-                    <div className="parentdiv">
-                        <div className="layoutx">
-                            <div className="container-fluid">
-                                <div className="row row-col-fixed rmvflex" style={{display: 'flex'}}>
-                                    <div className="col-sm-12 col-fixed" id="section-0">
-                                        <div className="row">
-                                            <div  className="col-12 col-ref">
-                                                <TranslationHelp />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style={{padding: "10px"}} className="layout2x"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
-
-                    </div>
-                }
+                }  
                 <Footer onSave={this.saveTarget} getRef = {this.getRefContents}/>
                 {this.state.showLoader ? <Loader /> : ""}
             </div>
         )
     }
 }
-export default Navbar;
+export default  Navbar;

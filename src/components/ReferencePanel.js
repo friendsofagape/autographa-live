@@ -1,19 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-const bootstrap = require('react-bootstrap');
-const Modal = require('react-bootstrap/lib/Modal');
-const Button = require('react-bootstrap/lib/Button');
-const Col = require('react-bootstrap/lib/Col');
-const Tabs = require('react-bootstrap/lib/Tabs');
-const Tab = require('react-bootstrap/lib/Tab');
-const Constant = require("../util/constants");
-const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
+import { observer } from "mobx-react"
+import AutographaStore from "./AutographaStore"
 const session =  require('electron').remote.session;
-import { dialog, remote } from 'electron';
-import { observer } from "mobx-react";
-import AutographaStore from "./AutographaStore";
-import Reference from "./Reference";
+
 
 @observer
 class ReferencePanel extends React.Component {
@@ -37,7 +26,6 @@ class ReferencePanel extends React.Component {
         });
     }
     render (){
-        const layout = AutographaStore.layout;
         const {tIns, tDel} = this.props;
         return (        
             <div className="container-fluid">
@@ -45,7 +33,7 @@ class ReferencePanel extends React.Component {
                     <div className="col-sm-12 col-fixed" id="section-0">
                         {tIns || tDel ? <div style={{textAlign: 'center'}}><span style={{color: '#27b97e', fontWeight: 'bold'}}>(+) {tIns}</span> | <span style={{color: '#f50808', fontWeight: 'bold'}}> (-) {tDel}</span></div> : ""}
                         <div className="row">
-                        <div dangerouslySetInnerHTML={{__html: this.props.refContent}} className="col-12 col-ref"></div>
+                            <div dangerouslySetInnerHTML={{__html: this.props.refContent}} className="col-12 col-ref"></div>
                         </div>
                     </div>
                 </div>

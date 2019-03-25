@@ -8,7 +8,7 @@ export const allBooksToUsfm = async (exportPath) => {
 	const activeBookNums = await db.allDocs()
 		.then(docs => docs.rows
 			.map(row => row.id)
-			.filter(id => parseInt(id, 10) == id));
+			.filter(id => parseInt(id, 10) === id));
 
 	const books = activeBookNums.map(bookNumber => {
 		const index = parseInt(bookNumber, 10) - 1;

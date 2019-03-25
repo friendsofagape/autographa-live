@@ -1,29 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import Tabs from 'react-bootstrap/lib/Tabs';
-import Tab from 'react-bootstrap/lib/Tab';
-const session =  require('electron').remote.session;
-const Constant = require("../util/constants")
-import { dialog } from 'electron';
-import { remote } from 'electron';
-const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
-const Modal = require('react-bootstrap/lib/Modal');
-const Button = require('react-bootstrap/lib/Button');
-const Col = require('react-bootstrap/lib/Col');
-const Row = require('react-bootstrap/lib/Row')
-const ControlLabel = require('react-bootstrap/lib/ControlLabel')
-const Grid = require('react-bootstrap/lib/Grid')
-const Radio = require('react-bootstrap/lib/Radio')
 import RaisedButton from 'material-ui/RaisedButton';
-const FormGroup = require('react-bootstrap/lib/FormGroup')
 import TextField from 'material-ui/TextField';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Checkbox from 'material-ui/Checkbox';
 import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore";
-const db = require(`${__dirname}/../util/data-provider`).targetDb();
 import { FormattedMessage } from 'react-intl';
+const Modal = require('react-bootstrap/lib/Modal');
+const FormGroup = require('react-bootstrap/lib/FormGroup');
+const db = require(`${__dirname}/../util/data-provider`).targetDb();
+
      var replacedChapter = {},
     replacedVerse = {},
      allChapters = {},
@@ -67,7 +52,6 @@ class SearchModal extends React.Component {
 
       db.get(AutographaStore.bookId.toString()).then((doc) => {
           
-              let currentBook = doc;
               let totalReplacedWord = 0;
               if (option == "chapter") {
                   totalReplacedWord = that.findReplaceSearchInputs(doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses, AutographaStore.chapterId - 1, searchVal, replaceVal, option);
@@ -184,13 +168,7 @@ class SearchModal extends React.Component {
 
   
     replaceContentAndSave(){
-      let newContent;
-      let replaceCount;
-      let allChapterReplaceCount = [];
-      const searchValue = AutographaStore.searchValue;
-      const replaceValue = AutographaStore.replaceValue;
-      let oldContent = AutographaStore.translationContent;
-
+     
       this.findAndReplaceText(AutographaStore.searchValue, AutographaStore.replaceValue, AutographaStore.replaceOption);
       AutographaStore.showModalSearch = false;
     }
@@ -205,8 +183,6 @@ class SearchModal extends React.Component {
       this.setState({replaceInfo: false})
       AutographaStore.replaceOption = "chapter";
     }
-    let wordBook = AutographaStore.currentTrans["dynamic-msg-book"];
-    let wordReplace = AutographaStore.currentTrans["label-total-word-replaced"]
     return (  
       <div>
       <Modal show={AutographaStore.showModalSearch} onHide={closeSearch} id="tab-search">

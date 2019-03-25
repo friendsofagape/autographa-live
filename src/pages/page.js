@@ -25,11 +25,7 @@ addLocaleData([...en, ...es, ...fr, ...it]);
 // Define user's language. Different browsers have the user locale defined
 // on different fields on the `navigator` object, so we make sure to account
 // for these different by checking all of them
-const language = (navigator.languages && navigator.languages[0]) ||
-                     navigator.language ||
-                     navigator.userLanguage;
 
-const languageWithoutRegionCode = language.toLowerCase().split(/[_-]+/)[0];
 
 // Try full locale, try locale without region code, fallback to 'en'
 // const messages = localeData[languageWithoutRegionCode] || localeData[language] || localeData.en;
@@ -70,5 +66,5 @@ class Page extends React.Component {
 	} 
 };
 
-export default Page;
+module.exports = Page
 

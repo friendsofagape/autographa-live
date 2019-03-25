@@ -72,7 +72,7 @@ export default class Paratext {
                 }
             })
         let projects = [];
-        if(response && response.status == 200){
+        if(response && response.status === 200){
             new xml2js.Parser().parseString(response.data, (err, result) => {
                 projects = result.repos.repo;
             })
@@ -92,12 +92,12 @@ export default class Paratext {
         }).catch((err) => {
             if(err.response.data && err.response.data.includes("Invalid authorization token")){
                 if (attempt === 3) throw err;
-                _this.getToken();
-                return _this.getBooksList(projectId, attempt + 1);
+                this.getToken();
+                return this.getBooksList(projectId, attempt + 1);
             }
             return {status: 400};
         });
-        if(response && response.status == 200 ){
+        if(response && response.status === 200 ){
             new xml2js.Parser().parseString(response.data, (err, result) => {
              	books = result.ProjectBooks.Book.map((res, i) => {
              	    return res.$
@@ -120,8 +120,8 @@ export default class Paratext {
         }).catch((err) =>{
             if(err.response.data && err.response.data.includes("Invalid authorization token")){
                 if (attempt === 3) throw err;
-                _this.getToken();
-                return _this.getUsxBookData(projectId, bookId, attempt + 1);
+                    this.getToken();
+                return this.getUsxBookData(projectId, bookId, attempt + 1);
             }
             throw new Error("Fetch bookdata issue");
         })
@@ -137,8 +137,8 @@ export default class Paratext {
         }).catch((err) =>{
             if(err.response.data && err.response.data.includes("Invalid authorization token")){
                 if (attempt === 3) throw err;
-                _this.getToken();
-                return _this.getBookRevision(projectId, bookId, attempt + 1);
+                    this.getToken();
+                return this.getBookRevision(projectId, bookId, attempt + 1);
             }
             throw new Error("Fetch bookdata issue");
         })
@@ -158,8 +158,8 @@ export default class Paratext {
         }).catch((err) =>{
             if(err.response.data && err.response.data.includes("Invalid authorization token")){
                 if (attempt === 3) throw err;
-                _this.getToken();
-                return _this.updateBookData(projectId, bookId, revision, bookXmldoc, attempt + 1);
+                    this.getToken();
+                return this.updateBookData(projectId, bookId, revision, bookXmldoc, attempt + 1);
             }
             throw new Error("upload bookdata issue");
         })

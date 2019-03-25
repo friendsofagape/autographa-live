@@ -4,7 +4,7 @@ import AutographaStore from "./AutographaStore";
 import * as usfm_export from "../util/json_to_usfm";
 import * as usfm_import from "../util/usfm_import";
 import Gitea from "../helpers/giteaAdapter"
-import { Panel,  FormGroup, Checkbox, Button } from 'react-bootstrap/lib';
+import { Panel,  FormGroup, Checkbox } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
@@ -49,7 +49,7 @@ class ProjectListRow extends React.Component {
 			this.state.selectedBook.push(bookId)
 			AutographaStore.paratextBook[projId] = this.state.selectedBook
 		}else{
-			this.state.selectedBook = this.state.selectedBook.filter(id => id !== bookId )
+			this.setState({selectedBook: this.state.selectedBook.filter(id => id !== bookId)})
 			AutographaStore.paratextBook[projId] = this.state.selectedBook
 		}
 	}
@@ -67,7 +67,7 @@ class ProjectListRow extends React.Component {
 	};
 
   	importBookParatext = (projectId) => {
-  		if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length == 0){
+  		if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length === 0){
         	swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["label-selection"], "error");
   			return
   		}
@@ -87,8 +87,6 @@ class ProjectListRow extends React.Component {
 	        	AutographaStore.paratextBook[projectId].map(async(bookId) => {
  	        		let bookData = await this.props.syncAdapter.getUsxBookData(projectId, bookId);
 		            let book = {};
-                	let verse = [];
-                	let chapters = {};
 		            let parser = new DOMParser();
 					let xmlDoc = parser.parseFromString(bookData,"text/xml");
 					
@@ -100,7 +98,7 @@ class ProjectListRow extends React.Component {
 						book[currChapter.attributes["number"].value] = []
 						let currVerse = verseNodes.iterateNext();
 						while(currVerse){
-							if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value].length != 0){
+							if(currVerse.attributes["number"].value === 1 && book[currChapter.attributes["number"].value].length !== 0){
 								currChapter = chapterNodes.iterateNext();
 								book[currChapter.attributes["number"].value] = [];
 							}
@@ -259,8 +257,6 @@ class ProjectListRow extends React.Component {
 
             const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
             const writtenBookIds = writtenBooks.map(b => b.bookNumber);
-            const pushResult = await this.props.syncAdapter.commitAndPush(localPath);
-
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-book-exported"], this.makeSyncReport(writtenBookIds), "success");
         } catch(err) {
@@ -275,7 +271,7 @@ class ProjectListRow extends React.Component {
 		let currentTrans = AutographaStore.currentTrans;
         let book = {};
         let _this = this;
-        if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length == 0){
+        if(AutographaStore.paratextBook[projectId] == null || Object.keys(AutographaStore.paratextBook[projectId]).length === 0){
         	swal(currentTrans["dynamic-msg-error"], currentTrans["label-selection"], "error");
   			return
 		}
@@ -330,7 +326,7 @@ class ProjectListRow extends React.Component {
 									
 									while(v < verseNodes.snapshotLength){
 										v++;
-										 if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value-1].length != 0){
+										 if(currVerse.attributes["number"].value === 1 && book[currChapter.attributes["number"].value-1].length !== 0){
 											i++;
 											currChapter = chapterNodes.snapshotItem(i);
 											book[currChapter.attributes["number"].value-1] = [];
@@ -354,7 +350,7 @@ class ProjectListRow extends React.Component {
 											currVerse = verseNodes.snapshotItem(v);
 									}
 									try{
-										let uploadedRes = await _this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
+										_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
 										fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
 										swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
 									}catch(err){
@@ -451,6 +447,8 @@ class ProjectListRow extends React.Component {
 	};
 }
 
-
+// ProjectListRow.propTypes = {
+//   project: PropTypes.object.isRequired
+// };
 
 export default ProjectListRow;

@@ -1,16 +1,10 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { dialog, remote } from 'electron';
 import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore"
-const { Modal, Button, Col, Tabs, Tab } = require('react-bootstrap/lib');
-const Constant = require("../util/constants");
-const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
-const session = require('electron').remote.session;
-const i18n = new(require('../translations/i18n'));
-const db = require(`${__dirname}/../util/data-provider`).targetDb();
 import Statistic  from '../components/Statistic';
 import { FormattedMessage } from 'react-intl';
+const i18n = new(require('../translations/i18n'));
+const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
 @observer
 class TranslationPanel extends React.Component {
@@ -49,7 +43,7 @@ class TranslationPanel extends React.Component {
       	for(let l=0; l<AutographaStore.layout; l++){
         	let ref = refContent[l] ? refContent[l].querySelectorAll('div[data-verse^="r"]') : [];
         	for (let i=0; i < ref.length; i++) {
-          		if (ref[i] != 'undefined') {
+          		if (ref[i] !== 'undefined') {
             		ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
           		}
         	};
@@ -85,7 +79,7 @@ class TranslationPanel extends React.Component {
                 for(let i=0; i < verseLength; i++){
                     let verseObj = chapter.verses[i];
                     let checkSpace = verseObj["verse"].match(/\s\s+/g, ' ');
-                    if(verseObj["verse"].length == 0){
+                    if(verseObj["verse"].length === 0){
                         emptyVerse.push(i);
                     }
                     else if(verseObj["verse"].length > 0 && verseObj["verse"].trim().split(" ").length === 1){

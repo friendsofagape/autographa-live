@@ -1,11 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import $ from 'jquery';
 import ReactBootstrapSlider from 'react-bootstrap-slider';
 import { observer } from "mobx-react";
 import AutographaStore from "./AutographaStore";
 import { FormattedMessage } from 'react-intl';
-const Constant = require("../util/constants");
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
@@ -30,7 +27,6 @@ class Footer extends React.Component {
         AutographaStore.layout = key;
         AutographaStore.layoutContent = key;
         AutographaStore.aId = key;
-        let chapter = AutographaStore.chapterId;
         refDb.get('targetReferenceLayout').then(function(doc) {
             refDb.put({
                 _id: 'targetReferenceLayout',
@@ -49,7 +45,7 @@ class Footer extends React.Component {
     fontChange(multiplier) {
         var elements = (document.getElementsByClassName("col-ref").length - 1)
         let fontSize = AutographaStore.fontMin;
-        if (document.getElementsByClassName("col-ref")[0].style.fontSize == "") {
+        if (document.getElementsByClassName("col-ref")[0].style.fontSize === "") {
             document.getElementsByClassName("col-ref")[0].style.fontSize = "14px";
         }else{
             fontSize = parseInt(document.getElementsByClassName("col-ref")[0].style.fontSize)
@@ -103,7 +99,7 @@ class Footer extends React.Component {
                             <span>
                             <FormattedMessage id="tooltip-minus-font-size" >
                             {(message) =>
-                                <a className={`btn btn-default font-button minus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (-2))}>A-</a>
+                                <a href="javascrip:void(0);" className={`btn btn-default font-button minus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (-2))}>A-</a>
                             }
                             </FormattedMessage>
                             </span>
@@ -119,7 +115,7 @@ class Footer extends React.Component {
                             <span>
                             <FormattedMessage id="tooltip-plus-font-size" >
                             {(message) =>
-                                <a className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
+                                <a href="#" className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
                             }
                             </FormattedMessage>
                             </span>
@@ -144,8 +140,6 @@ class Footer extends React.Component {
                                 </a>
                             }
                             </FormattedMessage>
-                            <a className={`btn btn-primary btn-default`} id="btn-4x" onClick = {this.handleChange.bind(this,4)} href="#" data-output="4x" role="multi-window-btn" data-toggle="tooltip" data-placement="top">Helps &nbsp;<i className="fa fa-columns fa-lg"></i>
-                                </a>
                         </div>
                     </div>
                     <span id="saved-time">{AutographaStore.transSaveTime ? `Saved ${AutographaStore.transSaveTime}` : ""}</span>
@@ -163,4 +157,4 @@ class Footer extends React.Component {
     }
 }
 
-export default Footer;
+export default  Footer;

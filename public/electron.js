@@ -1,4 +1,3 @@
-const {existsSync, mkdirSync} = require('fs');
 const path = require('path');
 const {app, Menu} = require('electron');
 
@@ -8,6 +7,10 @@ const {
   defineWindow,
   getWindow
 } = require('./electronWindows');
+
+//const dbUtil = require('../src/util/DbUtil');
+
+//dbUtil.dbSetupAll();
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 const MAIN_WINDOW_ID = 'main';
@@ -94,9 +97,9 @@ const menuTemplate = [
       }
     ]
   }
-]
-const menu = Menu.buildFromTemplate(menuTemplate)
-Menu.setApplicationMenu(menu)
+];
+const menu = Menu.buildFromTemplate(menuTemplate);
+Menu.setApplicationMenu(menu);
 
 // prevent multiple instances of the main window
 app.requestSingleInstanceLock();
@@ -126,45 +129,18 @@ app.on('activate', () => {
     createMainWindow();
   }
 });
-var dbSetup = new Promise(
-  function (resolve, reject) {
-    if ( !existsSync('db') ) {
-      mkdirSync( 'db' );
-    }
-        // Setup database.
-        var dbUtil = require(`../src/util/DbUtil.js`);
-        console.log(dbUtil)
-        dbUtil.setupTargetDb
-            .then((response) => {
-                console.log(response);
-                return dbUtil.setupRefDb;
-            })
-            .then((response) => {
-                console.log(response);
-        return dbUtil.setupLookupsDb;
-            })
-        .then((response)=>{
-            console.log(response)
-            resolve(response)
-        })
-        .catch((err) => {
-                console.log('Error while DB setup. ' + err);
-                reject(err);
-            });
-    });
-
-function preProcess() {
-    dbSetup
-        .then((response) => {
-            createWindow();
-        })
-        .catch((err) => {
-            console.log('Error while App intialization.' + err);
-        });
-}
+//
+// async function preProcess() {
+//   createWindow();
+//   try {
+//     await dbUtil.dbSetupAll();
+//   } catch(err) {
+//     console.log('Error while App intialization.' + err);
+//   };
+// };
 
 // create main BrowserWindow with a splash screen when electron is ready
-app.on('ready', preProcess => {
+app.on('ready', async () => {
   const splashWindow = createSplashWindow();
   const mainWindow = createMainWindow();
   mainWindow.once('ready-to-show', () => {
@@ -173,4 +149,5 @@ app.on('ready', preProcess => {
       mainWindow.show();
     }, 300);
   });
+  // await preProcess();
 });

@@ -1,12 +1,8 @@
 const path = require("path")
-const electron = require('electron');
-const electronRemote = require('electron').remote;
 const fs = require('fs');
 let loadedLanguage;
-let app = electron.app ? electron.app : electron.remote.app;
 const rtlDetect = require('rtl-detect');
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
-// const refDb = electronRemote.getCurrentWindow().refDb
 
 module.exports = i18n;
 
@@ -15,13 +11,14 @@ module.exports = i18n;
 function i18n() {
 	loadedLanguage = refDb.get('app_locale').then(function(doc) {
 		if(fs.existsSync(path.join(__dirname, doc.appLang + '.js'))) {
-			return JSON.parse(fs.readFileSync(path.join(__dirname, doc.appLang + '.js'), 'utf8'))
+			return JSON.parse(fs.readFileSync(path.resolve(__dirname, doc.appLang + '.js'), 'utf8'))
 		}
 		else {
-			return JSON.parse(fs.readFileSync(path.join(__dirname, 'en.js'), 'utf8'))
+			return JSON.parse(fs.readFileSync(path.reslove(__dirname, 'en.js'), 'utf8'))
 		}
 	}).catch(function(error){
-		return JSON.parse(fs.readFileSync(path.join(__dirname, 'en.js'), 'utf8'))
+		console.log(__dirname)
+		return JSON.parse(fs.readFileSync("./src/translations/en.js", 'utf8'))
 	})
 }
 

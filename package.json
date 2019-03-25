@@ -1,25 +1,21 @@
 {
-  "name": "better-electron-template",
-  "version": "0.1.0",
+  "name": "viewer-app-electron",
+  "version": "0.1.4",
   "private": true,
-  "main": "public/electron.js",
+  "main": "main.js",
   "homepage": "./",
   "dependencies": {
-    "@babel/plugin-proposal-decorators": "^7.3.0",
-    "@bit/unfoldingword.resources.viewer": "^0.1.4",
-    "babel-cli": "^6.11.4",
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "@bit/unfoldingword.resources.viewer": "0.1.5",
+    "@craco/craco": "^3.6.0",
+    "bootstrap": "^4.3.1",
     "customize-cra": "^0.2.12",
     "diff-match-patch": "^1.0.0",
     "jquery": "^3.3.1",
     "material-ui": "^0.17.4",
     "mobx": "^3.1.9",
     "mobx-react": "^4.1.8",
-    "pouchdb-adapter-leveldb": "^6.1.0",
-    "pouchdb-core": "^6.1.0",
-    "pouchdb-quick-search": "^1.2.0",
+    "pouchdb": "^7.0.0",
+    "pouchdb-quick-search": "^1.3.0",
     "react": "^16.8.4",
     "react-app-rewired": "^2.1.1",
     "react-bootstrap": "^0.32.1",
@@ -27,38 +23,27 @@
     "react-dom": "^16.8.4",
     "react-intl": "^2.4.0",
     "react-scripts": "2.1.8",
-    "react-tap-event-plugin": "^2.0.1",
     "request-promise": "^4.2.2",
     "rtl-detect": "^1.0.0",
     "sweetalert": "^2.1.0",
     "tmp": "0.0.33",
     "transform-runtime": "0.0.0",
+    "typescript": "^3.3.3333",
     "usfm-js": "^1.0.12",
-    "wacs-client": "0.1.1",
+    "wacs-client": "https://github.com/klappy/wacs-client#develop",
+    "xml2js": "^0.4.19",
     "yaml": "^1.0.2"
   },
-  "build": {
-    "appId": "com.example.electron-cra",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    }
-  },
   "scripts": {
-    "start": "concurrently 'yarn react-start' 'wait-on http://localhost:3000/ && cross-env NODE_ENV=development yarn electron-start'",
-    "build": "yarn react-build && cp package.json build/ && yarn electron-build",
+    "start": "concurrently 'npm run react-start' 'wait-on http://localhost:3000/ && cross-env NODE_ENV=development npm run electron-start'",
+    "build": "npm run react-build && cp package.json build/ && npm run electron-build",
     "electron-start": "electron .",
     "electron-build": "electron-packager ./build --out=dist",
-    "react-start": "react-app-rewired start",
-    "react-build": "react-scripts build",
-    "test": "react-scripts test",
+    "react-start": "craco start",
+    "react-build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject",
-    "pack": "electron-builder --dir",
-    "dist": "yarn run react-build && electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "rebuild": "electron-rebuild -f -b"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -73,7 +58,6 @@
     "concurrently": "^4.1.0",
     "cross-env": "^5.2.0",
     "electron": "^4.0.7",
-    "electron-builder": "^20.38.5",
     "electron-packager": "^13.1.1",
     "electron-rebuild": "^1.8.4",
     "wait-on": "^3.2.0"

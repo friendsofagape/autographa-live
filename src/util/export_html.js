@@ -1,7 +1,7 @@
-const path = require('path');
-import swal from 'sweetalert';
-var fs = require("fs");
 import {css_1_col_ltr, css_2_col_ltr, css_1_col_rtl, css_2_col_rtl} from './export_css'
+import swal from 'sweetalert';
+const path = require('path');
+var fs = require("fs");
 module.exports = {
 	exportHtml: function(id, currentBook, db, direction, column, currentTrans){
 	    	if(direction !== "RTL"){
@@ -13,7 +13,7 @@ module.exports = {
 	                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 	                    <meta name="viewport" content="width=device-width, initial-scale=1">
 	                    <meta name="description" content="">
-	                    ${ column == 1  ? css_1_col_ltr : css_2_col_ltr  }
+	                    ${ column === 1  ? css_1_col_ltr : css_2_col_ltr  }
 					</head>
 					<body class="body">
 					<center><h1>${currentBook.book_name}</h1></center>
@@ -64,12 +64,12 @@ module.exports = {
                     <meta http-equiv="X-UA-Compatible" content="IE=edge">
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                     <meta name="description" content="">
-					${ column == 1  ? css_1_col_rtl : css_2_col_rtl  }
+					${ column === 1  ? css_1_col_rtl : css_2_col_rtl  }
                 </head>
                 <body class="body">
 	                <center><h1>${currentBook.book_name}</h1></center>
 	                <div class="newspaper">`
-	                var contentFlag = false;
+	                let contentFlag = false;
 	                db.get(currentBook._id).then(function(doc) {
 	                    doc.chapters.map((obj, i) => {
 	                    	htmlContent += 

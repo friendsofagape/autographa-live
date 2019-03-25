@@ -13,14 +13,11 @@ import {ProjectCreate} from "./ProjectCreate";
 import ProjectList from "./ProjectList";
 
 const { dialog, getCurrentWindow } = require('electron').remote;
-const { Tabs, Tab, Modal, Button, Col, Row, Grid, Nav, NavItem, Panel, PanelGroup } = require('react-bootstrap/lib');
+const { Tabs, Tab, Modal, Col, Row, Nav, NavItem, Panel, PanelGroup } = require('react-bootstrap/lib');
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const lookupsDb = require(`${__dirname}/../util/data-provider`).lookupsDb();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const Constant = require("../util/constants");
-const session = require('electron').remote.session;
-const path = require("path");
-const Promise = require("bluebird");
 
 const ENDPOINTS = {
 	wacs: "https://content.bibletranslationtools.org/api/v1",
@@ -110,7 +107,6 @@ class SettingsModal extends React.Component {
 		refDb.get('refs').then((doc) => {
 		doc.ref_ids.forEach((ref_doc) => {
 			AutographaStore.refList.push( {value: ref_doc.ref_id, option: ref_doc.ref_name } );
-			let ref_id = ref_doc.ref_id;
 			if(Constant.defaultReferences.indexOf(ref_doc.ref_id) >= 0) {
 			AutographaStore.refListExist.push(ref_doc); 
 			} else {
@@ -142,8 +138,7 @@ class SettingsModal extends React.Component {
 			endkey: input.toLowerCase() + '\uffff',
 			include_docs: true
 		}).then(function(response) {
-			var data = ""
-			if (response != undefined && response.rows.length > 0) {
+			if (response !== undefined && response.rows.length > 0) {
 			Object.keys(response.rows).map((index, value) => {
 				if (response.rows) {
 				if (!filteredResults.hasOwnProperty(response.rows[index].doc['lang_code'])) {
@@ -262,8 +257,8 @@ class SettingsModal extends React.Component {
 
 	openFileDialogImportTrans = (event) => {
 		dialog.showOpenDialog(getCurrentWindow(), {
-			properties: ['openDirectory'],
-			filters: [{ name: 'All Files', extensions: ['*'] }],
+			properties: ['openFile', 'multiSelections'],
+			filters: [{ name: 'USFM Files', extensions: ['usfm'] }],
 		title: "Import Translation"
 		}, (selectedDir) => {
 			if (selectedDir != null) {
@@ -295,28 +290,23 @@ class SettingsModal extends React.Component {
 	}
 
 	importTranslation = () => {
-		let that = this;
 		if (!this.import_sync_setting()) return;
-		this.setState({
-			showLoader: true
-		});
-
+        this.props.showLoader(true);
 		const {
 			langCode,
 			langVersion
 		} = this.state.settingData;
-		const importDir = this.state.folderPathImport[0];
-
-        usfm_import.importTranslation(importDir, langCode, langVersion)
-			.catch((err) => {
-				const currentTrans = AutographaStore.currentTrans;
-				console.log(err)
-				that.setState({
-					showLoader: false
-				});
-				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-			})
-			.finally(() => window.location.reload())
+        const importDir = Array.isArray(this.state.folderPathImport) ?
+                            this.state.folderPathImport :
+                            [this.state.folderPathImport];
+        usfm_import.importTranslationFiles(importDir, langCode, langVersion)
+            .then((res) => window.location.reload())
+            .catch((err) => {
+                console.log(err)
+                const currentTrans = AutographaStore.currentTrans;
+                this.props.showLoader(false);
+                swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
+            })
 	}
 
 	reference_setting() {
@@ -350,10 +340,8 @@ class SettingsModal extends React.Component {
 
 	importReference = () => {
 		if (this.reference_setting() == false)
-			return;
-		this.setState({
-			showLoader: true
-		})
+            return;
+        this.props.showLoader(true);
 		let {
 			bibleName,
 			refVersion,
@@ -367,7 +355,7 @@ class SettingsModal extends React.Component {
 		var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
 			ref_entry = {},
 			ref_arr = [],
-			dir = refFolderPath[0];
+			dir = Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath;
 		ref_entry.ref_id = ref_id_value;
 		ref_entry.ref_name = bibleName;
 		ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
@@ -424,16 +412,17 @@ class SettingsModal extends React.Component {
 			refLangCodeValue,
 			refFolderPath
 		} = this.state.refSetting;
-		const that = this;
-		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+        const currentTrans = AutographaStore.currentTrans;
+        console.log(dir)
+        usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+            .then((res) => {
+                swal(currentTrans["label-imported-book"], currentTrans["dynamic-msg-imp-ref-text"], "success");
+                window.location.reload();
+            })
 			.catch((err) => {
-				const currentTrans = AutographaStore.currentTrans;
-				console.log(err)
-				that.setState({
-					showLoader: false
-				});
+				this.props.showLoader(false);
 				return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
-			}).finally(() => window.location.reload())
+			}) 
 	}
   
 	clickListSettingData = (evt, obj) => {
@@ -908,11 +897,12 @@ class SettingsModal extends React.Component {
                           <FormattedMessage id="placeholder-path-of-usfm-files">
                             {(message) => <TextField
                             hintText={message}
-                            onChange={this.onChange.bind(this)}
+                            onChange={(event)=> {this.setState({folderPathImport: event.target.value})}}
                             value={this.state.folderPathImport}
                             name="folderPathImport"
                             onClick={this.openFileDialogImportTrans}
                             className = "margin-top-24 textbox-width-70"
+                            id="import-file-trans"
 
                           />}
                           </FormattedMessage>
@@ -923,6 +913,7 @@ class SettingsModal extends React.Component {
                                 label={message}
                                 primary={true}
                                 onClick={this.importTranslation}
+                                id="btn-import-trans"
                               />
                             }
                           </FormattedMessage>
@@ -936,10 +927,11 @@ class SettingsModal extends React.Component {
                           <FormattedMessage id="placeholder-eng-translation">
                             {(message) => <TextField
                                 hintText={message}
-                                onChange={this.onReferenceChange.bind(this)}
+                                onChange={this.onReferenceChange}
                                 value={bibleName || ""}
                                 name="bibleName"
                                 className = "margin-top-24 textbox-width-70"
+                                id="import-ref-name"
                             />}
                           </FormattedMessage>
                         </div>
@@ -952,6 +944,7 @@ class SettingsModal extends React.Component {
                             value={refLangCode || ""}
                             name="refLangCode"
                             className = "margin-top-24 textbox-width-70"
+                            id="import-ref-lang"
                             
                           />
                         </div>
@@ -977,6 +970,7 @@ class SettingsModal extends React.Component {
                             name="refVersion"
                             className = "margin-top-24 textbox-width-70"
                             onFocus = {this.clearList}
+                            id="import-ref-version"
                           />
                         </div>
                         <div style={{"display": "flex"}} className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -1013,11 +1007,13 @@ class SettingsModal extends React.Component {
                             >
                               {(message) => <TextField
                               hintText={message}
-                              onChange={this.onReferenceChange.bind(this)}
+                              onChange={this.onReferenceChange}
                               value={refFolderPath || ""}
                               ref="refFolderPath"
+                              name="refFolderPath"
                               onClick={this.openFileDialogRefSetting}
                               className = "margin-top-24 textbox-width-70"
+                              id="import-ref-path"
                             />}
                           </FormattedMessage>
                         </div>
@@ -1028,6 +1024,7 @@ class SettingsModal extends React.Component {
                               label={message}
                               primary={true}
                               onClick={this.importReference}
+                              id="btn-import-ref"
                             />
                           }
                         </FormattedMessage>

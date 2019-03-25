@@ -47,7 +47,7 @@ export class ProjectCreate extends React.Component {
                     </div>
                     <div className="btn-imp-group" style={{float: "right"}}>
                         <a
-                            href="javascript:void(0)"
+                            href="javascript:void(0);"
                             className="margin-right-10 btn btn-success"
                             onClick={this.onButtonClick}
                             disabled={!this.state.projectName}

@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import ProjectListRow from './ProjectListRow';
 import { FormattedMessage } from 'react-intl';
-import { Panel } from 'react-bootstrap/lib';
 
 const ProjectList = ({ projects, showLoader, syncAdapter }) => {
     const hasExisting = projects.length > 0;
@@ -26,5 +25,9 @@ const ProjectList = ({ projects, showLoader, syncAdapter }) => {
             <div style={{marginTop: '10px'}}><FormattedMessage id="label-no-project"/></div>
         );
 };
+
+// ProjectList.propTypes = {
+//     projects: PropTypes.array.isRequired
+// };
 
 export default ProjectList;

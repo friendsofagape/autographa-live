@@ -1,14 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-const Constant = require("../util/constants");
 import { observer } from "mobx-react"
 import * as mobx from 'mobx'
-const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
-const db = require(`${__dirname}/../util/data-provider`).targetDb();
-const Modal = require('react-bootstrap/lib/Modal');
 import AutographaStore from "./AutographaStore" 
 import { FormattedMessage } from 'react-intl';
 const numberFormat = require("../util/getNumberFormat")
+const Modal = require('react-bootstrap/lib/Modal');
+const Constant = require("../util/constants");
 
 
 @observer
@@ -44,7 +41,7 @@ class Statistic extends React.Component {
                   </div>
                   <div className="panel-body">
                     <span className="empty-chapter-report">
-                    { emptyChapters.length != 0 ? `${numberFormat.getNumberFormat(emptyChapters)} ` : <FormattedMessage id="label-not-found" />}
+                    { emptyChapters.length !== 0 ? `${numberFormat.getNumberFormat(emptyChapters)} ` : <FormattedMessage id="label-not-found" />}
                     </span>
                   </div>
                 </div>
