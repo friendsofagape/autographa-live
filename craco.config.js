@@ -4,7 +4,8 @@ module.exports = {
     style: {
         
         modules: {
-            localIdentName: ""
+            localIdentName: "",
+            
         },
         node: {
             __dirname: false,

@@ -13,6 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import { Toggle } from 'material-ui';
 import Loader from './Loader';
 import swal from 'sweetalert';
+import App from '../App';
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
 const session = require('electron').remote.session;
@@ -821,14 +822,14 @@ class Navbar extends React.Component {
                     </div>
                 </nav>
                 {
-                    AutographaStore.layout == 1   &&
+                    AutographaStore.layout === 1   &&
                         <div className="parentdiv">
                             <div className="layoutx"> <Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id = {1} layout={1}/><ReferencePanel refContent ={refContent}  /></div>
                             <div style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                         </div>
                 } 
                 {
-                    AutographaStore.layout == 2 &&
+                    AutographaStore.layout === 2 &&
                     <div className="parentdiv">
                         <div className="layout2x"><Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id={21} layout = {1} /><ReferencePanel refContent ={refContent} refIds={AutographaStore.activeRefs[0]} /></div>
 
@@ -837,9 +838,12 @@ class Navbar extends React.Component {
                     </div>
                 }
                 {
-                    AutographaStore.layout == 3 &&
+                    AutographaStore.layout === 3 &&
                     <div className="parentdiv">
-                        <div className="layout3x"><Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id={31} layout = {1} /><ReferencePanel refContent ={refContent} refIds={AutographaStore.activeRefs[0]}/></div>
+                        <div className="layout3x">
+                            {/* <Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id={31} layout = {1} /><ReferencePanel refContent ={refContent} refIds={AutographaStore.activeRefs[0]}/> */}
+                            <App />
+                        </div>
 
                         <div className="layout3x"><Reference onClick={this.handleRefChange.bind(this, 1)} refIds={AutographaStore.activeRefs[1]} id={32} layout = {2} /><ReferencePanel refContent ={refContentOne} refIds={AutographaStore.activeRefs[1]} tIns = {AutographaStore.tIns[1]} tDel = {AutographaStore.tDel[1]}/></div>
 
