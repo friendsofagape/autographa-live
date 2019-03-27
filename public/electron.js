@@ -8,9 +8,9 @@ const {
   getWindow
 } = require('./electronWindows');
 
-//const dbUtil = require('../src/util/DbUtil');
+// const dbUtil = require('../src/util/DbUtil');
 
-//dbUtil.dbSetupAll();
+
 
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 const MAIN_WINDOW_ID = 'main';
@@ -141,6 +141,7 @@ app.on('activate', () => {
 
 // create main BrowserWindow with a splash screen when electron is ready
 app.on('ready', async () => {
+  // dbUtil.dbSetupAll();
   const splashWindow = createSplashWindow();
   const mainWindow = createMainWindow();
   mainWindow.once('ready-to-show', () => {

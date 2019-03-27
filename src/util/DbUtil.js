@@ -17,7 +17,7 @@ const populateDb = async ({db, bulkDocsArray}) => {
       await db.bulkDocs(data);
     });
     console.log('\tSuccessfully setup DB.\n');
-    db.close();
+      //db.close();
     return true;
   } catch(err) {
     db.close();
@@ -33,7 +33,7 @@ const setupDb = async ({db, bulkDocsArray}) => {
     console.log(info);
     if (info.doc_count > 0) {
       console.log('\tDB exists\n');
-      db.close();
+      //db.close();
       return false;
     } else {
       const populated = await populateDb({db, bulkDocsArray});
@@ -133,7 +133,7 @@ const destroyDbs = async () => {
   return true;
 };
 
-const exports = {
+const exportsAll = {
   dbSetupAll,
   destroyDbs,
   setupTargetDb,
@@ -141,4 +141,4 @@ const exports = {
 	setupLookupsDb,
 };
 
-export default exports;
+module.exports = exportsAll;

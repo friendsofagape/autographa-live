@@ -14,7 +14,7 @@ function i18n() {
 			return JSON.parse(fs.readFileSync(path.resolve(__dirname, doc.appLang + '.js'), 'utf8'))
 		}
 		else {
-			return JSON.parse(fs.readFileSync(path.reslove(__dirname, 'en.js'), 'utf8'))
+			return JSON.parse(fs.readFileSync("./src/translations/en.js", 'utf8'))
 		}
 	}).catch(function(error){
 		console.log(__dirname)

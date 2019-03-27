@@ -24,7 +24,6 @@ const bibleJson = require(`${__dirname}/../lib/full_bible_skel.json`);
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
-
 @observer
 class Navbar extends React.Component {
     constructor(props) {
@@ -75,9 +74,10 @@ class Navbar extends React.Component {
         this.resetDiffValue();        
     }
     getContent = (id, chapter) => {
-        return refDb.get(id).then( (doc) => { 
+        return refDb.get(id).then( (doc) => {
+            console.log(doc) 
             for (var i = 0; i < doc.chapters.length; i++) {
-                if (doc.chapters[i].chapter == parseInt(chapter, 10)) { 
+                if (doc.chapters[i].chapter === parseInt(chapter, 10)) { 
                     break;
                 }
             }
@@ -121,7 +121,7 @@ class Navbar extends React.Component {
                     let ds = dmp_diff.diff_prettyHtml(d);
                     refString += '<div data-verse="r' + (i) + '"><span class="verse-num">' + (i) + '</span><span>' + ds + '</span></div>';
                 }
-                if(layout != 0){
+                if(layout !== 0){
                     AutographaStore.tIns[layout] = tIns;
                     AutographaStore.tDel[layout] = tDel;
                 }
@@ -155,6 +155,7 @@ class Navbar extends React.Component {
         var chunkGroup = [];
         var chunks = AutographaStore.chunks;
         var verses = AutographaStore.verses;
+        
         for (i = 0; i < chunks.length; i++) {
             if (parseInt(chunks[i].chp, 10) === parseInt(chapter, 10)) {
                 chunkIndex = i + 1;
@@ -742,7 +743,7 @@ class Navbar extends React.Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a href="javascript:;" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src="../assets/images/logo.png"/></a>
+                        <a href="javascript:;" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
                     </div>
                     <div className="navbar-collapse collapse" id="navbar">
                         <ul className="nav navbar-nav" style={{padding: "3px 0 0 0px"}}>
