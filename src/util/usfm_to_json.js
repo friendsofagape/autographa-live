@@ -12,7 +12,7 @@ module.exports = {
             var lineReader = require('readline').createInterface({
                 input: require('fs').createReadStream(options.usfmFile)
             });
-            patterns = require('fs').readFileSync(`${__dirname}/patterns.prop`, 'utf8');
+            patterns = require('fs').readFileSync(`./src/util/patterns.prop`, 'utf8');
             var book = {},
                 verse = [],
                 db = require(`${__dirname}/../util/data-provider`).targetDb(),

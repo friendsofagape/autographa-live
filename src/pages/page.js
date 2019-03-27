@@ -16,7 +16,7 @@ import fr from 'react-intl/locale-data/fr';
 import it from 'react-intl/locale-data/it';
 import { observer } from "mobx-react";
 import AutographaStore from "../components/AutographaStore";
-const i18n = new(require('../translations/i18n'));
+const i18n = new(require('../translations/i18n'))();
 const refDb = require("../util/data-provider").referenceDb();
 
 

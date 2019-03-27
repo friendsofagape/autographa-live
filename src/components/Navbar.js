@@ -75,7 +75,6 @@ class Navbar extends React.Component {
     }
     getContent = (id, chapter) => {
         return refDb.get(id).then( (doc) => {
-            console.log(doc) 
             for (var i = 0; i < doc.chapters.length; i++) {
                 if (doc.chapters[i].chapter === parseInt(chapter, 10)) { 
                     break;

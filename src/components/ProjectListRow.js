@@ -254,7 +254,6 @@ class ProjectListRow extends React.Component {
 
         try {
             const localPath = await this.props.syncAdapter.clone(projectId);
-
             const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
             const writtenBookIds = writtenBooks.map(b => b.bookNumber);
             this.resetLoader();
@@ -288,7 +287,6 @@ class ProjectListRow extends React.Component {
 	        if (action) {
 				this.props.showLoader(true);
 				await this.asyncForEach(AutographaStore.paratextBook[projectId], async (bookId) => {
-					console.log(book)
 					try{
 						let bookData =  await _this.props.syncAdapter.getUsxBookData(projectId, bookId);
 						if (!fs.existsSync(dir)){
@@ -393,7 +391,6 @@ class ProjectListRow extends React.Component {
 		console.log(this.state.open)
 		if(!this.state.open){
 			this.props.showLoader(true);
-			let _this = this;
 			try{
 				let booksList = await this.props.syncAdapter.getBooksList(projectId);
 				booksList = booksList.map(book => {

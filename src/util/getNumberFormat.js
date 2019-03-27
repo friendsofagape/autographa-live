@@ -29,7 +29,6 @@ const  getNumberFormat = (arr) => {
     }
     return result;
 };
-module.exports = {
-    getNumberFormat
-}
+export default getNumberFormat;
+
         

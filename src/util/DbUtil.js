@@ -30,7 +30,6 @@ const setupDb = async ({db, bulkDocsArray}) => {
   console.log('setupDb()\n');
   try {
     const info = await db.info();
-    console.log(info);
     if (info.doc_count > 0) {
       console.log('\tDB exists\n');
       //db.close();
