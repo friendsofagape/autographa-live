@@ -53,7 +53,7 @@ class Page extends React.Component {
 	}
 
 	render(){
-		if(Object.keys(AutographaStore.currentTrans).length==0){
+		if(Object.keys(AutographaStore.currentTrans).length === 0){
 			return (<div></div>)
 		}
 	    return (
