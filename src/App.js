@@ -1,15 +1,21 @@
 import React, {useState} from 'react';
 import Viewer from '@bit/unfoldingword.resources.viewer';
-
 import dbUtil from './util/DbUtil';
-
+import Constant from './util/constants';
 dbUtil.dbSetupAll();
 
-const defaultContext = {
-	username: 'STR',
-};
-
-function App() {
+function App(props) {
+	console.log(props)
+	const defaultContext = {
+		username: 'STR',
+		//username: 'unfoldingword',
+		languageId: 'en',
+		resourceId: 'ult',
+		reference: {
+			bookId: `${props.book ? Constant.bookCodeList[parseInt(props.book, 10) - 1].toLowerCase() : 'gen' }`,
+			chapter: props.chapter ? props.chapter.toString() : '1',
+		}
+	};
 	const [context, setContext] = useState(defaultContext);
 	return (
 		<Viewer
@@ -19,5 +25,6 @@ function App() {
 		/>
 	);
 };
+
 
 export default App;

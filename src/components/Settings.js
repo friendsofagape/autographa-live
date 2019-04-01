@@ -201,7 +201,7 @@ class SettingsModal extends React.Component {
 		let version = langVersion;
 		let path = folderPath;
 		let isValid = true;
-		if (langCode === null || langCode == "") {
+		if (langCode === null || langCode === "") {
 		isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
 		} else if(langCode.match(/^\d/)) {      
 		isValid = this.setMessage('dynamic-msg-bib-code-start-with-number', false);
@@ -218,9 +218,9 @@ class SettingsModal extends React.Component {
 	}
 
 	saveSetting = () => {
-		if (this.target_setting() == false) return;
+		if (this.target_setting() === false) return;
 		const currentTrans = AutographaStore.currentTrans;
-		const {langCodeValue, langCode, langVersion, folderPath} = this.state.settingData;
+		const {langCode, langVersion, folderPath} = this.state.settingData;
 		const settingData = { 
 		_id: 'targetBible',
 		targetLang: langCode,
@@ -313,7 +313,6 @@ class SettingsModal extends React.Component {
 		const {
 			bibleName,
 			refVersion,
-			refLangCodeValue,
 			refLangCode,
 			refFolderPath
 		} = this.state.refSetting;
@@ -339,7 +338,7 @@ class SettingsModal extends React.Component {
 	}
 
 	importReference = () => {
-		if (this.reference_setting() == false)
+		if (this.reference_setting() === false)
             return;
         this.props.showLoader(true);
 		let {
@@ -363,10 +362,10 @@ class SettingsModal extends React.Component {
 		ref_arr.push(ref_entry);
 		refDb.get('refs').then((doc) => {
 			ref_entry = {}
-			var refExistsFlag = false;
-			var updatedDoc = doc.ref_ids.forEach((ref_doc) => {
+			//var refExistsFlag = false;
+			doc.ref_ids.forEach((ref_doc) => {
 				if (ref_doc.ref_id === ref_id_value) {
-					refExistsFlag = true;
+					//refExistsFlag = true;
 					// return
 				}
 				ref_entry.ref_id = ref_doc.ref_id;
@@ -409,8 +408,7 @@ class SettingsModal extends React.Component {
 		const {
 			bibleName,
 			refVersion,
-			refLangCodeValue,
-			refFolderPath
+			refLangCodeValue
 		} = this.state.refSetting;
         const currentTrans = AutographaStore.currentTrans;
         console.log(dir)
@@ -528,7 +526,7 @@ class SettingsModal extends React.Component {
 			}
 
 		}).then((res) => {
-			if (res == true) {
+			if (res === true) {
 				swal(currentTrans["label-bible-name"], currentTrans["dynamic-msg-name-taken"], "success");
 			} else {
 				this.loadReference();
@@ -651,11 +649,11 @@ class SettingsModal extends React.Component {
 	signin = (clickSrc) => {
 		const config = (clickSrc == "btn") ? this.state.sync : AutographaStore;
 		if (!config.username) {
-			if (clickSrc == "btn") this.setMessage("username-req", false);
+			if (clickSrc === "btn") this.setMessage("username-req", false);
 			return;
 		}
 		if (!config.password) {
-			if (clickSrc == "btn") this.setMessage("password-req", false);
+			if (clickSrc === "btn") this.setMessage("password-req", false);
 			return;
 		}
 		this.listSyncProjects(config.username, config.password, config.syncProvider, config.endpoint);
@@ -740,9 +738,8 @@ class SettingsModal extends React.Component {
 
     let closeSetting = () => AutographaStore.showModalSettings = false
     const { show } = this.props;
-    const {showMsg, modalBody, title} = this.state;
-    const { langCodeValue, langCode, langVersion, folderPath } = this.state.settingData;
-    const { bibleName, refVersion, refLangCodeValue, refLangCode, refFolderPath } = this.state.refSetting;
+    const { langCodeValue,  langVersion, folderPath } = this.state.settingData;
+    const { bibleName, refVersion,  refLangCode, refFolderPath } = this.state.refSetting;
    
     const listCode = this.state._listArray;
     let displayCSS = 'none';

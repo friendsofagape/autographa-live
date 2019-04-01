@@ -2,8 +2,9 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import path from 'path';
 import xml2js from 'xml2js'
-dotenv.config({path: path.join(__dirname, '..', '.env')});
+// dotenv.config({path: '../.env'});
 const ENDPOINT = "https://data-access.paratext.org";
+axios.defaults.withCredentials = false;
 export default class Paratext {
     /**
      * 
@@ -27,6 +28,7 @@ export default class Paratext {
     */
 
     async getToken() {
+        console.log("token", process.env.REACT_APP_PARATEXT_TOKEN)
         let paraTextReqBody = {
             username: this.username,
             password: this.password,
@@ -35,12 +37,14 @@ export default class Paratext {
         }
         let config = {
             headers: {
-                'Authorization': `Bearer ${process.env.PARATEXT_TOKEN}`,
-                'Content-Type': "application/json"
+                'Authorization': `Bearer ${process.env.REACT_APP_PARATEXT_TOKEN}`,
+                'Content-Type': "application/json",
+                "Access-Control-Expose-Headers": "Access-Control-*",
+                "Access-Control-Allow-Origin": "http://localhost:3000"
             }
         }
         let token = "";
-        token =  await axios.post("https://registry.paratext.org/api8/token", paraTextReqBody, config)
+        token =  await axios.post("https://registry.paratext.org/api8/token", paraTextReqBody, config, )
             .then(res => {
                 return res.data.access_token;
             }).catch((err) => {
@@ -58,7 +62,9 @@ export default class Paratext {
         let _this = this;
         let config = {
             headers: {
-                Authorization: `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                "Access-Control-Expose-Headers": "Access-Control-*",
+                "Access-Control-Allow-Origin": "http://localhost:3000"
             }
         }
         let response = await axios.get(`${ENDPOINT}/api8/projects`, config).then((res) => {
