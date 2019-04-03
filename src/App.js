@@ -18,8 +18,11 @@ function App(props) {
 	const [context, setContext] = useState(defaultContext);
 
 	useEffect(() => {
-		return () => setContext(defaultContext)
-	})
+		setContext(defaultContext)
+	}, [props.book])
+	useEffect(() => {
+		setContext(defaultContext)
+	}, [props.chapter])
 	return (
 		<Viewer
 		  context={context}
