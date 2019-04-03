@@ -1,22 +1,25 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Viewer from '@bit/unfoldingword.resources.viewer';
 import dbUtil from './util/DbUtil';
 import Constant from './util/constants';
 dbUtil.dbSetupAll();
 
 function App(props) {
-	console.log(props)
-	const defaultContext = {
+	let defaultContext = {
 		username: 'STR',
 		//username: 'unfoldingword',
 		languageId: 'en',
 		resourceId: 'ult',
 		reference: {
 			bookId: `${props.book ? Constant.bookCodeList[parseInt(props.book, 10) - 1].toLowerCase() : 'gen' }`,
-			chapter: props.chapter ? props.chapter.toString() : '1',
+			chapter: props.chapter ? props.chapter : '1',
 		}
 	};
 	const [context, setContext] = useState(defaultContext);
+
+	useEffect(() => {
+		setContext(defaultContext)
+	})
 	return (
 		<Viewer
 		  context={context}
@@ -25,6 +28,4 @@ function App(props) {
 		/>
 	);
 };
-
-
 export default App;

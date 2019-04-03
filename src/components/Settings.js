@@ -321,7 +321,7 @@ class SettingsModal extends React.Component {
 		let version = refVersion;
 		let path = refFolderPath;
 		let isValid = true;
-		if (name == "") {
+		if (name === "") {
 			isValid = this.setMessage('dynamic-msg-bib-name-validation', false);
 		} else if (langCode === null || langCode === "") {
 			isValid = this.setMessage('dynamic-msg-bib-code-validation', false);
@@ -463,7 +463,7 @@ class SettingsModal extends React.Component {
 				if (willDelete) {
 					refDb.get('refs').then((doc) => {
 						doc.ref_ids.forEach((ref_doc) => {
-							if (ref_doc.ref_id != element) {
+							if (ref_doc.ref_id !== element) {
 								ref_ids.push({
 									ref_id: ref_doc.ref_id,
 									ref_name: ref_doc.ref_name,
@@ -492,7 +492,7 @@ class SettingsModal extends React.Component {
 		} else if (bibleNameLen < 3) {
 			swal(currentTrans["label-bible-name"], currentTrans["ref_name_min_valid"], "error")
 			return
-		} else if (bibleNameLen == 0) {
+		} else if (bibleNameLen === 0) {
 			swal(currentTrans["label-bible-name"], currentTrans["ref_name_blank"], "error")
 			return
 		}
@@ -500,11 +500,11 @@ class SettingsModal extends React.Component {
 		let result = false;
 		refDb.get('refs').then((doc) => {
 			doc.ref_ids.forEach((ref_doc) => {
-				if ((ref_doc.ref_id != docId) && (ref_doc.ref_name.toLowerCase() === this.state.refName.toLowerCase())) {
+				if ((ref_doc.ref_id !== docId) && (ref_doc.ref_name.toLowerCase() === this.state.refName.toLowerCase())) {
 					result = true;
 					return
 				}
-				if (ref_doc.ref_id != docId) {
+				if (ref_doc.ref_id !== docId) {
 					ref_ids.push({
 						ref_id: ref_doc.ref_id,
 						ref_name: ref_doc.ref_name,
@@ -518,7 +518,7 @@ class SettingsModal extends React.Component {
 					})
 				}
 			})
-			if (result == true) {
+			if (result === true) {
 				return true;
 			} else {
 				doc.ref_ids = ref_ids;
@@ -620,7 +620,7 @@ class SettingsModal extends React.Component {
 
 	setSyncProvider = (providerName) => {
 		const oldVal = this.state.sync && this.state.sync.syncProvider;
-		if (providerName && providerName != oldVal) {
+		if (providerName && providerName !== oldVal) {
 			const state = {
 				projectData: [], // clears UI project list
 				sync: {syncProvider: providerName}
@@ -647,7 +647,7 @@ class SettingsModal extends React.Component {
 	};
 
 	signin = (clickSrc) => {
-		const config = (clickSrc == "btn") ? this.state.sync : AutographaStore;
+		const config = (clickSrc === "btn") ? this.state.sync : AutographaStore;
 		if (!config.username) {
 			if (clickSrc === "btn") this.setMessage("username-req", false);
 			return;
@@ -731,10 +731,6 @@ class SettingsModal extends React.Component {
     }
 
   	render(){
-    var errorStyle = {
-      margin: 'auto',
-      textAlign: 'center',
-    }
 
     let closeSetting = () => AutographaStore.showModalSettings = false
     const { show } = this.props;
@@ -756,7 +752,7 @@ class SettingsModal extends React.Component {
         <Modal.Header closeButton>
           <Modal.Title><FormattedMessage id="modal-title-setting" /></Modal.Title>
           <div
-            className={"alert " + (this.state.hideAlert != 'hidemessage' ?
+            className={"alert " + (this.state.hideAlert !== 'hidemessage' ?
               (this.state.hideAlert === 'success' ? 'alert-success msg' : 'alert-danger msg'): 'invisible')
             }
           >
@@ -1047,7 +1043,7 @@ class SettingsModal extends React.Component {
                                     <tr key={index}>
                                       <td>
                                         {
-                                         (this.state.bibleReference && this.state.refIndex != index) ? (
+                                         (this.state.bibleReference && this.state.refIndex !== index) ? (
                                             <div>{ref.ref_name}</div>
                                             )
                                             :
@@ -1115,7 +1111,6 @@ class SettingsModal extends React.Component {
                               }
                               { 
                                 AutographaStore.refListExist.map((ref, index) => {
-                                  let ref_first = ref.ref_id.substr(0, ref.ref_id.indexOf('_'));
                                   let ref_except_first =  ref.ref_id.substr(ref.ref_id.indexOf('_')+1);
                                   return(
                                     <tr key={index}>

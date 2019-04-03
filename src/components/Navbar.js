@@ -73,7 +73,7 @@ class Navbar extends React.Component {
         this.resetDiffValue();        
     }
     getContent = (id, chapter) => {
-        return refDb.get(id).then( (doc) => {
+        return refDb.get(id.toString()).then( (doc) => {
             for (var i = 0; i < doc.chapters.length; i++) {
                 if (doc.chapters[i].chapter === parseInt(chapter, 10)) { 
                     break;
@@ -298,12 +298,11 @@ class Navbar extends React.Component {
             })
             }else{
                 AutographaStore.bookName = Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1] 
-                db.get(bkId).then(function(doc) {
-                    refDb.get('refChunks').then(function(chunkDoc) {
+                db.get(AutographaStore.bookId.toString()).then((doc) => {
+                    refDb.get('refChunks').then((chunkDoc) => {
                         AutographaStore.verses = doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses;
                         AutographaStore.chunks = chunkDoc.chunks[parseInt(AutographaStore.bookId, 10) - 1];
-                        chapter = AutographaStore.chapterId;
-                        that.getRefContents(`eng_ult_${Constant.bookCodeList[parseInt(AutographaStore.bookId, 10) - 1]}`,chapter.toString());
+                        this.getRefContents(`eng_ult_${Constant.bookCodeList[parseInt(AutographaStore.bookId, 10) - 1]}`, AutographaStore.chapterId.toString());
                     });
                 })
             }    
@@ -389,7 +388,7 @@ class Navbar extends React.Component {
         // event.persist();
         AutographaStore.activeRefs[refDropDownPos] = event.target.value;
         refDb.get('activeRefs').then((doc) => {
-            doc._rev = doc._rev;
+            // doc._rev = doc._rev;
             doc.activeRefs = Object.assign(doc.activeRefs, AutographaStore.activeRefs);
             refDb.put(doc);
         }, (err) => {
@@ -697,7 +696,7 @@ class Navbar extends React.Component {
                                             bookData.map((item,index) =>{
                                             return <li key={index}>
                                                         <a href="#" key={index} onClick={ this.onItemClick.bind(this, item) }
-                                                            value={item} className={( AutographaStore.bookName == item ) ? 'link-active': ""} >
+                                                            value={item} className={( AutographaStore.bookName === item ) ? 'link-active': ""} >
                                                             {item}
                                                         </a>
                                                     </li>
@@ -848,7 +847,7 @@ class Navbar extends React.Component {
                     AutographaStore.layout === 4 &&
                     <div className="parentdiv">
                         <div className="layoutx">
-                            <App book = { AutographaStore.bookId } chapter = {AutographaStore.chapterId}/>
+                            <App book = { AutographaStore.bookId.toString() } chapter = {AutographaStore.chapterId.toString()}/>
                         </div>
                         <div  style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
