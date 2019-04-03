@@ -18,7 +18,7 @@ function App(props) {
 	const [context, setContext] = useState(defaultContext);
 
 	useEffect(() => {
-		setContext(defaultContext)
+		return () => setContext(defaultContext)
 	})
 	return (
 		<Viewer
