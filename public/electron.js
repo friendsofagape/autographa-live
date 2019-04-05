@@ -1,3 +1,4 @@
+
 const path = require('path');
 const {app, Menu} = require('electron');
 
@@ -8,7 +9,9 @@ const {
   getWindow
 } = require('./electronWindows');
 
-// const dbUtil = require('../src/util/DbUtil');
+//const dbUtil = require('../src/util/DbUtil');
+
+//dbUtil.dbSetupAll()
 
 
 
