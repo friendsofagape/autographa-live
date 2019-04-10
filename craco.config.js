@@ -1,16 +1,24 @@
 const { paths, when, whenDev, whenProd, whenTest, ESLINT_MODES, POSTCSS_MODES } = require("@craco/craco");
+const path = require("path");
+const webpack  = require('webpack');
+
  
 module.exports = {
+
     style: {
         
         modules: {
             localIdentName: "",
             
         },
-        node: {
-            __dirname: false,
-            __filename: false
+       
+        
+          css: {
+             options: { sourceMap: true }
           },
+          sass: {
+             options: { sourceMap: false }
+          }
         // css: {
         //     loaderOptions: { /* Any css-loader configuration options: https://github.com/webpack-contrib/css-loader. */ },
         //     loaderOptions: (cssLoaderOptions, { env, paths }) => { return cssLoaderOptions; }
@@ -52,9 +60,14 @@ module.exports = {
     webpack: {
         alias: {},
         plugins: [],
-        configure: { target: 'electron-renderer'/* Any webpack configuration options: https://webpack.js.org/configuration */ },
+        node:  false,
+        configure: {  
+                target: 'electron-renderer'
+        }
+    },/* Any webpack configuration options: https://webpack.js.org/configuration */ 
         
-    },
+        
+    
     jest: {
         babel: {
             addPresets: true, /* (default value) */

@@ -80,7 +80,7 @@ function createWindow(windowId, options = {}) {
   if (IS_DEVELOPMENT) {
     window.loadURL('http://localhost:3000');
   } else {
-    window.loadURL(`file://${path.join(__dirname, '/index.html')}`);
+    window.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
   }
 
   window.webContents.on('devtools-opened', () => {

@@ -2,7 +2,7 @@
   "name": "viewer-app-electron",
   "version": "0.1.4",
   "private": true,
-  "main": "./public/electron.js",
+  "main": "public/electron.js",
   "author": "Friends of Agape <mathew.joel@protonmail.com>",
   "homepage": "./",
   "dependencies": {
@@ -38,10 +38,10 @@
     "extends": null,
     "appId": "oa.autographa.live",
     "files": [
-      "./build/**/*",
-      "./public/electron.js",
-      "node_modules/**/*",
-      "package.json"
+      "build/**/*",
+      "public/**/*",
+      "src/**/*",
+      "node_modules/**/*"
     ],
     "directories": {
       "buildResources": "resources"
@@ -60,8 +60,8 @@
     "publish": null
   },
   "scripts": {
-    "start": "concurrently 'npm run react-start' 'wait-on http://localhost:3000/ && cross-env NODE_ENV=development npm run electron-start'",
-    "build": "yarn build:electron",
+    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000/ && cross-env NODE_ENV=development npm run electron-start\"",
+    "build": "npm run build:electron",
     "electron-start": "electron .",
     "electron-build": "electron-packager ./build --out=dist",
     "react-start": "craco start",
@@ -69,7 +69,8 @@
     "test": "craco test",
     "eject": "react-scripts eject",
     "build:electron": "craco build --config craco.config.js",
-    "pack": "electron-builder",
+    "preelectron-pack": "npm run build",
+    "electron-pack": "build",
     "dist": "electron-builder"
   },
   "eslintConfig": {
@@ -82,12 +83,14 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@rescripts/cli": "0.0.10",
+    "@rescripts/rescript-env": "0.0.10",
     "concurrently": "^4.1.0",
     "cross-env": "^5.2.0",
-    "electron": "^4.0.7",
+    "electron": "^4.1.4",
+    "electron-builder": "^20.39.0",
     "electron-packager": "^13.1.1",
     "electron-rebuild": "^1.8.4",
-    "wait-on": "^3.2.0",
-    "electron-builder": "^20.39.0"
+    "wait-on": "^3.2.0"
   }
 }

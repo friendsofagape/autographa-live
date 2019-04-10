@@ -7,7 +7,7 @@ const {
   createWindow,
   defineWindow,
   getWindow
-} = require('./electronWindows');
+} = require(path.join(__dirname, 'electronWindows.js'));
 
 //const dbUtil = require('../src/util/DbUtil');
 
