@@ -40,9 +40,8 @@ class Page extends React.Component {
 			AutographaStore.appLang = lang;
 	    });
 	    i18n.currentLocale().then((res) => {
-	    	AutographaStore.currentTrans = res;
+			AutographaStore.currentTrans = res;
 	    })
-
 	}
 	componentWillMount(){
 		refDb.get('activeRefs').then((doc) => {
@@ -51,16 +50,17 @@ class Page extends React.Component {
         	console.log(err)
         });
 	}
+	
 
 	render(){
 		if(Object.keys(AutographaStore.currentTrans).length === 0){
 			return (<div></div>)
 		}
 	    return (
-	    	<IntlProvider  locale = {AutographaStore.appLang} messages = {AutographaStore.currentTrans} >
+	    	<IntlProvider locale = 'en' key = {AutographaStore.appLang} messages = {AutographaStore.currentTrans} >
 			    <MuiThemeProvider>
 			    	<NavBar /> 
-			    </ MuiThemeProvider>
+			    </MuiThemeProvider>
 	     	</IntlProvider>
 	    )
 	} 

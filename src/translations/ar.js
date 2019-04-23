@@ -1,7 +1,7 @@
-[{
+export default {
 	
 	"label-translation": "ترجمة",	
-        "app-name": "أوتوغرافا ليت",
+    "app-name": "أوتوغرافا ليت",
 	"btn-switch-off": "إيقاف",
 	"btn-switch-on": "على",
 	"btn-all" : "الكل",
@@ -216,4 +216,4 @@
 	"book-3-john" : "3 يوحنا",
 	"book-jude" : "يهوذا",
 	"book-revelation" : "رؤيا"
-}]
+}

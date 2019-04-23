@@ -59,11 +59,17 @@ class ProjectListRow extends React.Component {
     };
 
 	importBook = (projectId) => {
-		if (this.props.syncAdapter instanceof Gitea) {
-			return this.importBookGitea(projectId);
-		} else {
-			return this.importBookParatext(projectId);
-		}
+		//comment for Gitea now
+
+		// if (this.props.syncAdapter instanceof Gitea) {
+		// 	return this.importBookGitea(projectId);
+		// } else {
+		// 	return this.importBookParatext(projectId);
+		// }
+
+		//need to remove and uncomment above code when gitea will work fine
+		return this.importBookParatext(projectId);
+
 	};
 
   	importBookParatext = (projectId) => {
@@ -228,11 +234,15 @@ class ProjectListRow extends React.Component {
     };
 
     uploadBook = async(projectId, projectName) => {
-        if (this.props.syncAdapter instanceof Gitea) {
-            return await this.uploadBookGitea(projectId, projectName);
-        } else {
-            return await this.uploadBookParatext(projectId, projectName);
-        }
+		//comment for Gitea now
+        // if (this.props.syncAdapter instanceof Gitea) {
+        //     return await this.uploadBookGitea(projectId, projectName);
+        // } else {
+        //     return await this.uploadBookParatext(projectId, projectName);
+		// }
+
+		//need to uncomment above code and remove this when gitea will work fine
+		return await this.uploadBookParatext(projectId, projectName);
     };
 
     uploadBookGitea = async(projectId, projectName) => {
@@ -431,7 +441,8 @@ class ProjectListRow extends React.Component {
 							}
 				    	</FormGroup>
 						{
-							(this.props.syncAdapter instanceof Gitea || Object.keys(this.state.bookList).length > 0) &&
+							/*(this.props.syncAdapter instanceof Gitea || Object.keys(this.state.bookList).length > 0)*/  
+							Object.keys(this.state.bookList).length > 0 &&
 							<div style={{float: "right"}} className="btn-imp-group">
 				    			<a href="javascript:void(0)"   className="margin-right-10 btn btn-success btn-import" onClick={() =>{ this.importBook(project.projid[0])} } disabled={this.state.isImporting ? true : false}>{this.state.importText}</a>
 				    			<a href="javascript:void(0)" className = "margin-right-10 btn btn-success btn-upload" onClick={() =>{ this.uploadBook(project.projid[0], project.proj[0])} } disabled={this.state.isImporting ? true : false}>Upload</a>

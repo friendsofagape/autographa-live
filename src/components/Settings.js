@@ -28,7 +28,7 @@ const ENDPOINTS = {
 class SettingsModal extends React.Component {
 	constructor(props) {
 		super(props);
-
+		this.langRef = React.createRef()
 		this.state = {
 			settingData: {
 				langCodeValue: "",
@@ -49,7 +49,7 @@ class SettingsModal extends React.Component {
 			bibleReference: true,
 			visibleList: true,
 			myBible: "",
-			appLang: "en",
+			appLang: AutographaStore.appLang,
 			message: "",
 			hideAlert: "hidemessage",
 			showLoader: false,
@@ -551,13 +551,15 @@ class SettingsModal extends React.Component {
 	}
 
 	changeLangauge = (event, index, value) => {
-		AutographaStore.appLang = value;
+		console.log("langauge select", value)
+		this.setState({appLang: value})
+		//AutographaStore.appLang = value;
 	}
 
 	saveAppLanguage = (e) => {
 		const currentTrans = AutographaStore.currentTrans;
 		refDb.get('app_locale').then((doc) => {
-			doc.appLang = AutographaStore.appLang;
+			doc.appLang = this.state.appLang//this.langRef.current.value//AutographaStore.appLang;
 			refDb.put(doc);
 			this.setState({
 				message: 'dynamic-msg-save-language',
@@ -569,10 +571,11 @@ class SettingsModal extends React.Component {
 				})
 			}, 2000);
 		}).catch((err) => {
+			console.log(err)
 			if (err.message === 'missing') {
 				var locale = {
 					_id: 'app_locale',
-					appLang: AutographaStore.appLang
+					appLang: this.state.appLang//AutographaStore.appLang
 				};
 				refDb.put(locale).then(function (res) {
 					swal(currentTrans["btn-save-changes"], currentTrans["dynamic-msg-save-language"], "success")
@@ -1132,7 +1135,7 @@ class SettingsModal extends React.Component {
                             <div className="form-group">
                                 <div className="mdl-selectfield mdl-js-selectfield">
                                     <label id="language-select" className="mdl-selectfield__label"><FormattedMessage id="label-select-language" /></label><br/>
-                                    <SelectField className="mdl-selectfield__select" id="localeList" value = {AutographaStore.appLang} onChange = {this.changeLangauge}>
+                                    <SelectField className="mdl-selectfield__select" id="localeList" value = {this.state.appLang} onChange = {this.changeLangauge} ref = {this.langRef}>
                                         <MenuItem value={"ar"} primaryText="Arabic" /> 
                                         <MenuItem value={"en"} primaryText="English" /> 
                                         <MenuItem value={"hi"} primaryText="Hindi" />

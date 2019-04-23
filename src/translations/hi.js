@@ -1,4 +1,4 @@
-[{
+export default {
 	
 	"label-translation": "अनुवाद",	
 	"app-name" : "औटोग्रफा लाइव",
@@ -217,4 +217,5 @@
 	"book-3-john" : "3 युहत्रा",
 	"book-jude" : "यहूदा",
 	"book-revelation" : "प्रकाशितवाक्य"
-}]
+}
+

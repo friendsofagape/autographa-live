@@ -1,4 +1,5 @@
 const PouchDB = require('pouchdb').default;
+const path = require('path');
 
 let _targetDb, _referenceDb, _lookupsDb;
 
@@ -9,14 +10,14 @@ const lookupsDb = () => {
 };
 
 const targetDb = () => {
-  console.log('init targetDB');
-  _targetDb = _targetDb || new PouchDB("db/targetDB");
+  console.log('init targetD');
+  _targetDb = _targetDb || new PouchDB(path.resolve(__dirname, "../db/targetDB"));
   return _targetDb;
 };
 
 const referenceDb = () => {
   console.log('init referenceDB');
-  _referenceDb = _referenceDb || new PouchDB.plugin(require('pouchdb-quick-search'))("db/referenceDB");
+  _referenceDb = _referenceDb || new PouchDB.plugin(require('pouchdb-quick-search'))(path.resolve(__dirname, "../db/referenceDB"));
   return _referenceDb;
 };
 

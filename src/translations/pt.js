@@ -1,4 +1,4 @@
-[{
+export default {
 	
 	"label-translation": "Tradução",	
 	"app-name" : "Autographa Live",
@@ -215,4 +215,4 @@
 	"book-3-john" : "3 João",
 	"book-jude" : "Judas",
 	"book-revelation" : "Apocalipse"
-}]
+}
