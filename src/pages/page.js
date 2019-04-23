@@ -16,17 +16,13 @@ import fr from 'react-intl/locale-data/fr';
 import it from 'react-intl/locale-data/it';
 import { observer } from "mobx-react";
 import AutographaStore from "../components/AutographaStore";
+import dbUtil from '../util/DbUtil';
 const i18n = new(require('../translations/i18n'))();
 const refDb = require("../util/data-provider").referenceDb();
-
-
 addLocaleData([...en, ...es, ...fr, ...it]);
-
 // Define user's language. Different browsers have the user locale defined
 // on different fields on the `navigator` object, so we make sure to account
 // for these different by checking all of them
-
-
 // Try full locale, try locale without region code, fallback to 'en'
 // const messages = localeData[languageWithoutRegionCode] || localeData[language] || localeData.en;
 
@@ -35,27 +31,42 @@ class Page extends React.Component {
 
 	constructor(props){
 		super(props);
-	    this.state = {appLang: ''}
+	    this.state = {appLang: '', dbsetup: false}
 	    i18n.getLocale().then((lang) => {
 			AutographaStore.appLang = lang;
 	    });
 	    i18n.currentLocale().then((res) => {
 			AutographaStore.currentTrans = res;
-	    })
-	}
+        })
+        
+
+    }
+    componentDidMount() {
+        dbUtil.dbSetupAll().then((res) => {
+            this.setState({dbsetup: res})
+        }).catch((err) => {
+            this.setState({dbsetup: false})
+
+        })
+    }
+    
 	componentWillMount(){
 		refDb.get('activeRefs').then((doc) => {
             Object.assign(AutographaStore.activeRefs, doc.activeRefs)
         }, (err) => {
         	console.log(err)
         });
-	}
+	}   
 	
 
 	render(){
 		if(Object.keys(AutographaStore.currentTrans).length === 0){
 			return (<div></div>)
-		}
+        }
+        if(this.state.dbsetup === false) {
+            return(<div></div>)
+        }
+        
 	    return (
 	    	<IntlProvider locale = 'en' key = {AutographaStore.appLang} messages = {AutographaStore.currentTrans} >
 			    <MuiThemeProvider>
