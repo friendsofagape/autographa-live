@@ -1,7 +1,4 @@
 const { paths, when, whenDev, whenProd, whenTest, ESLINT_MODES, POSTCSS_MODES } = require("@craco/craco");
-const path = require("path");
-const webpack  = require('webpack');
-
  
 module.exports = {
 
@@ -49,7 +46,9 @@ module.exports = {
     },
     babel: {
         presets: [],
-        plugins: [ [ "@babel/plugin-proposal-decorators", { "legacy": true } ], "@babel/plugin-transform-runtime", "@babel/plugin-transform-modules-commonjs"],
+        plugins: [ [ "react-intl", {
+            "messagesDir": "/src/translation"
+        }], [ "@babel/plugin-proposal-decorators", { "legacy": true } ], "@babel/plugin-transform-runtime", "@babel/plugin-transform-modules-commonjs"],
        
         //loaderOptions: { /* Any babel-loader configuration options: https://github.com/babel/babel-loader. */ },
         //loaderOptions: (babelLoaderOptions, { env, paths }) => { return babelLoaderOptions; }
@@ -59,11 +58,23 @@ module.exports = {
     },
     webpack: {
         alias: {},
-        plugins: [],
-        node:  false,
-        configure: {  
-                target: 'electron-renderer'
-        }
+        plugins: [
+            
+                
+            
+        ],
+        sourceMap: false,
+
+        configure: {
+            node: {
+                __dirname: true,
+                __filename: true
+            },
+            target: 'electron-renderer'
+            
+
+        },
+        
     },/* Any webpack configuration options: https://webpack.js.org/configuration */ 
         
         
