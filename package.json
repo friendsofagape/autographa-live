@@ -1,9 +1,9 @@
 {
-  "name": "viewer-app-electron",
-  "version": "0.1.4",
-  "private": true,
+  "name": "Autographa-Live",
+  "version": "0.1.0-beta.5",
   "main": "public/electron.js",
   "author": "Friends of Agape <mathew.joel@protonmail.com>",
+  "license": "GPL-3.0",
   "homepage": "./",
   "dependencies": {
     "@bit/unfoldingword.resources.viewer": "0.1.5",
@@ -40,7 +40,11 @@
       "build/**/*.*",
       "public/**/*.*",
       "node_modules/**/*",
-      "src/**/*.*"
+      "src/**/*.*",
+      "patterns.prop"
+    ],
+    "extraFiles": [
+      "patterns.prop"
     ],
     "directories": {
       "buildResources": "resources"
