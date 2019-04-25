@@ -186,7 +186,6 @@ class ProjectListRow extends React.Component {
 							  })
 
 	                    }).catch((err) => {
-							console.log(err);
 							this.resetLoader();
 							swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
 						});
@@ -340,6 +339,7 @@ class ProjectListRow extends React.Component {
 											book[currChapter.attributes["number"].value-1] = [];
 										}
 										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[currVerse.attributes["number"].value-1];
+
 											if(!currVerse.nextSibling){
 												currVerse.insertAdjacentText('afterend',verse.verse);
 											}
@@ -354,8 +354,9 @@ class ProjectListRow extends React.Component {
 											}else{
 												currVerse.insertAdjacentText('afterend', verse.verse);
 											}
-											 book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
+											book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
 											currVerse = verseNodes.snapshotItem(v);
+
 									}
 									try{
 										_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
@@ -398,7 +399,6 @@ class ProjectListRow extends React.Component {
 	};
 
 	getBooks = async (projectId, projectName) => {
-		console.log(this.state.open)
 		if(!this.state.open){
 			this.props.showLoader(true);
 			try{
