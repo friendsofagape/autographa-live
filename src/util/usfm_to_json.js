@@ -16,9 +16,7 @@ module.exports = {
             var lineReader = require('readline').createInterface({
                 input: require('fs-extra').createReadStream(options.usfmFile)
             });
-            console.log(process.execPath)
-            console.log(`${__dirname}/../patterns.prop`);
-            // patterns = require('fs-extra').readFileSync(`${__dirname}, patterns.prop`, 'utf8');
+            patterns = require('fs-extra').readFileSync(path.join(`./patterns.prop`), 'utf8');
             var book = {},
                 verse = [],
                 db = require(`${__dirname}/../util/data-provider`).targetDb(),
@@ -31,14 +29,6 @@ module.exports = {
             book["scriptDirection"] = options.scriptDirection;
             book.chapters = [];
         } catch (err) {
-            console.log("===========err==========");
-            console.log(err);
-            console.log("===========err==========")
-
-            console.log("===========options==========")
-            console.log(options)
-            console.log("===========options==========")
-
             return callback(new Error('usfm parser error'));
         }
         lineReader.on('line', function (line) {
@@ -69,7 +59,7 @@ module.exports = {
                 if (c === 0)
                     return callback(new Error("USFM files without chapters aren't supported."));
                 var verseStr = (splitLine.length <= 2) ? '' : splitLine.splice(2, splitLine.length - 1).join(' ');
-                // verseStr = replaceMarkers(verseStr);
+                verseStr = replaceMarkers(verseStr);
                 const bookIndex = booksCodes.findIndex((element) => {
                     return (element === book._id.split("_").slice(-1)[0].toUpperCase())
                 })
@@ -89,7 +79,7 @@ module.exports = {
             } else if (splitLine[0].startsWith('\\r')) {
                 // Do nothing here for now.
             } else if (c > 0 && v > 0) {
-                let cleanedStr = line//replaceMarkers(line);
+                let cleanedStr = replaceMarkers(line);
                 book.chapters[c - 1].verses[v - 1].verse += ((cleanedStr.length === 0 ? '' : ' ') + cleanedStr);
 
             }
