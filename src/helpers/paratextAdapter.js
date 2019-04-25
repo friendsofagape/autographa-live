@@ -28,7 +28,6 @@ export default class Paratext {
     */
 
     async getToken() {
-        console.log("token", process.env.REACT_APP_PARATEXT_TOKEN)
         let paraTextReqBody = {
             username: this.username,
             password: this.password,
