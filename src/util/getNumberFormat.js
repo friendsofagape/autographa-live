@@ -1,4 +1,4 @@
-const  getNumberFormat = (arr) => {
+export const  getNumberFormat = (arr) => {
     let  result="";  // track start and end
     let end = arr[0];
     let start = arr[0];
@@ -29,6 +29,5 @@ const  getNumberFormat = (arr) => {
     }
     return result;
 };
-export default getNumberFormat;
 
         

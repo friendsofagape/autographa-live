@@ -3,10 +3,9 @@ import { observer } from "mobx-react"
 import * as mobx from 'mobx'
 import AutographaStore from "./AutographaStore" 
 import { FormattedMessage } from 'react-intl';
-const numberFormat = require("../util/getNumberFormat")
+import * as numberFormat from  '../util/getNumberFormat';
 const Modal = require('react-bootstrap/lib/Modal');
-const Constant = require("../util/constants");
-
+const Constant = require('../util/constants');
 
 @observer
 class Statistic extends React.Component {
