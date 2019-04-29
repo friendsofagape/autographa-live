@@ -2,7 +2,7 @@ const booksCodes = require(`${__dirname}/constants.js`).bookCodeList;
 const bibleSkel = require(`${__dirname}/../lib/full_bible_skel.json`)
 const path = require('path');
 const remote = require('electron').remote;
-const appPath = process.env.NODE_ENV === 'production' ? remote.app.getAppPath() : __dirname;
+const appPath = remote.app.getAppPath();
 // const configFile = 
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
             var lineReader = require('readline').createInterface({
                 input: require('fs-extra').createReadStream(options.usfmFile)
             });
-            patterns = require('fs-extra').readFileSync(path.join(`./patterns.prop`), 'utf8');
+            patterns = require('fs-extra').readFileSync(path.join(appPath, `patterns.prop`), 'utf8');
             var book = {},
                 verse = [],
                 db = require(`${__dirname}/../util/data-provider`).targetDb(),

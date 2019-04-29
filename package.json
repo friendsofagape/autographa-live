@@ -43,9 +43,6 @@
       "src/**/*.*",
       "patterns.prop"
     ],
-    "extraFiles": [
-      "patterns.prop"
-    ],
     "directories": {
       "buildResources": "resources"
     },
