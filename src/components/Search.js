@@ -102,14 +102,14 @@ class SearchModal extends React.Component {
                   let modifiedVerse = originalVerse.replace(new RegExp(that.searchRegExp(searchVal), 'g'), replaceVal);
                   replacedVerse[i] = modifiedVerse;
                   chapter_hash["verse"] = modifiedVerse;
-                  chapter_hash["verse_number"] = i + 1;
+                  chapter_hash["verse_number"] = i;
                   verses_arr.push(chapter_hash);
                   chapter_hash = {};
                   replaceCount += originalVerse.match(new RegExp(that.searchRegExp(searchVal), 'g')).length;
               } else {
                   replacedVerse[i] = originalVerse;
                   chapter_hash["verse"] = originalVerse;
-                  chapter_hash["verse_number"] = i + 1;
+                  chapter_hash["verse_number"] = i;
                   verses_arr.push(chapter_hash);
                   chapter_hash = {};
                   replaceCount += 0;
@@ -120,14 +120,14 @@ class SearchModal extends React.Component {
               if (originalVerse.search(new RegExp(that.searchRegExp(searchVal), 'g')) >= 0) {
                   let modifiedVerse = originalVerse.replace(new RegExp(that.searchRegExp(searchVal), 'g'), replaceVal);
                   chapter_hash["verse"] = modifiedVerse;
-                  chapter_hash["verse_number"] = i + 1;
+                  chapter_hash["verse_number"] = i;
                   verses_arr.push(chapter_hash);
                   chapter_hash = {};
                   replaceCount += originalVerse.match(new RegExp(searchVal, 'g')).length;
 
               } else {
                   chapter_hash["verse"] = originalVerse;
-                  chapter_hash["verse_number"] = i + 1;
+                  chapter_hash["verse_number"] = i;
                   verses_arr.push(chapter_hash);
                   chapter_hash = {};
                   replaceCount += 0;

@@ -622,7 +622,7 @@ describe('Autographa Test', () => {
         });
 
         it("should import the translation file", () => {
-            const input = 'this is test';
+            const input = 'this is a test';
             return app.client.waitUntilWindowLoaded()
                 .waitForEnabled("#btnSettings", 2000)
                 .click("#btnSettings")
@@ -656,7 +656,7 @@ describe('Autographa Test', () => {
 
         it('should check for new reference version', () => {
             return app.client.waitUntilWindowLoaded()
-                .waitForVisible(".ref-drop-down")
+                .waitForVisible(".ref-drop-down", 30000)
                 .click(".ref-drop-down")
                 .selectByIndex(".ref-drop-down", 0)
                 .getValue('.ref-drop-down').should.eventually.equal('test_eng_net')
