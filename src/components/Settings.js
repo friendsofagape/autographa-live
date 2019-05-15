@@ -1270,6 +1270,7 @@ class CredentialPanel extends React.Component {
                     <FormattedMessage id="label-pwd">
                         {(message) =>
                             <TextField
+                                type="password"
                                 hintText={message}
                                 name="password"
                                 className="margin-top-24 textbox-width-70"
