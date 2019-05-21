@@ -3,7 +3,7 @@ import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore"
 import Statistic  from '../components/Statistic';
 import { FormattedMessage } from 'react-intl';
-const i18n = new(require('../translations/i18n'));
+const i18n = new(require('../translations/i18n'))();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
 @observer
@@ -77,7 +77,8 @@ class TranslationPanel extends React.Component {
                 let incompleteVerse = [];
                 let multipleSpaces = [];
                 for(let i=0; i < verseLength; i++){
-                    let verseObj = chapter.verses[i];
+					let verseObj = chapter.verses[i];
+					console.log(verseObj);
                     let checkSpace = verseObj["verse"].match(/\s\s+/g, ' ');
                     if(verseObj["verse"].length === 0){
                         emptyVerse.push(i);

@@ -4,8 +4,9 @@ import Constant from './util/constants';
 
 function App(props) {
 	let defaultContext = {
-		username: 'STR',
-		//username: 'unfoldingword',
+		// username: 'STR',
+		// username: 'unfoldingword',
+		username: 'Door43-Catalog',
 		languageId: 'en',
 		resourceId: 'ult',
 		reference: {

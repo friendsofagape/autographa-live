@@ -33,7 +33,7 @@ npm start
 In Command Prompt:
 
 ```
-cd autographa-lite
+cd autographa-live
 set ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES=true
 npm install
 npm start
