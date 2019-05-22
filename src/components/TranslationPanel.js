@@ -78,7 +78,6 @@ class TranslationPanel extends React.Component {
                 let multipleSpaces = [];
                 for(let i=0; i < verseLength; i++){
 					let verseObj = chapter.verses[i];
-					console.log(verseObj);
                     let checkSpace = verseObj["verse"].match(/\s\s+/g, ' ');
                     if(verseObj["verse"].length === 0){
                         emptyVerse.push(i);
