@@ -7,7 +7,7 @@ The crucial difference with [Autographa Lite](https://github.com/friendsofagape/
 **Both 'Lite' and 'Live' versions will continue being supported and developed.**
 
 ## Developer Setup
-It is relatively easy to setup the application locally for development. You will need API keys/credentials for running the full test-suite. Please email [joelthe1](https://github.com/joelthe1) for more information.
+It is relatively easy to setup the application locally for development.
 
 ### Prerequisites
 [Node JS 10.16.0](https://nodejs.org/download/release/v10.16.0/).   
