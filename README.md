@@ -10,7 +10,7 @@ The crucial difference with [Autographa Lite](https://github.com/friendsofagape/
 It is relatively easy to setup the application locally for development. You will need API keys/credentials for running the full test-suite. Please email [joelthe1](https://github.com/joelthe1) for more information.
 
 ### Prerequisites
-[Node JS 10.16.0](https://nodejs.org/download/release/v10.16.0/)
+[Node JS 10.16.0](https://nodejs.org/download/release/v10.16.0/).   
 [npm 6.4.1](https://www.npmjs.com/get-npm)    
 [Python 2](https://www.python.org/downloads/release/python-2715/) (One of our build tools [breaks under Python 3](https://github.com/nodejs/node-gyp/issues/1337).)
 
