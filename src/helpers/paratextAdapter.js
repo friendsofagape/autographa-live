@@ -1,6 +1,6 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-import path from 'path';
+// import dotenv from 'dotenv';
+// import path from 'path';
 import xml2js from 'xml2js'
 // dotenv.config({path: '../.env'});
 const ENDPOINT = "https://data-access.paratext.org";

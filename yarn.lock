@@ -3707,6 +3707,7 @@ electron-rebuild@^1.8.4:
     spawn-rx "^3.0.0"
     yargs "^12.0.5"
 
+
 electron-to-chromium@^1.3.103, electron-to-chromium@^1.3.113:
   version "1.3.113"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.113.tgz#b1ccf619df7295aea17bc6951dc689632629e4a9"
@@ -7341,11 +7342,11 @@ node-forge@0.7.5:
   version "0.7.5"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.7.5.tgz#6c152c345ce11c52f465c2abd957e8639cd674df"
 
-node-gyp@^3.8.0:
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-3.8.0.tgz#540304261c330e80d0d5edce253a68cb3964218c"
+node-gyp@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-4.0.0.tgz#972654af4e5dd0cd2a19081b4b46fe0442ba6f45"
+  integrity sha512-2XiryJ8sICNo6ej8d0idXDEMKfVfFK7kekGCtJAuelGsYHQxhj13KTf95swTCN2dZ/4lTfZ84Fu31jqJEEgjWA==
   dependencies:
-    fstream "^1.0.0"
     glob "^7.0.3"
     graceful-fs "^4.1.2"
     mkdirp "^0.5.0"
@@ -7355,8 +7356,23 @@ node-gyp@^3.8.0:
     request "^2.87.0"
     rimraf "2"
     semver "~5.3.0"
-    tar "^2.0.0"
+    tar "^4.4.8"
     which "1"
+
+nodegit@^0.24.3:
+  version "0.24.3"
+  resolved "https://registry.yarnpkg.com/nodegit/-/nodegit-0.24.3.tgz#f726e76921b33767a4e33e334343611c956ffd15"
+  integrity sha512-F9XpC5xzpoBgJXmdIRaD2z5DVG+iMttxFlzyCqmOu3y5y/DFuxBpzQtRND75oUOxJZh8sSlReVnXFV3PEyzvIw==
+  dependencies:
+    fs-extra "^7.0.0"
+    json5 "^2.1.0"
+    lodash "^4.17.11"
+    nan "^2.11.1"
+    node-gyp "^3.8.0"
+    node-gyp "^4.0.0"
+    node-pre-gyp "^0.11.0"
+    promisify-node "~0.3.0"
+    ramda "^0.25.0"
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -7573,6 +7589,13 @@ object-get-own-property-descriptor-x@^3.2.0:
     property-is-enumerable-x "^1.1.0"
     to-object-x "^1.4.1"
     to-property-key-x "^2.0.1"
+
+json5@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.1.0.tgz#e7a0c62c48285c628d20a10b85c89bb807c32850"
+  integrity sha512-8Mh9h6xViijj36g7Dxi+Y4S6hNGV96vcJZr/SrlHh1LR/pEn/8j/+qIBbs44YKl69Lrfctp4QD+AdWLTMqEZAQ==
+  dependencies:
+    minimist "^1.2.0"
 
 object-hash@^1.1.4:
   version "1.3.1"
@@ -11577,6 +11600,16 @@ w3c-hr-time@^1.0.1:
   resolved "https://registry.yarnpkg.com/w3c-hr-time/-/w3c-hr-time-1.0.1.tgz#82ac2bff63d950ea9e3189a58a65625fedf19045"
   dependencies:
     browser-process-hrtime "^0.1.2"
+
+wacs-client@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/wacs-client/-/wacs-client-0.1.2.tgz#b13baa489c826c8c3e8e991ba6dc096ff382615f"
+  integrity sha512-QdJCtShkq2sVsrqg7CVxLndo3EMyJXcxwt3ikU55yVK+1SZN8ytQ494DVrY3/Kpy6TDCloS+AeYQ7PZFleH6pg==
+  dependencies:
+    gogs-client "0.5.2"
+    nodegit "0.23.0"
+    nodegit "^0.24.3"
+    tmp "0.0.33"
 
 wait-on@^3.2.0:
   version "3.2.0"

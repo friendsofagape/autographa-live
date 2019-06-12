@@ -1,10 +1,11 @@
 {
   "name": "autographa-live",
+  "description": "A Bible translation editor for everyone. Now live.",
   "version": "0.1.0-beta.5",
   "main": "public/electron.js",
   "author": "Friends of Agape <mathew.joel@protonmail.com>",
   "license": "GPL-3.0",
-  "homepage": "./",
+  "homepage": "http://www.autographa.com",
   "dependencies": {
     "@bit/unfoldingword.resources.viewer": "0.1.5",
     "@craco/craco": "^3.6.0",
@@ -59,6 +60,15 @@
     },
     "publish": null
   },
+  "keywords": [
+    "Desktop",
+    "Bible Editor",
+    "USFM",
+    "USFM Editor",
+    "React.js",
+    "Translation",
+    "Open Source"
+  ],
   "scripts": {
     "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000/ && cross-env NODE_ENV=development npm run electron-start\"",
     "build": "npm run build:electron",
