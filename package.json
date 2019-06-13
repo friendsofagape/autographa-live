@@ -5,7 +5,7 @@
   "main": "public/electron.js",
   "author": "Friends of Agape <mathew.joel@protonmail.com>",
   "license": "GPL-3.0",
-  "homepage": "http://www.autographa.com",
+  "homepage": ".",
   "dependencies": {
     "@bit/unfoldingword.resources.viewer": "0.1.5",
     "@craco/craco": "^3.6.0",
