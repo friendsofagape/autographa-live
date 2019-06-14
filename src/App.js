@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Viewer from '@bit/unfoldingword.resources.viewer';
 import Constant from './util/constants';
+import { Offline, Online } from "react-detect-offline";
 
 function App(props) {
 	let defaultContext = {
@@ -23,11 +24,18 @@ function App(props) {
 		setContext(defaultContext)
 	}, [props.chapter])
 	return (
+		<div>
+		<Online>
 		<Viewer
 		  context={context}
 			setContext={setContext}
 			history={[]}
 		/>
+		</Online>
+		<Offline>
+			<p className="offline"> Wait for Internet Connection </p>
+		</Offline>
+		</div>
 	);
 };
 export default App;

@@ -8854,4 +8854,7 @@ body {
 .trans-margin {
   margin-bottom: 61px;
 }
-
+.offline {
+  margin-top: 10px;
+  font-weight: 800;
+}
