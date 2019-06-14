@@ -146,6 +146,7 @@ export default {
 	"ref_name_min_valid": "Name cannot be less than 3 characters.",
 	"ref_name_blank" : "Name cannot be blank.",
 	"dynamic-msg-save-language": "Successfully saved changes. Restart the application for the changes to take effect.",
+	"dynamic-msg-offline": "You do not seem to have a working internet connection to view this.<br /> Please try again after you are online.",
 	"label-auto-update-info" : "If enabled this would allow the application to automatically connect to the internet (when available), download and thereafter install updates that are released by the Autographa team.",
 	"label-auto-update" : "Auto-update",
 	"label-radio-enable": "Enabled",

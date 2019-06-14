@@ -121,6 +121,7 @@ export default {
 	"dynamic-msg-sync-book-list" : "Livros sincronizados com sucesso:\n$",
 	"dynamic-msg-sync-book-count" : "Sincronizado com sucesso $ livros.",
 	"dynamic-msg-save-language": "Mudanças salvas com sucesso. Reinicar a aplicação para efetuar as mudanças.",
+	"dynamic-msg-offline": "Você não parece ter uma conexão com a internet funcionando para ver isso. <br/> Por favor, tente novamente depois que você estiver online.",
 	"ref_name_max_valid": "O nome não pode ficar em branco",
 	"ref_name_min_valid": "Nome com menos de 3 caracteres",
 	"ref_name_blank" : "O nome não pode ficar em branco",

@@ -138,6 +138,7 @@ export default {
 	"dynamic-msg-sync-book-list" : "الكتب المتزامنة بنجاح:\n$",
 	"dynamic-msg-sync-book-count" : "تزامن بنجاح $ كتب.",
 	"dynamic-msg-save-language": "تم حفظ التغييرات بنجاح. أعد تشغيل التطبيق حتى تصبح التغييرات نافذة المفعول",
+	"dynamic-msg-offline": "لا يبدو أن لديك اتصال إنترنت فعال لعرض هذا. <br /> يرجى المحاولة مرة أخرى بعد الاتصال بالإنترنت.",
 	"ref_name_max_valid": "لا يمكن أن يزيد الاسم عن 10 أحرف",
 	"ref_name_min_valid": "لا يمكن أن يقل الاسم عن 3 أحرف",
 	"ref_name_blank" : "لا يمكن أن يكون الاسم فارغًا",

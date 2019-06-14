@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Viewer from '@bit/unfoldingword.resources.viewer';
 import Constant from './util/constants';
 import { Offline, Online } from "react-detect-offline";
+import { FormattedMessage } from 'react-intl';
 
 function App(props) {
 	let defaultContext = {
@@ -33,9 +34,12 @@ function App(props) {
 		/>
 		</Online>
 		<Offline>
-			<p className="offline"> Wait for Internet Connection </p>
-		</Offline>
-		</div>
-	);
+            <FormattedMessage id="dynamic-msg-offline">
+            {(message) =>
+            <p className="offline" dangerouslySetInnerHTML={{__html: message}}></p>}
+            </FormattedMessage>
+        </Offline>
+        </div>
+    );
 };
 export default App;
