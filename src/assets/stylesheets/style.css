@@ -8855,10 +8855,9 @@ body {
   margin-bottom: 61px;
 }
 .offline {
-  margin-top: 10px;
-  margin-top: 400px;
+  margin-top: 325px;
   font-weight: bold;
   text-align: center;
-  font-size: 25px;
+  font-size: 23px;
   line-height: 1.6;
 }
