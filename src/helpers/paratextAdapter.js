@@ -36,7 +36,7 @@ export default class Paratext {
         }
         let config = {
             headers: {
-                'Authorization': `Bearer ${process.env.PARATEXT_TOKEN}`,
+                'Authorization': `Bearer ${process.env.REACT_APP_PARATEXT_TOKEN}`,
                 'Content-Type': "application/json",
                 "Access-Control-Expose-Headers": "Access-Control-*",
                 "Access-Control-Allow-Origin": "http://localhost:3000"
