@@ -771,6 +771,7 @@ class Navbar extends React.Component {
                                 <FormattedMessage id="tooltip-compare-mode">
                                     {(message) =>
                                         <Toggle
+                                          disabled= {AutographaStore.disablediff}
                                           defaultToggled={toggle}
                                           style={{marginTop:"17px"}}
                                           onToggle = {this.setDiff}

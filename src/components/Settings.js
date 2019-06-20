@@ -1155,8 +1155,8 @@ class SettingsModal extends React.Component {
 									<PanelGroup accordion id = "paratext-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="paratext" /> }
 									</PanelGroup>
-								</Tab>
-								<Tab eventKey="door43" title={`${AutographaStore.currentTrans["label-door43"]}`}>
+								{/* </Tab>
+								 <Tab eventKey="door43" title={`${AutographaStore.currentTrans["label-door43"]}`}>
 									{ <Ahref i18n="text-info-door43" href="https://git.door43.org" /> }
 									<PanelGroup accordion id = "door43-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="door43" /> }
@@ -1191,7 +1191,7 @@ class SettingsModal extends React.Component {
                                             </Panel.Body>
                                         </Panel>
 										{ <CredentialPanel settings={this} idPrefix="other" /> }
-                                    </PanelGroup>
+                                    </PanelGroup> */}
                                 </Tab>
 							</Tabs>
 							{
