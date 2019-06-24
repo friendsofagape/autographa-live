@@ -3,7 +3,7 @@
   "description": "A Bible translation editor for everyone. Now live.",
   "version": "0.1.0-beta.6",
   "main": "public/electron.js",
-  "author": "Friends of Agape <mathew.joel@protonmail.com>",
+  "author": "Friends of Agape <mail@joelmath.io>",
   "license": "GPL-3.0",
   "homepage": ".",
   "dependencies": {
@@ -57,7 +57,8 @@
     "linux": {
       "target": [
         "deb"
-      ]
+      ],
+      "icon": "resources/icon.png"
     },
     "publish": null
   },
