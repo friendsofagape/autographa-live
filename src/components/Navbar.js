@@ -265,10 +265,10 @@ class Navbar extends React.Component {
         AutographaStore.activeTab = key;
     }
 
-    getValue(chapter, bookId){
+    getValue = async(chapter, bookId) => {
         AutographaStore.translationContent = "";
-        AutographaStore.chapterId = chapter;
-        AutographaStore.bookId = bookId;
+        AutographaStore.chapterId = await chapter;
+        AutographaStore.bookId = await bookId;
         this.saveLastVisit(bookId,chapter);
         const cookiechapter = { url: 'http://chapter.autographa.com', name: 'chapter' , value: chapter.toString() };
         session.defaultSession.cookies.set(cookiechapter, (error) => {
@@ -310,9 +310,13 @@ class Navbar extends React.Component {
         AutographaStore.showModalBooks = false;
     }
 
-    saveLastVisit(book, chapter) {
+    saveLastVisit = async(book, chapter) => {
+        let _bookName, _chapter, _book;
+        _bookName = await AutographaStore.bookName;
+        _chapter = await chapter;
+        _book = await book;
         refDb.get('ref_history').then(function(doc) {
-            doc.visit_history = [{ "book": AutographaStore.bookName, "chapter": chapter, "bookId": book }]
+            doc.visit_history = [{ "book": _bookName, "chapter": _chapter, "bookId": _book }]
             refDb.put(doc).then(function(response) {}).catch(function(err) {
             console.log(err);
             });
