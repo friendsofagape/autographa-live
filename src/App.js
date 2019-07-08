@@ -19,9 +19,11 @@ function App(props) {
 	const [context, setContext] = useState(defaultContext);
 
 	useEffect(() => {
+		console.log([props.book])
 		setContext(defaultContext)
 	}, [props.book])
 	useEffect(() => {
+		console.log([props.chapter]);
 		setContext(defaultContext)
 	}, [props.chapter])
 	return (
