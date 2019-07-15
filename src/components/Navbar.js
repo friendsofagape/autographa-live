@@ -617,6 +617,17 @@ class Navbar extends React.Component {
         this.setState({showLoader: value})
     }
 
+    onChangeBook = (newValue) => {
+        console.log("book",newValue)
+        console.log(AutographaStore.bookId);
+        AutographaStore.bookId = newValue;
+    }
+    onChangeChapter = (newValue) => {
+        console.log("chapter", newValue)
+        console.log(AutographaStore.chapterId);
+        AutographaStore.chapterId = newValue;
+    }
+
     render() {
         // const layout = AutographaStore.layout;
         var OTbooksstart = 0;
@@ -848,7 +859,7 @@ class Navbar extends React.Component {
                     AutographaStore.layout === 4 &&
                     <div className="parentdiv">
                         <div className="layoutx">
-                            <App book = { AutographaStore.bookId.toString() } chapter = {AutographaStore.chapterId.toString()}/>
+                            <App book = { AutographaStore.bookId.toString() } chapter = {AutographaStore.chapterId.toString()} onChangeBook={this.onChangeBook} onChangeChapter={this.onChangeChapter}/>
                         </div>
                         <div  style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>

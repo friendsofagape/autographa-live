@@ -17,14 +17,15 @@ function App(props) {
 		}
 	};
 	const [context, setContext] = useState(defaultContext);
-
+	
 	useEffect(() => {
-		console.log([props.book])
 		setContext(defaultContext)
+		let _bookID = Constant.bookCodeList.indexOf(defaultContext.reference.bookId.toUpperCase())
+		props.onChangeBook(_bookID+1)
 	}, [props.book])
 	useEffect(() => {
-		console.log([props.chapter]);
 		setContext(defaultContext)
+		props.onChangeChapter(defaultContext.reference.chapter);
 	}, [props.chapter])
 	return (
 		<div>
