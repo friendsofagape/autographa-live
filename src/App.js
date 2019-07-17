@@ -17,25 +17,33 @@ function App(props) {
 		}
 	};
 	const [context, setContext] = useState(defaultContext);
+	const [viewerComponent, setViewerComponent] = useState(<></>);
 	
 	useEffect(() => {
-		setContext(defaultContext)
 		let _bookID = Constant.bookCodeList.indexOf(defaultContext.reference.bookId.toUpperCase())
 		props.onChangeBook(_bookID+1)
-	}, [props.book])
-	useEffect(() => {
 		setContext(defaultContext)
+    }, [props.book])
+
+	useEffect(() => {
 		props.onChangeChapter(defaultContext.reference.chapter);
-	}, [props.chapter])
+		setContext(defaultContext)
+    }, [props.chapter])
+
+	useEffect(() => {
+		const viewer = (
+			<Viewer {...props}
+				context={context}
+				history={[]}
+				setContext={setContext}
+			/>
+		  );
+		  setViewerComponent(viewer);
+    }, [context])
+
 	return (
 		<div>
-		<Online>
-		<Viewer
-		  context={context}
-			setContext={setContext}
-			history={[]}
-		/>
-		</Online>
+		<Online>{viewerComponent}</Online>
 		<Offline>
             <FormattedMessage id="dynamic-msg-offline">
             {(message) =>
