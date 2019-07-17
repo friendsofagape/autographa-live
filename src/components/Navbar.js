@@ -618,13 +618,9 @@ class Navbar extends React.Component {
     }
 
     onChangeBook = (newValue) => {
-        console.log("book",newValue)
-        console.log(AutographaStore.bookId);
         AutographaStore.bookId = newValue;
     }
     onChangeChapter = (newValue) => {
-        console.log("chapter", newValue)
-        console.log(AutographaStore.chapterId);
         AutographaStore.chapterId = newValue;
     }
 
