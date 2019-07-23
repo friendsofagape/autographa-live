@@ -68,5 +68,8 @@ export class AutographaStore {
   @observable paratextBook = {}
   @observable backupOption = "current"
   @observable disablediff = false
+  @observable successFile = []
+  @observable errorFile = []
+  @observable warningMsg = []
 }
 export default new AutographaStore();

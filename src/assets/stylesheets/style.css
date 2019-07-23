@@ -5099,7 +5099,8 @@ button.close {
 
 .modal-open .modal {
   overflow-x: hidden;
-  overflow-y: auto; }
+  /* overflow-y: auto; */
+ }
 
 .modal-dialog {
   position: relative;
@@ -5115,7 +5116,8 @@ button.close {
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   background-clip: padding-box;
-  outline: 0; }
+  outline: 0;
+  overflow-y: scroll; }
 
 .modal-backdrop {
   position: fixed;
@@ -8860,4 +8862,63 @@ body {
   text-align: center;
   font-size: 23px;
   line-height: 1.6;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+.importReport > div {
+  margin-top: 20px;
+  width: 665px;
+}
+.successTitle {
+  font-weight: bold;
+  margin-left: 25px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+.warningTitle {
+  font-weight: bold;
+  margin-left: 25px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+.errorTitle {
+  font-weight: bold;
+  margin-left: 25px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+.ImportedFiles {
+  max-width: 642px;
+  margin-left: 12px;
+  max-height: 165px;
+  overflow: auto;
+  background: #F8F8F8;
+}
+.WarningFiles {
+  max-width: 642px;
+  margin-left: 12px;
+  margin-top: 5px;
+  max-height: 165px;
+  overflow: auto;
+  background: #F8F8F8;
+}
+.ErrorFiles {
+  max-width: 642px;
+  margin-left: 12px;
+  max-height: 165px;
+  overflow: auto;
+  background: #F8F8F8;
 }
