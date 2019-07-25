@@ -516,7 +516,37 @@ class SettingsModal extends React.Component {
                     successTitle: AutographaStore.currentTrans["tooltip-import-title"]
                 }))
             })
-                return res;
+            const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
+            let objWarnArray = [];
+            let preValue = undefined;
+            let book = "";
+            let chapters = [];
+            chapterMissing.map((value) => { 
+                if (value[0] !== preValue){
+                    if (value[0] !== preValue && preValue !== undefined ){
+                        const obj = {'filename':book, 'chapter':chapters};
+                        objWarnArray.push(obj);
+                        book = "";
+                        chapters = [];
+                    }
+            book = value[0];
+            chapters.push(value[1])
+            preValue = value[0];
+            }
+            else{
+                chapters.push(value[1])
+            }          
+            });
+            if (book !== "" && chapters.length !== 0){
+            const obj = {'filename':book, 'chapter':chapters};
+            objWarnArray.push(obj);
+                if (this.state.warningTitle === ""){
+                    this.setState({warningTitle:"WarningFiles"});
+                }
+            }
+            let finalWarnArray = Array.from(new Set(objWarnArray));
+            this.setState({ warningFile: finalWarnArray })
+            return res;
             }).then((err) => {
                 var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
                 err = mobx.toJS(AutographaStore.errorFile);
@@ -534,7 +564,7 @@ class SettingsModal extends React.Component {
                     }))
                 })
             }).then(() => {
-                this.props.showLoader(true)
+                this.props.showLoader(false)
                 this.setState({show:true})
                 AutographaStore.showModalSettings = false;
             })//.finally(() => window.location.reload())
