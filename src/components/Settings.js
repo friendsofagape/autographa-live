@@ -27,7 +27,7 @@ const lookupsDb = require(`${__dirname}/../util/data-provider`).lookupsDb();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 const Constant = require("../util/constants");
 const path = require("path");
-var fs = Promise.promisifyAll(require("fs"));
+const fs = require("fs");
 var appPath = path.join(__dirname,'..','..');
 let flag = false;
 
@@ -88,7 +88,8 @@ class SettingsModal extends React.Component {
             errorTitle:"",
             show: false,
             expanded: "",
-            totalFile: []
+            totalFile: [],
+            warningFile: []
 
 		};
 		db.get('targetBible').then((doc) => {
@@ -311,7 +312,7 @@ class SettingsModal extends React.Component {
 	}
 
 	importTranslation = () => {
-		if (!this.import_sync_setting()) return;
+        if (!this.import_sync_setting()) return;
         this.props.showLoader(true);
 		const {
 			langCode,
@@ -327,30 +328,64 @@ class SettingsModal extends React.Component {
                             [this.state.folderPathImport];
 		usfm_import.importTranslationFiles(importDir, langCode, langVersion)
 		.then((res)=> {
-			this.setState(prevState => ({
-				successFile: [...prevState.successFile, (res)],
-				successTitle: AutographaStore.currentTrans["tooltip-import-title"]
-			}))
-			return res;
-
-		}).catch((err) => {
-			console.log(err)
-			var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
-			fs.appendFile(errorpath, err+"\n" , (err) => {
-				if (err) {
-					console.log(err);
-				}else{
-					console.log("succesfully created error.log file")
-				}
-			});
-			let newErr = err.toString().replace("Error:","");
-			this.setState(prevState => ({
-				errorFile: [...prevState.errorFile, (newErr)],
-				errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
-			}))
-			return err
+            res = mobx.toJS(AutographaStore.successFile);
+            res.map((value) => {
+                this.setState(prevState => ({
+                    successFile: [...prevState.successFile, (value)],
+                    successTitle: AutographaStore.currentTrans["tooltip-import-title"]
+                }))
+            })
+            const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
+            let objWarnArray = [];
+            let preValue = undefined;
+            let book = "";
+            let chapters = [];
+            chapterMissing.map((value) => { 
+                if (value[0] !== preValue){
+                    if (value[0] !== preValue && preValue !== undefined ){
+                        const obj = {'filename':book, 'chapter':chapters};
+                        objWarnArray.push(obj);
+                        book = "";
+                        chapters = [];
+                    }
+            book = value[0];
+            chapters.push(value[1])
+            preValue = value[0];
+            }
+            else{
+                chapters.push(value[1])
+            }          
+            });
+            if (book !== "" && chapters.length !== 0){
+            const obj = {'filename':book, 'chapter':chapters};
+            objWarnArray.push(obj);
+                if (this.state.warningTitle === ""){
+                    this.setState({warningTitle:"WarningFiles"});
+                }
+            }
+        let finalWarnArray = Array.from(new Set(objWarnArray));
+        this.setState({ warningFile: finalWarnArray })
+        console.log(this.state.warningFile);
+            return res;
+		}).then((err) => {
+            var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
+            err = mobx.toJS(AutographaStore.errorFile);
+            err.map((value) => {
+                fs.appendFile(errorpath, value+"\n" , (value) => {
+                    if (value) {
+                        console.log(AutographaStore.errorFile);
+                    }else{
+                        console.log("succesfully created error.log file")
+                    }
+                });
+                let newErr = value.toString().replace("Error:","");
+                this.setState(prevState => ({
+                    errorFile: [...prevState.errorFile, (newErr)],
+                    errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
+                }))
+            })
 		}).then(() => {
-            this.setState({showLoader:false});
+            this.props.showLoader(false);
             this.setState({show:true});
             AutographaStore.showModalSettings = false;
         }) //.finally(() => window.location.reload());
@@ -394,7 +429,7 @@ class SettingsModal extends React.Component {
 	importReference = () => {
 		if (this.reference_setting() === false)
             return;
-        this.props.showLoader(true);
+        this.props.showLoader(true)
 		let {
 			bibleName,
 			refVersion,
@@ -408,8 +443,9 @@ class SettingsModal extends React.Component {
 		var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
 			ref_entry = {},
 			ref_arr = [],
-			dir = Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath;
-			this.setState({totalFile:dir});
+            dir = Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath;
+            let files = fs.readdirSync(Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath);
+			this.setState({totalFile:files});
 		ref_entry.ref_id = ref_id_value;
 		ref_entry.ref_name = bibleName;
 		ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
@@ -466,34 +502,42 @@ class SettingsModal extends React.Component {
 			refLangCodeValue
 		} = this.state.refSetting;
         const currentTrans = AutographaStore.currentTrans;
-        fs.exists(appPath+"/report", function(exists) {
+		let date = new Date();
+        fs.exists(`${appPath}/report/error${date.getDate()}${date.getMonth()}${date.getFullYear()}.log`, function(exists) {
             if (exists) console.log("Directory Exists")
             else fs.mkdir(`${appPath}/report`, (err) => {if (err) throw err;});
         });
 		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
 			.then((res)=> {
+            res = mobx.toJS(AutographaStore.successFile);
+            res.map((value) => {
                 this.setState(prevState => ({
-                    successFile: [...prevState.successFile, (res)],
+                    successFile: [...prevState.successFile, (value)],
                     successTitle: AutographaStore.currentTrans["tooltip-import-title"]
                 }))
+            })
                 return res;
-            }).catch((err) => {
-                let errorpath = `${appPath}/report/referror.log`;
-                fs.appendFile(errorpath, err+"\n" , (err) => {
-                    if (err) { console.log(err) }
-                    else{ console.log("succesfully created referror.log file") }
-                });
-                let newErr = err.toString().replace("Error:","");
-                this.setState(prevState => ({
+            }).then((err) => {
+                var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
+                err = mobx.toJS(AutographaStore.errorFile);
+                err.map((value) => {
+                    fs.appendFile(errorpath, value+"\n" , (value) => {
+                        if (value) {
+                        }else{
+                            console.log("succesfully created error.log file")
+                        }
+                    });
+                    let newErr = value.toString().replace("Error:","");
+                    this.setState(prevState => ({
                     errorFile: [...prevState.errorFile, (newErr)],
                     errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
-                }))
-                return err
+                    }))
+                })
             }).then(() => {
-            this.setState({showLoader:false});
-            this.setState({show:true});
-            AutographaStore.showModalSettings = false
-        })//.finally(() => window.location.reload())
+                this.props.showLoader(true)
+                this.setState({show:true})
+                AutographaStore.showModalSettings = false;
+            })//.finally(() => window.location.reload())
 
             // .then((res) => {
             //     swal(currentTrans["label-imported-book"], currentTrans["dynamic-msg-imp-ref-text"], "success");
@@ -860,43 +904,8 @@ class SettingsModal extends React.Component {
     }
     if(this.state.showLoader){
 	  return(<Loader />);
-	}
-	  const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
-        let objWarnArray = [];
-        let preValue = undefined;
-        let book = "";
-        let chapters = [];
-
-        chapterMissing.map((value) => { 
-            if (value[0] !== preValue){
-                if (value[0] !== preValue && preValue !== undefined ){
-                    const obj = {'filename':book, 'chapter':chapters};
-                    objWarnArray.push(obj);
-                    book = "";
-                    chapters = [];
-                }
-                book = value[0];
-                chapters.push(value[1])
-                preValue = value[0];
-            }
-            else{
-                chapters.push(value[1])
-            }          
-        });
-
-        if (book !== "" && chapters.length !== 0){
-            const obj = {'filename':book, 'chapter':chapters};
-            objWarnArray.push(obj);
-            if (this.state.warningTitle === ""){
-                this.setState({warningTitle:"WarningFiles"});
-            }
-        }
-        let finalWarnArray = Array.from(new Set(objWarnArray));
-
-        // To remove 'undefined' values from success files state array.
-        (this.state.successFile) = (this.state.successFile).filter(function( element ) {
-            return element !== undefined;
-         });
+    }
+    
     return (
 	<div>  
       <Modal show={show} onHide={closeSetting} id="tab-settings">
@@ -1367,7 +1376,7 @@ class SettingsModal extends React.Component {
             <Modal.Header className="head" closeButton>
             <Modal.Title><FormattedMessage id="modal-import-report" /></Modal.Title>
             </Modal.Header>
-                <div className="successTitle">Successfully Imported Files {(this.state.successFile.length)+(finalWarnArray.length)}/{this.state.totalFile.length}</div>
+                <div className="successTitle">Successfully Imported Files {(this.state.successFile.length)+(this.state.warningFile.length)}/{this.state.totalFile.length}</div>
                 <Modal.Body className={this.state.successTitle ? "ImportedFiles" : ""} onDoubleClick={this.handleChange('panel')}>
                 {this.state.successFile.map((success,key) =>
                     <div id={key} key={key} style={{width:"200px", textAlign:"center", display: "inline-block", margin:"1px"}}>
@@ -1386,7 +1395,7 @@ class SettingsModal extends React.Component {
                     <div style={{position:"absolute",top: "-4px", right: "39px"}}>
                     {this.state.warningTitle ?<ExpandMoreIcon onClick={this.handleChange('panel')} style={{borderRadius:"35%", backgroundColor:"#a59f9f"}}/>:""}
                     </div>
-                    {finalWarnArray.map((_warning,key) =>
+                    {this.state.warningFile.map((_warning,key) =>
                         <div id={key} key={key} style={{width:"200px", textAlign:"center", display: "inline-block", margin:"1px"}}>
                             <ExpansionPanel expanded={this.state.expanded === ('panel'+key) || this.state.expanded === 'panel' } onChange={this.handleChange('panel'+key)}>
                             <ExpansionPanelSummary
