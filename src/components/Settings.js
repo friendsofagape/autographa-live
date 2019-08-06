@@ -1414,12 +1414,12 @@ class SettingsModal extends React.Component {
             <div>
             <Tabs activeKey={this.state.tabKey} style={{ width: "auto" }} onSelect={this.handleSelect} id="controlled-tab-example">
               <Tab eventKey={1} title={<div className="success-title"><FormattedMessage id="tooltip-import-title" /> ({this.state.successFile.length + this.state.warningFile.length}/{this.state.totalFile.length})</div>}>
-              <div style={{ position: "absolute", top: "-4px", right: "39px" }} >
+               <Modal.Body className={this.state.successTitle ? "imported-files" : ""} onDoubleClick={this.handleChange('panel')}>
+               <div style={{ position: "absolute", top: "-4px", right: "39px" }} >
                     {this.state.warningTitle ? (
                       <ExpandMoreIcon onClick={this.handleErrChange("panel")} style={{ borderRadius: "35%", backgroundColor: "#a59f9f"}}/>) : ("")
                     }
                 </div>
-               <Modal.Body className={this.state.successTitle ? "imported-files" : ""} onDoubleClick={this.handleChange('panel')}>
                 {this.state.successFile.map((success,key) => (
                     <div id={key} key={key} style={{width:"200px", textAlign:"center", float: "left", margin:"2px 1px 2px 1px"}}>
                         <ExpansionPanelSummary 
