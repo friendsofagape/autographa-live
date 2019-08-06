@@ -24,6 +24,11 @@ export const saveJsonToDb = (importDir, bibleName, refLangCodeValue, refVersion)
                 usfmFile: filePath,
                 targetDb: 'refs',
                 scriptDirection: AutographaStore.refScriptDirection
+            }).then((res) => {
+                if(res !== undefined)
+                AutographaStore.successFile.push(res);
+            }).catch((err) => {
+                AutographaStore.errorFile.push(err);
             })
         ))
         .then(ps => Promise.all(ps));
@@ -60,6 +65,11 @@ export const importTranslationFiles = (importFiles, langCode, langVersion) => {
                 usfmFile: filePath,
                 targetDb: 'target',
                 scriptDirection: AutographaStore.refScriptDirection
+            }).then((res) => {
+                if(res !== undefined)
+                AutographaStore.successFile.push(res);
+            }).catch((err) => {
+                AutographaStore.errorFile.push(err);
             })
         }));
 }
