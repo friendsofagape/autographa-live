@@ -213,7 +213,7 @@ module.exports = {
 };
 
 function fileName(file) {
-    return file.substr(file.lastIndexOf("/") + 1);
+    return path.basename(file);
 }
 
 var patterns = "";
