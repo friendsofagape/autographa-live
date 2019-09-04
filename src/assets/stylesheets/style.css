@@ -8915,3 +8915,13 @@ body {
   overflow: auto;
   background: #F8F8F8;
 }
+.folder-selection {
+  display: inline-block;
+  color: #00b0ff;
+  transform: scale(1.3);
+  cursor: pointer;
+}
+.folder-selection:hover {
+  display: inline-block;
+  transform: scale(1.5);
+}
