@@ -78,6 +78,7 @@ export const importTranslationFiles = (importFiles, langCode, langVersion) => {
 const getNonDotFiles = (dir) =>
     readdir(dir)
         .then(files => files.filter(f => !f.startsWith('.')))
+        .then(files => files.filter(file => file.match(/(.*)(\.usfm|\.sfm)/i)))
         .then(files => files.map(relPath => path.join(dir, relPath)))
         .then(files => files.filter(f => fs.statSync(f).isFile()));
 
