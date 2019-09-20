@@ -5116,8 +5116,7 @@ button.close {
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   background-clip: padding-box;
-  outline: 0;
-  overflow-y: scroll; }
+  outline: 0; }
 
 .modal-backdrop {
   position: fixed;
@@ -8863,21 +8862,6 @@ body {
   font-size: 23px;
   line-height: 1.6;
 }
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888; 
-}
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555; 
-}
 .import-report > div {
   margin-top: 20px;
   width: 665px;
@@ -8902,15 +8886,15 @@ body {
   margin-bottom: 5px;
 }
 .imported-files {
-  max-width: 642px;
-  margin-left: 12px;
+  max-width: 653px;
+  margin-left: 10px;
   max-height: 452px;
   overflow: auto;
   background: #F8F8F8;
 }
 .error-files {
-  max-width: 642px;
-  margin-left: 12px;
+  max-width: 653px;
+  margin-left: 10px;
   max-height: 452px;
   overflow: auto;
   background: #F8F8F8;
@@ -8924,4 +8908,19 @@ body {
 .folder-selection:hover {
   display: inline-block;
   transform: scale(1.5);
+}
+div::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0.8em;
+}
+
+div::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+div::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+background-color: darkgrey;
+outline: 1px solid slategrey;
 }
