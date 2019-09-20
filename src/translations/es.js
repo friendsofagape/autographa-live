@@ -39,6 +39,8 @@ export default {
 	"placeholder-replace-text" : "Reemplazo",
 	"placeholder-path-to-destination" : "Ruta a la carpeta de destino",
 	"placeholder-path-of-usfm-files" : "Ruta de la carpeta que contiene archivos USFM",
+	"placeholder-select-usfm-files": "Seleccione los archivos USFM",
+	"placeholder-saving-usfm-files": "Ruta de la carpeta para guardar archivos USFM",
 	"placeholder-eng-translation" : "Reina-Valera",
 	"placeholder-stage-trans": "Nombre de la etapa de la traducción",
 	"placeholder-name": "Nombre",

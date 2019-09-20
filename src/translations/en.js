@@ -60,6 +60,8 @@ export default {
 	"placeholder-replace-text" : "Replacement",
 	"placeholder-path-to-destination" : "Path to destination folder",
 	"placeholder-path-of-usfm-files" : "Path of folder containing USFM files",
+	"placeholder-select-usfm-files": "Select the USFM Files",
+	"placeholder-saving-usfm-files": "Path of folder for saving USFM files",
 	"placeholder-eng-translation" : "New English Translation",
 	"placeholder-stage-trans": "Stage name of translation",
 	"placeholder-name": "Name",
