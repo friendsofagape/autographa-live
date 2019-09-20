@@ -44,6 +44,8 @@ export default {
 	"placeholder-replace-text" : "إستبدال",
 	"placeholder-path-to-destination" : "مسار إلى مجلد الوجهة",
 	"placeholder-path-of-usfm-files" : "مسار المجلد الذي يحتوي على ملفات أوسفم",
+	"placeholder-select-usfm-files": "حدد ملفات USFM",
+	"placeholder-saving-usfm-files": "مسار المجلد لحفظ ملفات USFM",
 	"placeholder-eng-translation" : "الترجمة الإنجليزية الجديدة",
 	"placeholder-stage-trans": "اسم مرحلة الترجمة",
 	"placeholder-name": "اسم",

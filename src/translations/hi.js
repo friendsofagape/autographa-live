@@ -39,6 +39,8 @@ export default {
 	"placeholder-replace-text" : "प्रतिस्थापन",
 	"placeholder-path-to-destination" : "लक्षित फोल्डर की ओर मार्ग",
 	"placeholder-path-of-usfm-files" : "युएसऍफ़एम् वाली फाइलों का मार्ग",
+	"placeholder-select-usfm-files": "USFM फ़ाइलें चुनें",
+	"placeholder-saving-usfm-files": "USFM फ़ाइलों को सहेजने के लिए फ़ोल्डर का पथ",
 	"placeholder-eng-translation" : "नया अंग्रेज़ी अनुवाद",
 	"placeholder-stage-trans": "अनुवाद के चरण का नाम",
 	"placeholder-name": "नाम",

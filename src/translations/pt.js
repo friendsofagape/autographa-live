@@ -38,6 +38,8 @@ export default {
 	"placeholder-replace-text" : "Substituição",
 	"placeholder-path-to-destination" : "Localização da pasta de destino",
 	"placeholder-path-of-usfm-files" : "Localização da pasta que contém arquivos USFM",
+	"placeholder-select-usfm-files": "Selecione os arquivos USFM",
+	"placeholder-saving-usfm-files": "Caminho da pasta para salvar arquivos USFM",
 	"placeholder-eng-translation" : "Almeida",
 	"placeholder-stage-trans": "Nome da etapa da tradução",
 	"placeholder-name": "Nome",
