@@ -441,7 +441,7 @@ class SettingsModal extends React.Component {
 		if (refLangCodeValue === null) {
 			refLangCodeValue = refLangCode
 		}
-		var ref_id_value = bibleName + '_' + refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase(),
+		var ref_id_value = refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase() + '_' + bibleName,
 			ref_entry = {},
 			ref_arr = [],
             dir = Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath;

@@ -14,6 +14,7 @@ import { Toggle } from 'material-ui';
 import Loader from './Loader';
 import swal from 'sweetalert';
 import App from '../App';
+import {tokenize} from 'string-punctuation-tokenizer';
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
 const session = require('electron').remote.session;
@@ -443,17 +444,21 @@ class Navbar extends React.Component {
         })
     }
     getDifferenceCount = (verse_diff, layout) => {
-        let insertions = 0, deletions = 0;
-        let re = /\b(\w+)'?(\w+)?\b/g;
+        let insertions = 0, deletions = 0, insertWord, deleteWord;
+        // let re = /\b(\w+)'?(\w+)?\b/g;
         for (let x = 0; x < verse_diff.length; x++) {
             var op = verse_diff[x][0];
             var data = verse_diff[x][1];
             switch (op) {
                 case DiffMatchPatch.DIFF_INSERT:
-                    insertions += data.match(re) ? data.match(re).length : 0
+                    // insertions += data.match(re) ? data.match(re).length : 0
+                    insertWord = tokenize({text: data});
+                    insertions += insertWord.length;
                     break;
                 case DiffMatchPatch.DIFF_DELETE:
-                    deletions += data.match(re) ? data.match(re).length : 0
+                    // deletions += data.match(re) ? data.match(re).length : 0
+                    deleteWord = tokenize({text: data});
+                    deletions +=  deleteWord.length;
                     break;
                 case DiffMatchPatch.DIFF_EQUAL:
                     break;
