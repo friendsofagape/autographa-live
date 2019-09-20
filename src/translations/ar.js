@@ -113,6 +113,7 @@ export default {
 	"label-create-project": "خلق مشروع جديد",
 	"username-req": "اسم المستخدم مطلوب",
 	"password-req": "كلمة المرور مطلوبة",
+	"export-usfm": "USFM",
 	"export-html-1-column": "1-تخطيط العمود HTML",
 	"export-html-2-column": "2-تخطيط العمود HTML",
 	"tooltip-language-validation": "يجب أن يكون الطول بين 2 و 8 أحرف ولا يمكن البدء بالرقم.",
