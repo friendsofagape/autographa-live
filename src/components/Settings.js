@@ -1200,7 +1200,7 @@ class SettingsModal extends React.Component {
                            <label><FormattedMessage id="label-folder-location" /></label>
                           <br />
                           <FormattedMessage
-                            id="placeholder-path-of-usfm-files"
+                            id="placeholder-select-usfm-files"
                             >
                             {(message) => 
                                 <div>
