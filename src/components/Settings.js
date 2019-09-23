@@ -292,14 +292,15 @@ class SettingsModal extends React.Component {
 
 	openFileDialogRefSetting = (event) => {
 		dialog.showOpenDialog(getCurrentWindow(), {
-			properties: ['openDirectory'],
-			filters: [{ name: 'All Files', extensions: ['*'] }],
+			properties: ['openFile', 'multiSelections'],
+			filters: [{ name: 'All Files', extensions: ['usfm', 'sfm'] }],
 			title: "Import Reference"
 		}, (selectedDir) => {
-			if (selectedDir != null) {
-			this.state.refSetting["refFolderPath"] = selectedDir;
-			this.setState({});
-			}
+                if (selectedDir != null) {
+                    this.state.refSetting["refFolderPath"] = selectedDir;
+                    this.setState({});
+                    this.setState({ totalFile: selectedDir });
+                }
 		});
 	}
 
@@ -444,9 +445,7 @@ class SettingsModal extends React.Component {
 		var ref_id_value = refLangCodeValue.toLowerCase() + '_' + refVersion.toLowerCase() + '_' + bibleName,
 			ref_entry = {},
 			ref_arr = [],
-            dir = Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath;
-            let files = fs.readdirSync(Array.isArray(refFolderPath) ? refFolderPath[0] : refFolderPath);
-			this.setState({totalFile:files});
+            dir = Array.isArray(refFolderPath) ? refFolderPath : [refFolderPath];
 		ref_entry.ref_id = ref_id_value;
 		ref_entry.ref_name = bibleName;
 		ref_entry.ref_lang_code = refLangCodeValue.toLowerCase();
@@ -1201,7 +1200,7 @@ class SettingsModal extends React.Component {
                            <label><FormattedMessage id="label-folder-location" /></label>
                           <br />
                           <FormattedMessage
-                            id="placeholder-path-of-usfm-files"
+                            id="placeholder-select-usfm-files"
                             >
                             {(message) => 
                                 <div>

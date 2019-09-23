@@ -15,8 +15,8 @@ export const getStuffAsync = (param) =>
     });
 
 export const saveJsonToDb = (importDir, bibleName, refLangCodeValue, refVersion) =>
-    getNonDotFiles(importDir)
-        .then(filePaths => filePaths.map((filePath) =>
+    // getNonDotFiles(importDir)
+    Promise.all(filterFiles(importDir).map((filePath) =>
             getStuffAsync({
                 bibleName: bibleName,
                 lang: refLangCodeValue.toLowerCase(),
@@ -78,7 +78,6 @@ export const importTranslationFiles = (importFiles, langCode, langVersion) => {
 const getNonDotFiles = (dir) =>
     readdir(dir)
         .then(files => files.filter(f => !f.startsWith('.')))
-        .then(files => files.filter(file => file.match(/(.*)(\.usfm|\.sfm)/i)))
         .then(files => files.map(relPath => path.join(dir, relPath)))
         .then(files => files.filter(f => fs.statSync(f).isFile()));
 
