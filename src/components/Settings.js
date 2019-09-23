@@ -296,11 +296,11 @@ class SettingsModal extends React.Component {
 			filters: [{ name: 'All Files', extensions: ['usfm', 'sfm'] }],
 			title: "Import Reference"
 		}, (selectedDir) => {
-            if (selectedDir != null) {
-                this.state.refSetting["refFolderPath"] = selectedDir;
-                this.setState({});
-                this.setState({ totalFile: selectedDir });
-			}
+                if (selectedDir != null) {
+                    this.state.refSetting["refFolderPath"] = selectedDir;
+                    this.setState({});
+                    this.setState({ totalFile: selectedDir });
+                }
 		});
 	}
 
