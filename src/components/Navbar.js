@@ -266,6 +266,10 @@ class Navbar extends React.Component {
         AutographaStore.activeTab = key;
     }
 
+    loadData = () => {
+        this.getValue(AutographaStore.chapterId, AutographaStore.bookId)
+    }
+
     getValue(chapter, bookId){
         AutographaStore.translationContent = "";
         AutographaStore.chapterId = chapter;
@@ -731,7 +735,7 @@ class Navbar extends React.Component {
                         </Tabs>
                     </Modal.Body>
                 </Modal>
-                <SettingsModal show={AutographaStore.showModalSettings} showLoader = {this.setLoader} />
+                <SettingsModal show={AutographaStore.showModalSettings} showLoader = {this.setLoader} loadData={this.loadData} />
                 <AboutUsModal show={AutographaStore.showModalAboutUs} />
                 <SearchModal show={AutographaStore.showModalSearch}/>
                 <DownloadModal show={AutographaStore.showModalDownload} />
