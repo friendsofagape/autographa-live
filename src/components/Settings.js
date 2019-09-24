@@ -390,7 +390,7 @@ class SettingsModal extends React.Component {
             this.props.showLoader(false);
             this.setState({show:true});
             AutographaStore.showModalSettings = false;
-        }) //.finally(() => window.location.reload());
+        }).finally(() => this.transImport());
             // .then((res) => window.location.reload())
             // .catch((err) => {
             //     console.log(err)
@@ -567,7 +567,7 @@ class SettingsModal extends React.Component {
                 this.props.showLoader(false)
                 this.setState({show:true})
                 AutographaStore.showModalSettings = false;
-            })//.finally(() => window.location.reload())
+            }).finally(() => this.referenceImport())
 
             // .then((res) => {
             //     swal(currentTrans["label-imported-book"], currentTrans["dynamic-msg-imp-ref-text"], "success");
@@ -577,7 +577,18 @@ class SettingsModal extends React.Component {
 			// 	this.props.showLoader(false);
 			// 	return swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
 			// }) 
-	}
+    }
+    
+    referenceImport = () => {
+        this.loadReference()
+        //clearing state fields after loading
+        this.setState({ refSetting: "" })
+    }
+
+    transImport = () => {
+        this.props.loadData()
+        this.setState({ folderPathImport: "" })
+    }
   
 	clickListSettingData = (evt, obj) => {
 		let settingData = Object.assign({}, this.state.settingData);
@@ -706,8 +717,7 @@ class SettingsModal extends React.Component {
 		this.setState({refName: e.target.value});
 	}
 
-	changeLangauge = (event, index, value) => {
-		console.log("langauge select", value)
+	changeLangauge = (value) => {
 		this.setState({appLang: value})
 		//AutographaStore.appLang = value;
 	}
@@ -891,7 +901,15 @@ class SettingsModal extends React.Component {
 
 	handleClose = () => {
         this.setState({ show: false });
-        window.location.reload();
+        this.setState({
+            successFile: [],
+            errorFile: [],
+            warningFile: [],
+            warningTitle: "",
+            successTitle:"",
+            errorTitle:"",
+        })
+        AutographaStore.warningMsg = []
     }
 
     handleChange = panel => (event, isExpanded) => {
