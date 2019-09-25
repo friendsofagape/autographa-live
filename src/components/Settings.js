@@ -716,7 +716,7 @@ class SettingsModal extends React.Component {
 		this.setState({refName: e.target.value});
 	}
 
-	changeLangauge = (value) => {
+	changeLangauge = (event, index, value) => {
 		this.setState({appLang: value})
 		//AutographaStore.appLang = value;
 	}
