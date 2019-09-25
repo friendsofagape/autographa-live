@@ -937,7 +937,7 @@ class SettingsModal extends React.Component {
         this.setState({expanded: (isExpanded ? panel : false) });
     }
 
-    handleSelect = tabKey => {
+    handleTabSelect = tabKey => {
         this.setState({ tabKey: tabKey });
     };
 
@@ -1445,7 +1445,7 @@ class SettingsModal extends React.Component {
             <Modal.Title><FormattedMessage id="modal-import-report" /></Modal.Title>
             </Modal.Header>
             <div>
-            <Tabs activeKey={this.state.tabKey} style={{ width: "auto" }} onSelect={this.handleSelect} id="controlled-tab-example">
+            <Tabs activeKey={this.state.tabKey} style={{ width: "auto" }} onSelect={this.handleTabSelect} id="controlled-tab-example">
               <Tab eventKey={1} title={<div className="success-title"><FormattedMessage id="tooltip-import-title" /> ({this.state.successFile.length + this.state.warningFile.length}/{this.state.totalFile.length})</div>}>
                <Modal.Body className={this.state.successTitle ? "imported-files" : ""} onDoubleClick={this.handleChange('panel')}>
                <div style={{ position: "absolute", top: "-4px", right: "39px" }} >
