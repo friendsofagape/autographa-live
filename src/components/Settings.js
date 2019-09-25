@@ -902,13 +902,15 @@ class SettingsModal extends React.Component {
         this.setState({
             successFile: [],
             errorFile: [],
-            warningFile: [],
             warningTitle: "",
             successTitle:"",
             errorTitle:"",
-            totalFile: []
+            totalFile: [],
+            warningFile: [],
         })
         AutographaStore.warningMsg = []
+        AutographaStore.successFile = []
+        AutographaStore.errorFile = []
     }
 
     handleChange = panel => (event, isExpanded) => {
