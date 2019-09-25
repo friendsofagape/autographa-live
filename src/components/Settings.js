@@ -367,7 +367,6 @@ class SettingsModal extends React.Component {
             }
             let finalWarnArray = Array.from(new Set(objWarnArray));
             this.setState({ warningFile: finalWarnArray })
-            console.log(this.state.warningFile);
             return res;
 		}).then((err) => {
             var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
@@ -717,7 +716,7 @@ class SettingsModal extends React.Component {
 		this.setState({refName: e.target.value});
 	}
 
-	changeLangauge = (value) => {
+	changeLangauge = (event, index, value) => {
 		this.setState({appLang: value})
 		//AutographaStore.appLang = value;
 	}
@@ -737,7 +736,6 @@ class SettingsModal extends React.Component {
 				})
 			}, 2000);
 		}).catch((err) => {
-			console.log(err)
 			if (err.message === 'missing') {
 				var locale = {
 					_id: 'app_locale',
@@ -904,12 +902,15 @@ class SettingsModal extends React.Component {
         this.setState({
             successFile: [],
             errorFile: [],
-            warningFile: [],
             warningTitle: "",
             successTitle:"",
             errorTitle:"",
+            totalFile: [],
+            warningFile: [],
         })
         AutographaStore.warningMsg = []
+        AutographaStore.successFile = []
+        AutographaStore.errorFile = []
     }
 
     handleChange = panel => (event, isExpanded) => {
@@ -937,7 +938,6 @@ class SettingsModal extends React.Component {
     }
 
     handleTabSelect = tabKey => {
-        console.log("selected" + tabKey);
         this.setState({ tabKey: tabKey });
     };
 
