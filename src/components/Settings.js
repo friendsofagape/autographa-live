@@ -367,7 +367,6 @@ class SettingsModal extends React.Component {
             }
             let finalWarnArray = Array.from(new Set(objWarnArray));
             this.setState({ warningFile: finalWarnArray })
-            console.log(this.state.warningFile);
             return res;
 		}).then((err) => {
             var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
@@ -737,7 +736,6 @@ class SettingsModal extends React.Component {
 				})
 			}, 2000);
 		}).catch((err) => {
-			console.log(err)
 			if (err.message === 'missing') {
 				var locale = {
 					_id: 'app_locale',
@@ -908,6 +906,7 @@ class SettingsModal extends React.Component {
             warningTitle: "",
             successTitle:"",
             errorTitle:"",
+            totalFile: []
         })
         AutographaStore.warningMsg = []
     }
@@ -937,7 +936,6 @@ class SettingsModal extends React.Component {
     }
 
     handleSelect = tabKey => {
-        console.log("selected" + tabKey);
         this.setState({ tabKey: tabKey });
     };
 
