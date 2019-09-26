@@ -1068,7 +1068,7 @@ class SettingsModal extends React.Component {
                           <RadioButtonGroup
                             valueSelected={AutographaStore.scriptDirection.toUpperCase()}
                             name="scriptDir"
-                            style={{display: "flex", marginBottom:"6%"}}
+                            style={{display: "flex", marginBottom:"6%", marginTop: "8px"}}
                             onChange={(event, value) => this.onChangeScriptDir(value)}
                           >
                             <RadioButton
@@ -1079,7 +1079,7 @@ class SettingsModal extends React.Component {
                             <RadioButton
                             value="RTL"
                             label={<FormattedMessage id="label-rtl" />}
-                            style={{width: "70%"}} 
+                            style={{width: "70%", marginLeft: "25px"}}
                             />
                           </RadioButtonGroup>
                         </div>
@@ -1210,7 +1210,7 @@ class SettingsModal extends React.Component {
                             <RadioButton
                               value="RTL"
                               label={<FormattedMessage id="label-rtl" />}
-                              style={{width: "70%"}} 
+                              style={{width: "70%", marginLeft: "25px"}}
                             />
                           </RadioButtonGroup>
                         </div>
