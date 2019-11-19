@@ -130,6 +130,8 @@ export default {
 	"dynamic-msg-trans-data" : "بيانات الترجمة",
 	"dynamic-msg-enter-translation" : "الرجاء إدخال تفاصيل الترجمة في الإعدادات للمتابعة مع تصدير",
 	"dynamic-msg-process-req" : "تعذر معالجة الطلب",
+	"set-translation-details": "Unable to Import",
+	"dynamic-translation-details" :  "Please ensure you have set the translation details in Settings then Import the files.",
 	"compare-mode-heading": "غير قادر على إظهار المقارنة",
 	"dynamic-compare-mode" :  "وضع المقارنة غير ذي مغزى عبر لغات مختلفة. يرجى التأكد من ضبط تفاصيل الترجمة في الإعدادات وتحديد اللغة نفسها عبر جميع الأجزاء",
 	"dynamic-msg-bib-name-validation" : "مطلوب اسم الكتاب المقدس",

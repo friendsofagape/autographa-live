@@ -37,6 +37,12 @@ export const toUsfm = async (book, stage, targetLangDoc) => {
     return writeUsfm(usfmDoc, filePath);
 };
 
+export const backuptoUSFM = async (book, filePath) => {
+    console.log(book, filePath);
+    const usfmDoc = await toUsfmDoc(book, false);
+    return writeUsfm(usfmDoc, filePath);
+};
+
 async function toUsfmDoc(book, returnNullForEmptyBook=false) {
     try {
         const usfmContent = [];

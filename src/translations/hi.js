@@ -109,6 +109,8 @@ export default {
 	"dynamic-msg-trans-data" : "अनुवाद डेटा",
 	"dynamic-msg-enter-translation" : "एक्सपोर्ट करना जारी रखने के लिए विस्तृत अनुवाद को सेटिंग्स में डालें",
 	"dynamic-msg-process-req" : "निवेदन पूरा करने में असमर्थ",
+	"set-translation-details": "Unable to Import",
+	"dynamic-translation-details" :  "Please ensure you have set the translation details in Settings then Import the files.",
 	"compare-mode-heading": "तुलना दिखाने में असमर्थ",
 	"dynamic-compare-mode" :  "तुलना मोड अलग-अलग भाषाओं में सार्थक नहीं है। कृपया सुनिश्चित करें कि आपने सेटिंग्स में अनुवाद विवरण सेट कर दिए हैं और सभी पैन में एक ही भाषा का चयन किया है",
 	"dynamic-msg-bib-name-validation" : "बाइबल से नाम की आवश्यकता है",

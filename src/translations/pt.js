@@ -108,6 +108,8 @@ export default {
 	"dynamic-msg-trans-data" : "Dados da tradução",
 	"dynamic-msg-enter-translation" : "Indicar Detalhes da Tradução para continuar com a exportação",
 	"dynamic-msg-process-req" : "Não foi possível processar este pedido",
+	"set-translation-details": "Unable to Import",
+	"dynamic-translation-details" :  "Please ensure you have set the translation details in Settings then Import the files.",
 	"compare-mode-heading": "Não é possível mostrar a comparação",
 	"dynamic-compare-mode" :  "O modo de comparação não é significativo em diferentes idiomas. Certifique-se de ter definido os detalhes da tradução nas Configurações e selecionado o mesmo idioma em todos os painéis",
 	"dynamic-msg-bib-name-validation" : "O nome da Bíblia é obrigatório",

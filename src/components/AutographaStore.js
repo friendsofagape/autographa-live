@@ -12,6 +12,8 @@ export class AutographaStore {
   @observable showModalSearch = false
   @observable showModalDownload = false
   @observable showModalStat = false
+  @observable settingImportReport = false
+  @observable showSyncImportReport = false
   @observable bookChapterContent = ''
   @observable chunkGroup = ''
   @observable content = ''
@@ -66,6 +68,7 @@ export class AutographaStore {
   @observable username = ""
   @observable password = ""
   @observable paratextBook = {}
+  @observable door43Book = {}
   @observable backupOption = "current"
   @observable disablediff = false
   @observable successFile = []

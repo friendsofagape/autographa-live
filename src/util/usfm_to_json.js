@@ -13,6 +13,7 @@ module.exports = {
     */
 
     toJson: function (options, callback) {
+        console.log(options, callback);
         try {
             var lineReader = require('readline').createInterface({
                 input: require('fs-extra').createReadStream(options.usfmFile)
@@ -36,10 +37,13 @@ module.exports = {
         lineReader.on('line', function (line) {
             // Logic to tell if the input file is a USFM book of the Bible.
             if (!usfmBibleBook)
-                if (validLineCount > 3)
-                    // return callback(new Error('not usfm file'))
+                if (validLineCount > 3){
+                    console.log(options,options.usfmFile);
                     return callback(new Error(`${fileName(options.usfmFile)} ${AutographaStore.currentTrans["usfm-bookid-missing"]}`));
 
+                }
+                    // return callback(new Error('not usfm file'))
+                    
             validLineCount++;
             line = line.trim();
             var splitLine = line.split(/ +/);

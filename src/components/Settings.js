@@ -19,6 +19,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ImportReport from './ImportReport';
 
 const numberFormat = require("../util/getNumberFormat")
 const { dialog, getCurrentWindow } = require('electron').remote;
@@ -34,7 +35,7 @@ let flag = false;
 
 const ENDPOINTS = {
 	wacs: "https://content.bibletranslationtools.org/api/v1",
-	door43: "https://git.door43.org/api/v1"
+	door43: "https://git.door43.org/api/swagger"
 };
 
 @observer
@@ -91,7 +92,8 @@ class SettingsModal extends React.Component {
             expanded: "",
             totalFile: [],
             warningFile: [],
-            tabKey: 1
+			tabKey: 1,
+			isReady:false
 		};
 		db.get('targetBible').then((doc) => {
 			AutographaStore.scriptDirection = doc.langScript.toUpperCase();
@@ -314,6 +316,8 @@ class SettingsModal extends React.Component {
 	}
 
 	importTranslation = () => {
+		console.log("********importTranslation********");
+		AutographaStore.settingImportReport=false;
         if (!this.import_sync_setting()) return;
         this.props.showLoader(true);
 		const {
@@ -329,67 +333,69 @@ class SettingsModal extends React.Component {
                             this.state.folderPathImport :
                             [this.state.folderPathImport];
 		usfm_import.importTranslationFiles(importDir, langCode, langVersion)
-		.then((res)=> {
-            res = mobx.toJS(AutographaStore.successFile);
-            res.map((value) => {
-                this.setState(prevState => ({
-                    successFile: [...prevState.successFile, (value)],
-                    successTitle: AutographaStore.currentTrans["tooltip-import-title"]
-                }))
-            })
-            const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
-            let objWarnArray = [];
-            let preValue = undefined;
-            let book = "";
-            let chapters = [];
-            chapterMissing.map((value) => { 
-                if (value[0] !== preValue){
-                    if (value[0] !== preValue && preValue !== undefined ){
-                        const obj = {'filename':book, 'chapter':chapters};
-                        objWarnArray.push(obj);
-                        book = "";
-                        chapters = [];
-                    }
-            book = value[0];
-            chapters.push(value[1])
-            preValue = value[0];
-            }
-            else{
-                chapters.push(value[1])
-            }          
-            });
-            if (book !== "" && chapters.length !== 0){
-            const obj = {'filename':book, 'chapter':chapters};
-            objWarnArray.push(obj);
-                if (this.state.warningTitle === ""){
-                    this.setState({warningTitle:"WarningFiles"});
-                }
-            }
-            let finalWarnArray = Array.from(new Set(objWarnArray));
-            this.setState({ warningFile: finalWarnArray })
-            return res;
-		}).then((err) => {
-            var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
-            err = mobx.toJS(AutographaStore.errorFile);
-            err.map((value) => {
-                fs.appendFile(errorpath, value+"\n" , (value) => {
-                    if (value) {
-                        console.log(AutographaStore.errorFile);
-                    }else{
-                        console.log("succesfully created error.log file")
-                    }
-                });
-                let newErr = value.toString().replace("Error:","");
-                this.setState(prevState => ({
-                    errorFile: [...prevState.errorFile, (newErr)],
-                    errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
-                }))
-            })
-		}).then(() => {
-            this.props.showLoader(false);
-            this.setState({show:true});
-            AutographaStore.showModalSettings = false;
-        }).finally(() => this.transImport());
+		.then(() => AutographaStore.settingImportReport=true)
+		.then(()=> console.log("*****Translation Import*****From DB---->"))
+        .finally(() => this.transImport());
+        //     res = mobx.toJS(AutographaStore.successFile);
+        //     res.map((value) => {
+        //         this.setState(prevState => ({
+        //             successFile: [...prevState.successFile, (value)],
+        //             successTitle: AutographaStore.currentTrans["tooltip-import-title"]
+        //         }))
+        //     })
+        //     const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
+        //     let objWarnArray = [];
+        //     let preValue = undefined;
+        //     let book = "";
+        //     let chapters = [];
+        //     chapterMissing.map((value) => { 
+        //         if (value[0] !== preValue){
+        //             if (value[0] !== preValue && preValue !== undefined ){
+        //                 const obj = {'filename':book, 'chapter':chapters};
+        //                 objWarnArray.push(obj);
+        //                 book = "";
+        //                 chapters = [];
+        //             }
+        //     book = value[0];
+        //     chapters.push(value[1])
+        //     preValue = value[0];
+        //     }
+        //     else{
+        //         chapters.push(value[1])
+        //     }          
+        //     });
+        //     if (book !== "" && chapters.length !== 0){
+        //     const obj = {'filename':book, 'chapter':chapters};
+        //     objWarnArray.push(obj);
+        //         if (this.state.warningTitle === ""){
+        //             this.setState({warningTitle:"WarningFiles"});
+        //         }
+        //     }
+        //     let finalWarnArray = Array.from(new Set(objWarnArray));
+        //     this.setState({ warningFile: finalWarnArray })
+        //     return res;
+		// }).then((err) => {
+        //     var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
+        //     err = mobx.toJS(AutographaStore.errorFile);
+        //     err.map((value) => {
+        //         fs.appendFile(errorpath, value+"\n" , (value) => {
+        //             if (value) {
+        //                 console.log(AutographaStore.errorFile);
+        //             }else{
+        //                 console.log("succesfully created error.log file")
+        //             }
+        //         });
+        //         let newErr = value.toString().replace("Error:","");
+        //         this.setState(prevState => ({
+        //             errorFile: [...prevState.errorFile, (newErr)],
+        //             errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
+        //         }))
+        //     })
+		// }).then(() => {
+        //     this.props.showLoader(false);
+        //     this.setState({show:true});
+        //     AutographaStore.showModalSettings = false;
+        // }).finally(() => this.transImport());
             // .then((res) => window.location.reload())
             // .catch((err) => {
             //     console.log(err)
@@ -397,7 +403,71 @@ class SettingsModal extends React.Component {
             //     this.props.showLoader(false);
             //     swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-imp-error"], "error");
             // })
-	}
+    }
+    
+    // importReport() {
+	// 	console.log("*********SETTING REPORT*********");
+    //     let date = new Date();
+    //     let res = mobx.toJS(AutographaStore.successFile);
+    //     res.map((value) => {
+    //         this.setState(prevState => ({
+    //             successFile: [...prevState.successFile, (value)],
+    //             successTitle: AutographaStore.currentTrans["tooltip-import-title"]
+    //         }))
+    //     })
+    //     const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
+    //     let objWarnArray = [];
+    //     let preValue = undefined;
+    //     let book = "";
+    //     let chapters = [];
+    //     chapterMissing.map((value) => { 
+    //         if (value[0] !== preValue){
+    //             if (value[0] !== preValue && preValue !== undefined ){
+    //                 const obj = {'filename':book, 'chapter':chapters};
+    //                 objWarnArray.push(obj);
+    //                 book = "";
+    //                 chapters = [];
+    //             }
+    //     book = value[0];
+    //     chapters.push(value[1])
+    //     preValue = value[0];
+    //     }
+    //     else{
+    //         chapters.push(value[1])
+    //     }          
+    //     });
+    //     if (book !== "" && chapters.length !== 0){
+    //     const obj = {'filename':book, 'chapter':chapters};
+    //     objWarnArray.push(obj);
+    //         if (this.state.warningTitle === ""){
+    //             this.setState({warningTitle:"WarningFiles"});
+    //         }
+    //     }
+    //     let finalWarnArray = Array.from(new Set(objWarnArray));
+    //     this.setState({ warningFile: finalWarnArray })
+    //     // return res;
+    
+    //     var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
+    //     let err = mobx.toJS(AutographaStore.errorFile);
+    //     err.map((value) => {
+    //         fs.appendFile(errorpath, value+"\n" , (value) => {
+    //             if (value) {
+    //                 console.log(AutographaStore.errorFile);
+    //             }else{
+    //                 console.log("succesfully created error.log file")
+    //             }
+    //         });
+    //         let newErr = value.toString().replace("Error:","");
+    //         this.setState(prevState => ({
+    //             errorFile: [...prevState.errorFile, (newErr)],
+    //             errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
+    //         }))
+    //     })
+        
+    //     this.props.showLoader(false);
+    //     this.setState({show:true});
+    //     AutographaStore.showModalSettings = false;
+    // }
 
 	reference_setting() {
 		const {
@@ -495,6 +565,8 @@ class SettingsModal extends React.Component {
 	}
 
 	saveJsonToDB = (dir) => {
+		console.log("*****Reference Import*****");
+		AutographaStore.settingImportReport=false;
 		const {
 			bibleName,
 			refVersion,
@@ -506,67 +578,70 @@ class SettingsModal extends React.Component {
             if (exists) console.log("Directory Exists")
             else fs.mkdir(`${appPath}/report`, (err) => {if (err) throw err;});
         });
-		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
-			.then((res)=> {
-            res = mobx.toJS(AutographaStore.successFile);
-            res.map((value) => {
-                this.setState(prevState => ({
-                    successFile: [...prevState.successFile, (value)],
-                    successTitle: AutographaStore.currentTrans["tooltip-import-title"]
-                }))
-            })
-            const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
-            let objWarnArray = [];
-            let preValue = undefined;
-            let book = "";
-            let chapters = [];
-            chapterMissing.map((value) => { 
-                if (value[0] !== preValue){
-                    if (value[0] !== preValue && preValue !== undefined ){
-                        const obj = {'filename':book, 'chapter':chapters};
-                        objWarnArray.push(obj);
-                        book = "";
-                        chapters = [];
-                    }
-            book = value[0];
-            chapters.push(value[1])
-            preValue = value[0];
-            }
-            else{
-                chapters.push(value[1])
-            }          
-            });
-            if (book !== "" && chapters.length !== 0){
-            const obj = {'filename':book, 'chapter':chapters};
-            objWarnArray.push(obj);
-                if (this.state.warningTitle === ""){
-                    this.setState({warningTitle:"WarningFiles"});
-                }
-            }
-            let finalWarnArray = Array.from(new Set(objWarnArray));
-            this.setState({ warningFile: finalWarnArray })
-            return res;
-            }).then((err) => {
-                var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
-                err = mobx.toJS(AutographaStore.errorFile);
-                err.map((value) => {
-                    fs.appendFile(errorpath, value+"\n" , (value) => {
-                        if (value) {
-                        }else{
-                            console.log("succesfully created error.log file")
-                        }
-                    });
-                    let newErr = value.toString().replace("Error:","");
-                    this.setState(prevState => ({
-                    errorFile: [...prevState.errorFile, (newErr)],
-                    errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
-                    }))
-                })
-            }).then(() => {
-                this.props.showLoader(false)
-                this.setState({show:true})
-                AutographaStore.showModalSettings = false;
-            }).finally(() => this.referenceImport())
+        usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
+		.then(() => AutographaStore.settingImportReport=true)
+		.then(()=> console.log("*****Reference Import*****From DB---->"))
+        .finally(() => this.referenceImport());
+			// .then((res)=> {
+            // res = mobx.toJS(AutographaStore.successFile);
+            // res.map((value) => {
+            //     this.setState(prevState => ({
+            //         successFile: [...prevState.successFile, (value)],
+            //         successTitle: AutographaStore.currentTrans["tooltip-import-title"]
+            //     }))
+            // })
+            // const chapterMissing = mobx.toJS(AutographaStore.warningMsg);
+            // let objWarnArray = [];
+            // let preValue = undefined;
+            // let book = "";
+            // let chapters = [];
+            // chapterMissing.map((value) => { 
+            //     if (value[0] !== preValue){
+            //         if (value[0] !== preValue && preValue !== undefined ){
+            //             const obj = {'filename':book, 'chapter':chapters};
+            //             objWarnArray.push(obj);
+            //             book = "";
+            //             chapters = [];
+            //         }
+            // book = value[0];
+            // chapters.push(value[1])
+            // preValue = value[0];
+            // }
+            // else{
+            //     chapters.push(value[1])
+            // }          
+            // });
+            // if (book !== "" && chapters.length !== 0){
+            // const obj = {'filename':book, 'chapter':chapters};
+            // objWarnArray.push(obj);
+            //     if (this.state.warningTitle === ""){
+            //         this.setState({warningTitle:"WarningFiles"});
+            //     }
+            // }
+            // let finalWarnArray = Array.from(new Set(objWarnArray));
+            // this.setState({ warningFile: finalWarnArray })
+            // return res;
+            // }).then((err) => {
+            //     var errorpath = `${appPath}/report/error${date.getDate()}${date.getMonth()+1}${date.getFullYear()}.log`;
+            //     err = mobx.toJS(AutographaStore.errorFile);
+            //     err.map((value) => {
+            //         fs.appendFile(errorpath, value+"\n" , (value) => {
+            //             if (value) {
+            //             }else{
+            //                 console.log("succesfully created error.log file")
+            //             }
+            //         });
+            //         let newErr = value.toString().replace("Error:","");
+            //         this.setState(prevState => ({
+            //         errorFile: [...prevState.errorFile, (newErr)],
+            //         errorTitle: AutographaStore.currentTrans["tooltip-error-title"]
+            //         }))
+            //     })
+            // }).then(() => {
+            //     this.props.showLoader(false)
+            //     this.setState({show:true})
+            //     AutographaStore.showModalSettings = false;
+            // }).finally(() => this.referenceImport())
 
             // .then((res) => {
             //     swal(currentTrans["label-imported-book"], currentTrans["dynamic-msg-imp-ref-text"], "success");
@@ -805,7 +880,8 @@ class SettingsModal extends React.Component {
 		switch (syncProviderName) {
 			case "wacs":
 			case "door43":
-				return new gitea(username, password, ENDPOINTS[syncProviderName], onFailure);
+                return new gitea(username, password);
+				// return new gitea(username, password, ENDPOINTS[syncProviderName], onFailure);
 			case "other":
 				return new gitea(username, password, endpoint, onFailure);
 			default:
@@ -942,7 +1018,6 @@ class SettingsModal extends React.Component {
     };
 
   	render(){
-
     let closeSetting = () => AutographaStore.showModalSettings = false
     const { show } = this.props;
     const { langCodeValue,  langVersion, folderPath } = this.state.settingData;
@@ -954,7 +1029,11 @@ class SettingsModal extends React.Component {
       displayCSS = "inline-block";
     } else {
       displayCSS = 'none';
-    }
+	}
+	if(AutographaStore.settingImportReport===true){
+		console.log("Setting Import Report ---->",AutographaStore.settingImportReport);
+		return(<ImportReport totalFiles={this.state.totalFile} showLoader={this.props.showLoader} />)
+	}
     if(this.state.showLoader){
 	  return(<Loader />);
     }
@@ -1380,7 +1459,7 @@ class SettingsModal extends React.Component {
 									<PanelGroup accordion id = "paratext-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
 										{ <CredentialPanel settings={this} idPrefix="paratext" /> }
 									</PanelGroup>
-								{/* </Tab>
+								</Tab>
 								 <Tab eventKey="door43" title={`${AutographaStore.currentTrans["label-door43"]}`}>
 									{ <Ahref i18n="text-info-door43" href="https://git.door43.org" /> }
 									<PanelGroup accordion id = "door43-credential" style={{marginTop: '10px'}} activeKey={this.state.activeKey} onSelect={this.handleSelect} >
@@ -1416,7 +1495,7 @@ class SettingsModal extends React.Component {
                                             </Panel.Body>
                                         </Panel>
 										{ <CredentialPanel settings={this} idPrefix="other" /> }
-                                    </PanelGroup> */}
+                                    </PanelGroup>
                                 </Tab>
 							</Tabs>
 							{
@@ -1440,7 +1519,8 @@ class SettingsModal extends React.Component {
             </Tab.Container>
           </Modal.Body>
       	</Modal>
-		  <Modal className="import-report" show={this.state.show} onHide={this.handleClose}>
+		{/* <ImportReport showimport={this.state.isReady} showfunc={this.showfunc} totalFiles = {this.state.totalFile}/> */}
+		  {/* <Modal className="import-report" show={this.state.show} onHide={this.handleClose}>
             <Modal.Header className="head" closeButton>
             <Modal.Title><FormattedMessage id="modal-import-report" /></Modal.Title>
             </Modal.Header>
@@ -1516,7 +1596,7 @@ class SettingsModal extends React.Component {
             </Tabs>
             </div>
             <Modal.Footer />
-            </Modal>
+            </Modal> */}
 	</div>
     )
   }
