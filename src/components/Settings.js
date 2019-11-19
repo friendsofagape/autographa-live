@@ -245,7 +245,7 @@ class SettingsModal extends React.Component {
 		const {langCode, langVersion, folderPath} = this.state.settingData;
 		const settingData = { 
 		_id: 'targetBible',
-		targetLang: langCode,
+		targetLang: langCode.toLowerCase(),
 		targetVersion: langVersion,
 		targetPath: folderPath,
 		langScript: AutographaStore.scriptDirection.toUpperCase()
