@@ -3,7 +3,7 @@
   "description": "A Bible translation editor for everyone. Now live.",
   "version": "0.1.0-beta.6",
   "main": "public/electron.js",
-  "author": "Friends of Agape <mail@joelmath.io>",
+  "author": "Friends of Agape <mathew.joel@protonmail.com>",
   "license": "GPL-3.0",
   "homepage": ".",
   "dependencies": {
@@ -86,7 +86,7 @@
     "eject": "react-scripts eject",
     "build:electron": "craco build --config craco.config.js main=build/electron.js",
     "preelectron-pack": "npm run build",
-    "electron-pack": "build"
+    "electron-pack": "electron-builder build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -104,7 +104,7 @@
     "concurrently": "^4.1.0",
     "cross-env": "^5.2.0",
     "electron": "^6.0.9",
-    "electron-builder": "^20.40.2",
+    "electron-builder": "^21.2.0",
     "electron-packager": "^13.1.1",
     "electron-rebuild": "^1.8.4",
     "wait-on": "^3.2.0"
