@@ -8,9 +8,10 @@
   "homepage": ".",
   "dependencies": {
     "@bit/unfoldingword.resources.viewer": "0.1.5",
-    "@craco/craco": "^3.6.0",
+    "@craco/craco": "5.6.2",
     "@material-ui/core": "^4.2.0",
     "@material-ui/icons": "^4.2.1",
+    "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "customize-cra": "^0.2.12",
     "diff-match-patch": "^1.0.0",
@@ -27,7 +28,7 @@
     "react-detect-offline": "^2.4.0",
     "react-dom": "^16.8.4",
     "react-intl": "^2.8.0",
-    "react-scripts": "2.1.8",
+    "react-scripts": "3.0.1",
     "request-promise": "^4.2.2",
     "rtl-detect": "^1.0.0",
     "string-punctuation-tokenizer": "^2.0.0-beta.2",
@@ -36,8 +37,8 @@
     "transform-runtime": "0.0.0",
     "typescript": "^3.4.3",
     "usfm-js": "^1.0.12",
-    "xml2js": "^0.4.19",
-    "yaml": "^1.0.2"
+    "xml2js": "^0.4.22",
+    "yaml": "^1.7.2"
   },
   "build": {
     "extends": "react-cra",
