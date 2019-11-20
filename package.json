@@ -28,7 +28,7 @@
     "react-detect-offline": "^2.4.0",
     "react-dom": "^16.8.4",
     "react-intl": "^2.8.0",
-    "react-scripts": "2.1.8",
+    "react-scripts": "3.0.1",
     "request-promise": "^4.2.2",
     "rtl-detect": "^1.0.0",
     "string-punctuation-tokenizer": "^2.0.0-beta.2",
