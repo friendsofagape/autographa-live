@@ -95,6 +95,7 @@ class ProjectListRow extends React.Component {
 		            let book = {};
 		            let parser = new DOMParser();
 					let xmlDoc = parser.parseFromString(bookData,"text/xml");
+					console.log("xmlDoc----->",xmlDoc);
 					
 					//Modifying the exisitng dom and uploading to paratext
 					if (xmlDoc.evaluate) {
@@ -150,24 +151,33 @@ class ProjectListRow extends React.Component {
 							currVerse = verseNodes.iterateNext();
 						}
 					}
+					console.log("book------>",book);
 					//get bookIndex from const 
 					let bookCode = booksCodes.findIndex((book) => book === bookId)
-
+					console.log("bookCode--->",bookCode);
 					db.get((bookCode + 1).toString()).then((doc) => {
+						console.log("doc------>",doc);
 	                    for (let i = 0; i < doc.chapters.length; i++) {
+							console.log("i = ",i,Object.keys(book));
 	                        for (let j = 1; j <= Object.keys(book).length; j++) {
-	                            if (j === doc.chapters[i].chapter) {
-	                                var versesLen = Math.min(book[j].length, doc.chapters[i].verses.length);
+								console.log("j = ",j);
+	                            // if (j === doc.chapters[i].chapter) {
+									console.log("j === doc.chapters[i].chapter ---> ",doc.chapters[i].chapter);
+									var versesLen = Math.min(book[j].length, doc.chapters[i].verses.length);
+									console.log("versesLen---->",versesLen);
 	                                for (let k = 0; k < versesLen; k++) {
+										console.log("k = ",k);
+										console.log("book[j][k]---->",book[j][k]);
 	                                    var verseNum = book[j][k].verse_number;
 	                                    doc.chapters[i].verses[verseNum - 1].verse = book[j][k].verse;
 	                                    book[j][k] = undefined;
 	                                }
 	                                //check for extra verses in the imported usfm here.
-	                                break;
-	                            }
+	                                // break;
+	                            // }
 	                        }
-	                    }
+						}
+						console.log("doc---2--->",doc);
 	                    db.put(doc).then((response) => {
 							this.resetLoader();
 							//swal({AutographaStore.currentTrans["btn-import"], AutographaStore.currentTrans["label-imported-book"], "success");
