@@ -44,7 +44,6 @@ class ProjectListRow extends React.Component {
         // });
 	}
 	selectBook = (projId, bookId, obj) => {
-		// console.log(projId, bookId, obj.target.checked)
 		if(obj.target.checked) {
 			this.state.selectedBook.push(bookId)
 			AutographaStore.paratextBook[projId] = this.state.selectedBook
@@ -95,17 +94,16 @@ class ProjectListRow extends React.Component {
 		            let book = {};
 		            let parser = new DOMParser();
 					let xmlDoc = parser.parseFromString(bookData,"text/xml");
-					console.log("xmlDoc----->",xmlDoc);
 					
 					//Modifying the exisitng dom and uploading to paratext
 					if (xmlDoc.evaluate) {
 						let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ANY_TYPE, null);
 						let verseNodes = xmlDoc.evaluate("//verse", xmlDoc, null, XPathResult.ANY_TYPE, null);
 						let currChapter=chapterNodes.iterateNext();
-						book[currChapter.attributes["number"].value] = []
+						book[currChapter.attributes["number"].value] = [];
 						let currVerse = verseNodes.iterateNext();
 						while(currVerse){
-							if(currVerse.attributes["number"].value === 1 && book[currChapter.attributes["number"].value].length !== 0){
+							if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value].length != 0){
 								currChapter = chapterNodes.iterateNext();
 								book[currChapter.attributes["number"].value] = [];
 							}
@@ -151,33 +149,23 @@ class ProjectListRow extends React.Component {
 							currVerse = verseNodes.iterateNext();
 						}
 					}
-					console.log("book------>",book);
 					//get bookIndex from const 
-					let bookCode = booksCodes.findIndex((book) => book === bookId)
-					console.log("bookCode--->",bookCode);
+					let bookCode = booksCodes.findIndex((book) => book === bookId);
 					db.get((bookCode + 1).toString()).then((doc) => {
-						console.log("doc------>",doc);
 	                    for (let i = 0; i < doc.chapters.length; i++) {
-							console.log("i = ",i,Object.keys(book));
 	                        for (let j = 1; j <= Object.keys(book).length; j++) {
-								console.log("j = ",j);
-	                            // if (j === doc.chapters[i].chapter) {
-									console.log("j === doc.chapters[i].chapter ---> ",doc.chapters[i].chapter);
+	                            if (j === doc.chapters[i].chapter) {
 									var versesLen = Math.min(book[j].length, doc.chapters[i].verses.length);
-									console.log("versesLen---->",versesLen);
-	                                for (let k = 0; k < versesLen; k++) {
-										console.log("k = ",k);
-										console.log("book[j][k]---->",book[j][k]);
-	                                    var verseNum = book[j][k].verse_number;
+									for (let k = 0; k < versesLen; k++) {
+										var verseNum = book[j][k].verse_number;
 	                                    doc.chapters[i].verses[verseNum - 1].verse = book[j][k].verse;
 	                                    book[j][k] = undefined;
 	                                }
 	                                //check for extra verses in the imported usfm here.
-	                                // break;
-	                            // }
+	                                break;
+	                            }
 	                        }
 						}
-						console.log("doc---2--->",doc);
 	                    db.put(doc).then((response) => {
 							this.resetLoader();
 							//swal({AutographaStore.currentTrans["btn-import"], AutographaStore.currentTrans["label-imported-book"], "success");
@@ -200,7 +188,6 @@ class ProjectListRow extends React.Component {
 							swal(AutographaStore.currentTrans["dynamic-msg-error"], AutographaStore.currentTrans["dynamic-msg-went-wrong"], "error");
 						});
                 	});
-					// console.log(book)
  	        	})
 	        }
 	    });
@@ -234,7 +221,6 @@ class ProjectListRow extends React.Component {
             this.resetLoader();
             await swal(currentTrans["btn-import"], this.makeSyncReport(importedBooks), "success");
         } catch(err) {
-            console.log(err);
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
         }
@@ -278,7 +264,6 @@ class ProjectListRow extends React.Component {
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-book-exported"], this.makeSyncReport(writtenBookIds), "success");
         } catch(err) {
-            console.log(err);
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
         }
@@ -327,14 +312,13 @@ class ProjectListRow extends React.Component {
 						let parser = new xml2js.Parser();
 						parser.parseString(bookRevision, (err, result) => {
 							let revision = result.RevisionInfo.ChapterInfo[0].$.revision;
-							let bookIndex = booksCodes.findIndex((book) => book === bookId)
+							let bookIndex = booksCodes.findIndex((book) => book === bookId);
 							db.get((bookIndex + 1).toString()).then( async (doc) => {
 								let xmlBook = fs.readFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId.toUpperCase()}.xml`, 'utf8');
 								const xmlDoc = new DOMParser().parseFromString(xmlBook,"text/xml");
 								if (xmlDoc.evaluate) {
 									let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 									let verseNodes = xmlDoc.evaluate("//verse", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		
 									let currChapter=chapterNodes.snapshotItem(0);
 									book[currChapter.attributes["number"].value-1] = [];
 									let currVerse = verseNodes.snapshotItem(0);
@@ -343,13 +327,12 @@ class ProjectListRow extends React.Component {
 									
 									while(v < verseNodes.snapshotLength){
 										v++;
-										 if(currVerse.attributes["number"].value === 1 && book[currChapter.attributes["number"].value-1].length !== 0){
+										 if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value-1].length != 0){
 											i++;
 											currChapter = chapterNodes.snapshotItem(i);
 											book[currChapter.attributes["number"].value-1] = [];
 										}
 										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[currVerse.attributes["number"].value-1];
-
 											if(!currVerse.nextSibling){
 												currVerse.insertAdjacentText('afterend',verse.verse);
 											}
@@ -366,7 +349,6 @@ class ProjectListRow extends React.Component {
 											}
 											book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
 											currVerse = verseNodes.snapshotItem(v);
-
 									}
 									try{
 										_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
