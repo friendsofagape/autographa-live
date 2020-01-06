@@ -776,10 +776,13 @@ class Navbar extends React.Component {
                                     {AutographaStore.translatedBookNames !== null && (
                                             bookData.map((item, index) => {
                                             return <li key={index}>
-                                                        <a href="#" key={index} onClick={ this.onItemClick.bind(this, item) }
-                                                            value={item} className={( AutographaStore.bookName === item ) ? 'link-active': ""} >
-                                                            {item}
-                                                        </a>
+                                                    <Link key={index} style={{ cursor: 'pointer' }} onClick={this.onItemClick.bind(this, item, index)}
+                                                        value={item} onMouseEnter={this.handlepopper} className={(AutographaStore.bookName === item) ? 'link-active' : ""} >
+                                                        {item}
+                                                        <Tooltip TransitionComponent={Zoom} placement="top" title="edit">
+                                                        <EditIcon key={index} style={{ cursor: 'pointer', marginLeft: "9px" }} hidden={AutographaStore.index !== index} onClick={this.editbooks} />
+                                                        </Tooltip>
+                                                    </Link>
                                                     </li>
                                             })
                                     )}                       
