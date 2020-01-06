@@ -8417,7 +8417,7 @@ ul {
   }
 
 .books-li ul {
-  padding-left: 50px; }
+  padding-left: 25px; }
 
 .books-li ul li a {
   color: #0b63bf !important; }
@@ -8723,7 +8723,9 @@ body {
   border: none; }
 
 #tab-books .modal-content {
-  width: 725px !important; }
+  width: 900px !important;
+  margin-left: -100px; 
+}
 
 #tab-search label {
   color: #03a9f4; }

@@ -14,7 +14,13 @@ import { Toggle } from 'material-ui';
 import Loader from './Loader';
 import swal from 'sweetalert';
 import App from '../App';
-import {tokenize} from 'string-punctuation-tokenizer';
+import { tokenize } from 'string-punctuation-tokenizer';
+import { Link } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import { Tooltip, IconButton, Zoom } from '@material-ui/core';
+import BookNameEditor from './BookNameEditor';
+import * as mobx from "mobx";
+const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
 const session = require('electron').remote.session;
@@ -73,6 +79,30 @@ class Navbar extends React.Component {
         });
         this.resetDiffValue();        
     }
+
+    componentDidMount() {
+        db.get('translatedBookNames', function (err, doc) {
+            if (err) {
+                localStorage.setItem('editBookNamesMode', false);
+                let doc = {
+                    _id: "translatedBookNames",
+                    books: Constant.booksEditList,
+                }
+                db.put(doc, function (err, response) {
+                    if (err) {
+                        return console.log(err);
+                    } else {
+                        window.location.reload()
+                    }
+                });
+                return console.log(err);
+            } else {
+                AutographaStore.translatedBookNames = doc.books
+            }
+        })
+        AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
+    }
+    
     getContent = (id, chapter) => {
         return refDb.get(id.toString()).then( (doc) => {
             for (var i = 0; i < doc.chapters.length; i++) {
@@ -230,7 +260,7 @@ class Navbar extends React.Component {
         AutographaStore.showModalBooks = true;
         AutographaStore.activeTab = tab;
         AutographaStore.bookActive = AutographaStore.bookId;
-        AutographaStore.bookName = Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1] 
+        AutographaStore.bookName = AutographaStore.editBookNamesMode && (AutographaStore.translatedBookNames !== null) ? AutographaStore.translatedBookNames[parseInt(AutographaStore.bookId, 10) - 1] : Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1];
         AutographaStore.chapterActive = AutographaStore.chapterId;
         this.getData();
     }
@@ -244,16 +274,21 @@ class Navbar extends React.Component {
         })
     }
 
-    onItemClick(bookName) {
+    onItemClick(bookName, requiredIndex) {
+        if (AutographaStore.openBookNameEditor === true) {
+            AutographaStore.bookNameEditorPopup = true
+            AutographaStore.RequiredIndex = requiredIndex
+        }
         AutographaStore.bookName = bookName;
         AutographaStore.chapterActive = 0;
         
         // getting chapter list
-        let bookIndex =  Constant.booksList.findIndex((book)=> book.toLowerCase() === bookName.toLowerCase());
+        let bookIndex = (AutographaStore.editBookNamesMode) ? AutographaStore.index : Constant.booksList.findIndex((book) => book.toLowerCase() === bookName.toLowerCase());
         const bookSkel = bibleJson[bookIndex+1];
         AutographaStore.bookActive = bookIndex+1
         AutographaStore.bookChapter["chapterLength"] = bookSkel.chapters.length;
         AutographaStore.bookChapter["bookId"] = bookIndex+1;
+        if (AutographaStore.bookNameEditorPopup === false)
         this.goToTab(2)
     }
 
@@ -636,23 +671,50 @@ class Navbar extends React.Component {
         AutographaStore.chapterId = newValue;
     }
 
+    editbooks = () => {
+        AutographaStore.editBookNamesMode = true
+        localStorage.setItem('editBookNamesMode', AutographaStore.editBookNamesMode);
+        AutographaStore.openBookNameEditor = !AutographaStore.openBookNameEditor
+    }
+
+    handlepopper = (event) => {
+        let book = event.currentTarget.getAttribute('value')
+        var index1;
+        (AutographaStore.translatedBookNames).map((value, index) => {
+            if (value === book) {
+                index1 = index
+            }
+        })
+        AutographaStore.index = index1
+    }
+
     render() {
         // const layout = AutographaStore.layout;
         var OTbooksstart = 0;
         var OTbooksend = 38;
         var NTbooksstart= 39;
         var NTbooksend= 65;
-        const bookData = AutographaStore.bookData;
+        var bookData;
+        let mode = mobx.toJS(AutographaStore.editBookNamesMode)
+        if ((mode.toString() === "true")) {
+            bookData = AutographaStore.translatedBookNames
+        }
+        else {
+            bookData = AutographaStore.bookData
+        }
         const refContent = AutographaStore.content; 
         const refContentOne = AutographaStore.contentOne;
         const refContentTwo = AutographaStore.contentTwo;
-        const bookName = Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1]
+        const bookName = ((mode.toString() === "true") && (AutographaStore.translatedBookNames !== null)) ? AutographaStore.translatedBookNames[parseInt(AutographaStore.bookId, 10) - 1] : Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1];
         let close = () => AutographaStore.showModalBooks = false;
         const test = (AutographaStore.activeTab === 1);
         var chapterList = [];
         const toggle = AutographaStore.toggle;
         for(var i=0; i<AutographaStore.bookChapter["chapterLength"]; i++){
             chapterList.push( <li key={i} value={i+1} ><a href="javascript:void(0);"  className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
+        }
+        if (localStorage.getItem('editBookNamesMode') === false) {
+            bookData = AutographaStore.bookData
         }
 
         return (
@@ -711,8 +773,8 @@ class Navbar extends React.Component {
                                 <div className="wrap-center"></div>
                                 <div className="row books-li" id="bookdata">
                                     <ul id="books-pane">
-                                        {
-                                            bookData.map((item,index) =>{
+                                    {AutographaStore.translatedBookNames !== null && (
+                                            bookData.map((item, index) => {
                                             return <li key={index}>
                                                         <a href="#" key={index} onClick={ this.onItemClick.bind(this, item) }
                                                             value={item} className={( AutographaStore.bookName === item ) ? 'link-active': ""} >
@@ -720,7 +782,7 @@ class Navbar extends React.Component {
                                                         </a>
                                                     </li>
                                             })
-                                        }                       
+                                    )}                       
                                     </ul>
                                 </div>
                                 <div className= "clearfix"></div>
@@ -739,6 +801,7 @@ class Navbar extends React.Component {
                 <AboutUsModal show={AutographaStore.showModalAboutUs} />
                 <SearchModal show={AutographaStore.showModalSearch}/>
                 <DownloadModal show={AutographaStore.showModalDownload} />
+                <BookNameEditor show={AutographaStore.bookNameEditorPopup} />
                 <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
                     <div className="container-fluid">
                     <div className="navbar-header">

@@ -23,6 +23,11 @@ export class AutographaStore {
   @observable chapterActive = 1
   @observable currentRef = 'eng_ult'
   @observable bookData = Constant.booksList
+  @observable translatedBookNames = null
+  @observable openBookNameEditor = false
+  @observable updatedTranslatedBookNames = ''
+  @observable editBookNamesMode = false
+  @observable bookNameEditorPopup = false
   @observable bookName = ''
   @observable translationContent =  ''
   @observable selectId =  1
@@ -71,5 +76,6 @@ export class AutographaStore {
   @observable successFile = []
   @observable errorFile = []
   @observable warningMsg = []
+  @observable index = null
 }
 export default new AutographaStore();

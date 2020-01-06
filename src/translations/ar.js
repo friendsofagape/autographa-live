@@ -57,6 +57,8 @@ export default {
 	"tbl-header-name" : "اسم الكتاب المقدس",
 	"tbl-header-action" : "عمل",
 	"modal-title-setting" : "إعدادات",
+	"modal-translate-book-name": "ترجمة اسم الكتاب",
+	"icon-button-reset": "إعادة تعيين",
 	"tooltip-select-book" : "حدد كتاب",
 	"tooltip-select-chapter" : "حدد الفصل",
 	"tooltip-compare-mode" : "قارن الوضع",
