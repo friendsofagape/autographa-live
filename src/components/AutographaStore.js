@@ -76,6 +76,6 @@ export class AutographaStore {
   @observable successFile = []
   @observable errorFile = []
   @observable warningMsg = []
-  @observable index = null
+  @observable bookindex = null
 }
 export default new AutographaStore();
