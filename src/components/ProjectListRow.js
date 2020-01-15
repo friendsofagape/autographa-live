@@ -157,10 +157,14 @@ class ProjectListRow extends React.Component {
 	                            if (j === doc.chapters[i].chapter) {
 									var versesLen = Math.min(book[j].length, doc.chapters[i].verses.length);
 									for (let k = 0; k < versesLen; k++) {
-										var verseNum = book[j][k].verse_number;
-	                                    doc.chapters[i].verses[verseNum - 1].verse = book[j][k].verse;
-	                                    book[j][k] = undefined;
-	                                }
+                                        var verseNum = book[j][k].verse_number;
+                                        if (verseNum.match(/[-,]/gm)) {
+                                            let verseNumber = (verseNum.match(/^(\d+)/gm));
+                                            verseNum = verseNumber[0];
+                                        }
+                                        doc.chapters[i].verses[verseNum - 1].verse = book[j][k].verse;
+                                        book[j][k] = undefined;
+                                    }
 	                                //check for extra verses in the imported usfm here.
 	                                break;
 	                            }
