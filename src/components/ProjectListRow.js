@@ -326,24 +326,15 @@ class ProjectListRow extends React.Component {
 									let currVerse = verseNodes.snapshotItem(0);
 									let v = 0;
 									let i = 0;
-									console.log("doc--->",doc);
 									while(v < verseNodes.snapshotLength){
-										console.log("YEs");
 										v++;
 										 if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value-1].length != 0){
 											i++;
 											currChapter = chapterNodes.snapshotItem(i);
 											book[currChapter.attributes["number"].value-1] = [];
 										}
-										console.log("currVerse--->",currVerse);
-										console.log(currVerse.attributes["number"].value);
-										let paratext_verse = (currVerse.attributes["number"].value);
 										let verse_num = ((currVerse.attributes["number"].value).match(/^(\d+)/gm));
-										(currVerse.attributes["number"].value) = parseInt(verse_num[0]);
-										console.log("verse_num---->",verse_num,"currVerse--->",currVerse);
-										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[currVerse.attributes["number"].value-1];
-										console.log("currChapter--->",currChapter);
-										console.log("verse---->",verse);
+										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[parseInt(verse_num[0])-1];
 											if(!currVerse.nextSibling){
 												currVerse.insertAdjacentText('afterend',verse.verse);
 											}
@@ -358,7 +349,7 @@ class ProjectListRow extends React.Component {
 											}else{
 												currVerse.insertAdjacentText('afterend', verse.verse);
 											}
-											book[currChapter.attributes["number"].value-1].push({verse_number: paratext_verse, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
+											book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
 											currVerse = verseNodes.snapshotItem(v);
 									}
 									try{
@@ -372,7 +363,6 @@ class ProjectListRow extends React.Component {
 									}
 								}
 							}).catch((err) => {
-								console.log("outside catch---->");
 								this.props.showLoader(false);
 								swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
 							});
