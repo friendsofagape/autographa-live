@@ -215,13 +215,17 @@ class Navbar extends React.Component {
 
     updateTransContent = () => {
         let translationContent = [];
+        let jointVerse = [];
+        console.log("Navbar--->updateTransContent");
         db.get(AutographaStore.bookId.toString()).then((doc) => {
           let verses = doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses;
           AutographaStore.verses = verses
           verses.forEach( (verse, index) => {
             translationContent.push(verse.verse);
+            jointVerse.push(verse.joint_verse);
           });
-          AutographaStore.translationContent = translationContent
+          AutographaStore.translationContent = translationContent;
+          AutographaStore.jointVerse = jointVerse;
         });
     }
 
@@ -306,6 +310,7 @@ class Navbar extends React.Component {
     }
 
     getValue(chapter, bookId){
+        console.log("Navbar ---> getValue")
         AutographaStore.translationContent = "";
         AutographaStore.chapterId = chapter;
         AutographaStore.bookId = bookId;
@@ -641,8 +646,10 @@ class Navbar extends React.Component {
                             tIns += diffCount["ins"];
                             tDel += diffCount["del"];
                             let ds = dmp_diff.diff_prettyHtml(verseDiff);
+                            console.log("toggled");
                             translationContent.push(<span dangerouslySetInnerHTML={{__html: ds}}></span>);
                         }else{
+                            console.log("toggled---else-->");
                             translationContent.push(AutographaStore.verses[i - 1].verse.toString());
                         }
                         chunkGroup.push(chunk);

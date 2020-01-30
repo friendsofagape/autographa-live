@@ -79,12 +79,13 @@ module.exports = {
                 if (bookIndex !== -1){
                     if(bibleSkel[bookIndex + 1].chapters[c - 1] !== undefined){
                         if (v < bibleSkel[bookIndex + 1].chapters[c - 1].verses.length) {
+                            // console.log(splitLine[1]);
                             if (splitLine[1].match((/\W/gm))){
-                                let verseNumber = splitLine[1].match(/\d+/gm);
+                                let verseNumber = splitLine[1].match(/\d+/g);
+                                // console.log(verseNumber);
                                 book.chapters[c - 1].verses.push({
                                     "verse_number": parseInt(verseNumber[0], 10),
-                                    "verse": verseStr,
-                                    "joint_verse": "nil"
+                                    "verse": verseStr
                                 });
                                 v++;
                                 // Here instead of i = verseNumber[1], used i = verseNumber[0] so that won't miss any number
@@ -92,17 +93,17 @@ module.exports = {
                                 for (let i = (parseInt(verseNumber[0])+1); i <= verseNumber[(verseNumber.length)-1]; i++) {
                                     book.chapters[c - 1].verses.push({
                                         "verse_number": parseInt(i, 10),
-                                        "verse": "Joint Verse",
+                                        "verse": "----- Joint with preceeding verse(s) -----",
                                         "joint_verse": parseInt(verseNumber[0])
                                     });
                                     v++;
                                 }
                             }
                             else{
+                                // console.log(parseInt(splitLine[1], 10));
                                 book.chapters[c - 1].verses.push({
                                     "verse_number": parseInt(splitLine[1], 10),
-                                    "verse": verseStr,
-                                    "joint_verse": "nil"
+                                    "verse": verseStr
                                 });
                                 v++;
                             }
@@ -157,7 +158,6 @@ module.exports = {
                     return callback(null, `${fileName(options.usfmFile)}`)
                 }, (err) => {
                     refDb.put(book).then((doc) => {
-                        console.log(book);
                         var missingChapterbook = [];
                     (book.chapters).forEach((_value,index)=> {
                         if(_value.verses.length===0){
@@ -199,7 +199,12 @@ module.exports = {
                                     var verseNum = book.chapters[j].verses[k].verse_number;
                                     if (doc.chapters[i].verses[verseNum - 1] != undefined){
                                         console.log(book.chapters[j].verses[k]);
+                                        console.log(doc.chapters[i].verses[verseNum - 1]);
                                         doc.chapters[i].verses[verseNum - 1].verse = book.chapters[j].verses[k].verse;
+                                        // Adding joint verse data into DB
+                                        if (book.chapters[j].verses[k].joint_verse){
+                                            doc.chapters[i].verses[verseNum - 1].joint_verse = book.chapters[j].verses[k].joint_verse;
+                                        }
                                         book.chapters[j].verses[k] = undefined;
                                     }
                                     else{
