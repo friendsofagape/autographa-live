@@ -47,12 +47,31 @@ async function toUsfmDoc(book, returnNullForEmptyBook=false) {
         for (const chapter of doc.chapters) {
             usfmContent.push('\n\\c ' + chapter.chapter);
             usfmContent.push('\\p');
+            let i = 0;
+            let verseNumber;
+            let verses;
             for (const verse of chapter.verses) {
-                // Push verse number and content.
-                usfmContent.push('\\v ' + verse.verse_number + ' ' + verse.verse);
-                isEmpty = isEmpty && !verse.verse;
+                i = i + 1;
+                if (i < (chapter.verses).length && chapter.verses[i].joint_verse) {
+                    // Finding out the join verses and get their verse number(s)
+                    verseNumber = chapter.verses[i].joint_verse + "-" + chapter.verses[i].verse_number;
+                    verses = chapter.verses[(chapter.verses[i].joint_verse)-1].verse;
+                    continue;
+                } else {
+                    if (verseNumber) {
+                        // Push join verse number (1-3) and content.
+                        usfmContent.push('\\v ' + verseNumber + ' ' + verses);
+                        verseNumber = undefined;
+                        verses = undefined;
+                    } else {
+                        // Push verse number and content.
+                        usfmContent.push('\\v ' + verse.verse_number + ' ' + verse.verse);
+                    }
+                    isEmpty = isEmpty && !verse.verse;
+                }
             }
         }
+        console.log(usfmContent);
         return (returnNullForEmptyBook && isEmpty)
             ? null
             : usfmContent.join('\n');
