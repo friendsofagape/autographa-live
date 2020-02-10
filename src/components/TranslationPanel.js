@@ -3,6 +3,9 @@ import { observer } from "mobx-react"
 import AutographaStore from "./AutographaStore"
 import Statistic  from '../components/Statistic';
 import { FormattedMessage } from 'react-intl';
+import * as mobx from 'mobx'
+import MicIcon from '@material-ui/icons/Mic';
+import { StoreContext } from '../Audio/context/StoreContext';
 const i18n = new(require('../translations/i18n'))();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
@@ -14,36 +17,17 @@ class TranslationPanel extends React.Component {
       		if(res) AutographaStore.scriptDirection = "rtl"
     	});
    		this.timeout =  0;
-  	}
-
-  	highlightRef(vId, refId, obj) {
-		{/*var content = ReactDOM.findDOMNode(this);
-		let verses = content.getElementsByClassName("verse-input")[0].querySelectorAll("span[id^=v]");
-		var refContent = document.getElementsByClassName('ref-contents');
-		for (var a=0; a< refContent.length; a++) {
-		var refContent2 = refContent[a];
-		for (var i = 0; i < AutographaStore.verses.length; i++) {
-			var refDiv = refContent2.querySelectorAll('div[data-verse^='+'"'+"r"+(i+1)+'"'+']');
-			if (refDiv != 'undefined') {
-			refDiv[0].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
-			}            
-		};
-		let chunk = document.getElementById(obj).getAttribute("data-chunk-group");
-		if (chunk) {
-			refContent2.querySelectorAll('div[data-verse^="r"]').style="background-color: '';font-weight: '';padding-left:10px;padding-right:10px";
-			var limits = chunk.split("-").map(function(element) { return parseInt(element, 10) - 1; });
-			for(var j=limits[0]; j<=limits[1];j++){
-			refContent2.querySelectorAll("div[data-verse=r"+(j+1)+"]")[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;margin-right:10px";
-			}
-			$('div[data-verse="r' + (limits[0] + 1) + '"]').css({ "border-radius": "10px 10px 0px 0px" });
-			$('div[data-verse="r' + (limits[1] + 1) + '"]').css({ "border-radius": "0px 0px 10px 10px" });
+	  }
+	componentDidMount(){
+		this.highlighttrans(AutographaStore.vId)
+	}
+	componentDidUpdate(){
+		this.highlighttrans(AutographaStore.vId)
+		if(AutographaStore.AudioMount===true){
+		this.highlightRef(`v${AutographaStore.vId}`, AutographaStore.vId-1)
 		}
-        }*/}
-        // document.getElementById(vId).addEventListener("paste", function (e) {
-		// 	e.preventDefault();
-		// 	var text = e.clipboardData.getData("text/plain");
-		// 	document.execCommand("insertHTML", false, text);
-		// })
+	}
+  	highlightRef(vId, refId, obj) {
       	let refContent = document.getElementsByClassName('ref-contents');
       	for(let l=0; l<AutographaStore.layout; l++){
         	let ref = refContent[l] ? refContent[l].querySelectorAll('div[data-verse^="r"]') : [];
@@ -56,8 +40,30 @@ class TranslationPanel extends React.Component {
           		refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
         }
         let focusIn = document.getElementById(vId);
-        focusIn.focus();
-  	}
+		focusIn.focus();
+		if(AutographaStore.AudioMount===true)
+		this.highlighttrans(vId, refId,  obj);
+	}
+
+	highlighttrans (vId) {
+		let num = AutographaStore.vId
+		let refContent = document.getElementsByClassName('verse-input');
+      	for(let l=0; l<AutographaStore.layout; l++){
+			let ref = refContent[l] ? refContent[l].querySelectorAll('div') : [];
+        	for (let i=0; i < ref.length; i++) {
+          		if (ref[i] !== 'undefined') {
+            		ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px;whitespace:pre-wrap;"
+          		}
+        	};
+			if( refContent[l])
+			if(num<=0){
+				num = 1
+			}
+			if(AutographaStore.AudioMount === true && (num > 0)) {
+				refContent[l].querySelectorAll('div')[num-1].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px;whitespace:pre-wrap;";
+			}
+        }
+	}
 
 	handleKeyUp =(e)=> {
 		if(this.timeout) clearTimeout(this.timeout);
@@ -108,15 +114,25 @@ class TranslationPanel extends React.Component {
             AutographaStore.incompleteVerse = incompleteVerseChapter;
             AutographaStore.multipleSpaces = multipleSpacesChapter;      
         })  
-    }
+	}
   
   	render (){
-    	let verseGroup = [];
+		let recordedVerse = mobx.toJS(AutographaStore.recVerse)
+		let recflag;
+		let verseGroup = [];
     	const toggle = AutographaStore.toggle;
-
 		for (let i = 0; i < AutographaStore.chunkGroup.length; i++) {
 		let vid="v"+(i+1);
-		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
+		if(recordedVerse !== null){
+			recordedVerse.map((recVerse, index) => {
+				// if(recVerse.match(i)!== -1){
+                //     recflag = recVerse
+                //     console.log(recVerse)
+                // }
+			})
+		}
+		verseGroup.push(
+		<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
 			<span className='verse-num' key={i}>{(i+1)}</span>
 			<span contentEditable={true} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}

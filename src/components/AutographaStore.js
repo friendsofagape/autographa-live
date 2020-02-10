@@ -77,5 +77,9 @@ export class AutographaStore {
   @observable errorFile = []
   @observable warningMsg = []
   @observable bookindex = null
+  @observable AudioMount = false
+  @observable vId = 1
+  @observable recVerse = null
+  @observable isWarning = false
 }
 export default new AutographaStore();

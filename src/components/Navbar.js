@@ -20,6 +20,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
+import VerseRecorder from './VerseRecorder';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -52,8 +53,8 @@ class Navbar extends React.Component {
             replaceVal:"",
             toggled: false,
             setDiff: false,
-            showLoader: false
-
+            showLoader: false,
+            showAudio:false
         };
        
         var verses, chapter;
@@ -101,6 +102,11 @@ class Navbar extends React.Component {
             }
         })
         AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
+    }
+    mountAudio = (status) => {
+        if(status === true)
+        window.location.reload();
+        AutographaStore.AudioMount = !AutographaStore.AudioMount
     }
     
     getContent = (id, chapter) => {
@@ -290,6 +296,7 @@ class Navbar extends React.Component {
         AutographaStore.bookChapter["bookId"] = bookIndex+1;
         if (AutographaStore.bookNameEditorPopup === false)
         this.goToTab(2)
+        
     }
 
      
@@ -390,7 +397,6 @@ class Navbar extends React.Component {
         return verse
         .replace(/&gt;/g, '>')
         .replace(/&lt;/g, '<')
-        .replace(/\n/g, ' ');
     }
 
     saveTarget = () => {
@@ -850,6 +856,12 @@ class Navbar extends React.Component {
                             </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right nav-pills verse-diff-on">
+                            <li className="rec-btn">
+                                    <FormattedMessage id="tooltip-recorder" >
+                                    {(message) =>
+                                    <a onClick={() => this.mountAudio(AutographaStore.AudioMount)} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone fa-2x"></i></a>}
+                                </FormattedMessage>
+                            </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>
                             <li>
 
@@ -904,7 +916,7 @@ class Navbar extends React.Component {
                     AutographaStore.layout === 1   &&
                         <div className="parentdiv">
                             <div className="layoutx"> <Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id = {1} layout={1}/><ReferencePanel refContent ={refContent}  /></div>
-                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                         </div>
                 } 
                 {

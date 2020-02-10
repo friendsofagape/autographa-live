@@ -4,6 +4,8 @@ import { observer } from "mobx-react";
 import AutographaStore from "./AutographaStore";
 import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap/lib';
+import BottomBar from '../Audio/components/BottomBar';
+import AudioApp from '../Audio/AudioApp';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
@@ -95,6 +97,7 @@ class Footer extends React.Component {
         const layout = AutographaStore.layout;
         const toggle = AutographaStore.toggle;
         return (
+            <React.Fragment>
         <nav className="navbar navbar-default navbar-fixed-bottom">
             <div className="container-fluid">
                  <div className="collapse navbar-collapse">
@@ -163,7 +166,10 @@ class Footer extends React.Component {
                         </ul>
                 </div>
             </div>
-        </nav> )
+        </nav>
+        <AudioApp isOpen={AutographaStore.AudioMount} />
+        </React.Fragment>
+        )
     }
 }
 

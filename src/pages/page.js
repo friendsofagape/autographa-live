@@ -17,6 +17,7 @@ import it from 'react-intl/locale-data/it';
 import { observer } from "mobx-react";
 import AutographaStore from "../components/AutographaStore";
 import dbUtil from '../util/DbUtil';
+import StoreContextProvider from '../Audio/context/StoreContext';
 const i18n = new(require('../translations/i18n'))();
 const refDb = require("../util/data-provider").referenceDb();
 addLocaleData([...en, ...es, ...fr, ...it]);
@@ -70,7 +71,9 @@ class Page extends React.Component {
 	    return (
 	    	<IntlProvider locale = 'en' key = {AutographaStore.appLang} messages = {AutographaStore.currentTrans} >
 			    <MuiThemeProvider>
-			    	<NavBar /> 
+				<StoreContextProvider>
+				<NavBar />
+				</StoreContextProvider>
 			    </MuiThemeProvider>
 	     	</IntlProvider>
 	    )
