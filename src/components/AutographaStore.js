@@ -81,5 +81,6 @@ export class AutographaStore {
   @observable vId = 1
   @observable recVerse = null
   @observable isWarning = false
+  @observable isRecording = false
 }
 export default new AutographaStore();

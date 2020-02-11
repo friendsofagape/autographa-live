@@ -1,10 +1,12 @@
 import React, { createContext, Component } from 'react';
 import * as sampleBible from '../components/VerseGrid/verse';
 import { default as localforage } from 'localforage';
-import * as recSave from '../core/savetoIndex';
 import * as verseRecorder from '../../components/VerseRecorder';
 import * as downloadURL from '../core/downloadWebm';
 import AutographaStore from '../../components/AutographaStore';
+import swal from 'sweetalert';
+const constants = require('../../util/constants');
+let saveRec = require('../core/savetodir');
 
 export const StoreContext = createContext();
 
@@ -22,78 +24,109 @@ class StoreContextProvider extends Component {
 	toggleOpen = () => {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
-	
+
 	selectPrev = (vId) => {
-		AutographaStore.isWarning=false
-		if (this.state.onselect > 1) {
+		AutographaStore.isWarning = false;
+		if (this.state.onselect > 1 && AutographaStore.isRecording === false) {
 			this.setState({ onselect: AutographaStore.vId - 1 });
-			AutographaStore.vId = AutographaStore.vId - 1
-			this.state.recVerse.map((value,index) => {
-				if(value.toString() === AutographaStore.vId.toString()){
-					console.log("Value",value,"onselect", AutographaStore.vId)
-					AutographaStore.isWarning=true
+			AutographaStore.vId = AutographaStore.vId - 1;
+			this.state.recVerse.map((value, index) => {
+				if (value.toString() === AutographaStore.vId.toString()) {
+					AutographaStore.isWarning = true;
 				}
-			})
+			});
+		} else {
+			swal({
+				title: 'Are you sure?',
+				text: 'You want stop the currently recording verse',
+				icon: 'warning',
+				buttons: true,
+				dangerMode: true,
+			}).then((willDelete) => {
+				if (willDelete) {
+					this.stopRecording();
+					swal('Stopped Recording!', {
+						icon: 'success',
+					});
+				}
+			});
 		}
 	};
 	selectNext = (vId) => {
-		AutographaStore.isWarning=false
-		if (this.state.onselect <= ((AutographaStore.chunkGroup.length)-1)) {
+		AutographaStore.isWarning = false;
+		if (
+			this.state.onselect <= AutographaStore.chunkGroup.length - 1 &&
+			AutographaStore.isRecording === false
+		) {
 			this.setState({ onselect: AutographaStore.vId + 1 });
-			AutographaStore.vId = AutographaStore.vId + 1
-			this.state.recVerse.map((value,index) => {
-				if(value.toString()  === AutographaStore.vId.toString()){
-					console.log("Value",value,"onselect", AutographaStore.vId)
-					AutographaStore.isWarning=true
+			AutographaStore.vId = AutographaStore.vId + 1;
+			this.state.recVerse.map((value, index) => {
+				if (value.toString() === AutographaStore.vId.toString()) {
+					AutographaStore.isWarning = true;
 				}
-			})
+			});
+		} else {
+			swal({
+				title: 'Are you sure?',
+				text: 'You want stop the currently recording verse',
+				icon: 'warning',
+				buttons: true,
+				dangerMode: true,
+			}).then((willDelete) => {
+				if (willDelete) {
+					this.stopRecording();
+					swal('Stopped Recording!', {
+						icon: 'success',
+					});
+				}
+			});
 		}
 	};
 	resetVal = (value, event, index) => {
 		this.setState({ onselect: value });
 	};
 	startRecording = () => {
-		this.setState({ record: true });
+		if (AutographaStore.isWarning === false) {
+			this.setState({ record: true });
+			AutographaStore.isRecording = true;
+		}
 	};
 	stopRecording = () => {
+		AutographaStore.isRecording = false;
 		this.setState({ record: false });
-		this.state.recVerse.push(this.state.onselect);
-	};
-	getDB = () => {
-		let newURL;
-		localforage
-			.getItem(`${this.state.onselect}`)
-			.then((value) => {
-				// This code runs once the value has been loaded from the offline store.
-				newURL = value;
-				// console.log(value1.id)
-				this.setState({
-					blob: newURL,
-				});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		if (AutographaStore.isWarning === false) {
+			this.state.recVerse.push(this.state.onselect);
+		}
 	};
 
 	saveRecord = async (value, event) => {
-		let save;
+		let save,
+			book = {};
 		value['verse'] = this.state.onselect;
 		// if (this.state.isWarning === false)
 		// 	this.state.recVerse.push(AutographaStore.vId);
+		let chapter = 'Chapter' + AutographaStore.chapterId;
+		book.bookNumber = AutographaStore.bookId.toString();
+		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
 		this.setState({ recordedFiles: value });
-		save = await recSave.default(
-			this.state.bible,
+		save = await saveRec.recSave(
+			book,
 			this.state.recordedFiles,
-			1,
+			chapter,
 			this.state.onselect,
 		);
-		this.getDB();
-		AutographaStore.recVerse= this.state.recVerse
+		// save = await recSave.(
+		// 	this.state.bible,
+		// 	this.state.recordedFiles,
+		// 	1,
+		// 	this.state.onselect,
+		// );
+		AutographaStore.recVerse = this.state.recVerse;
 	};
 	render() {
-		console.log("onslect", this.state.onselect)
-		console.log("warning", AutographaStore.isWarning)
+		console.log('onslect', this.state.onselect);
+		console.log('warning', AutographaStore.isWarning);
+		console.log('rec', this.state.recVerse);
 		return (
 			<StoreContext.Provider
 				value={{

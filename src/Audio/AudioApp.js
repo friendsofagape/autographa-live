@@ -5,6 +5,7 @@ import BottomBar from './components/BottomBar';
 import TranslationPanel from '../components/TranslationPanel';
 import { AutographaStore } from '../components/AutographaStore';
 import { VerseRecorder } from '../components/VerseRecorder';
+import Player from './components/AudioPlayer';
 // import ExportWebm from './core/ExportWebm';
 
 const AudioApp = (props) => {
@@ -13,7 +14,7 @@ const AudioApp = (props) => {
 			<StoreContextProvider>
 				<BottomBar isOpen={props}/>
 				{/* <TexttoSpeech /> */}
-				{/* <Player /> */}
+				<Player />
 				{/* <Navbar /> */}
 				{/* <VerseRecorder /> */}
 			</StoreContextProvider>

@@ -21,6 +21,8 @@ import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
 import Player from '../AudioPlayer';
 import VerseRecorder from '../../../components/VerseRecorder';
+import AutographaStore from '../../../components/AutographaStore';
+import swal from 'sweetalert';
 const path = ``;
 
 const useStyles = makeStyles((theme) => ({
@@ -99,61 +101,75 @@ function BottomBar(props) {
 	} = useContext(StoreContext);
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob);
-		// console.log(recordedBlob);
+		console.log(recordedBlob);
 	}
 
 	useEffect(() => {
-		// if (recVerse.find((item) => item === onselect)) {
-		// 	setShow(true);
-		// } else {
-		// 	setShow(false);
-		// }
-		var timerID = setInterval(() => stopRecording(), 60000);
-		return function cleanup() {
-			clearInterval(timerID);
-		};
-		// console.log(props.isOpen.vId);
+		if (AutographaStore.isWarning === true) {
+			swal({
+				title: 'Are you sure you want to Re-record this verse?',
+				text:
+					'Once deleted, you will not be able to recover this verse file!',
+				icon: 'warning',
+				buttons: true,
+				dangerMode: true,
+			}).then((willDelete) => {
+				if (willDelete) {
+					AutographaStore.isWarning = false;
+					swal(`Verse${onselect} recording has been deleted!`, {
+						icon: 'success',
+					});
+				} else {
+					AutographaStore.isWarning = true;
+					swal(`Verse${onselect} recording is safe`);
+				}
+			});
+		}
+		// var timerID = setInterval(() => stopRecording(), 6000);
+		// return function cleanup() {
+		// 	clearInterval(timerID);
+		// };
 	});
 
 	return (
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-					<div>
-						<ReactMicPlus
-							className={classes.soundWave}
-							record={record}
-							onStop={onStop}
-							strokeColor='#000000'
-							backgroundColor='#3F5274'
-							nonstop={true}
-							duration={5}
-						/>
-					</div>
-					<Slide
-						direction='up'
-						in={props}
-						mountOnEnter
-						unmountOnExit>
+					<Slide direction='up' in={props} mountOnEnter unmountOnExit>
 						<AppBar
 							position='fixed'
 							color='primary'
 							className={classes.appBar}>
 							<Toolbar>
-								<Fab
-									color='secondary'
-									aria-label='edit'
-									className={classes.fab}
-									onClick={startRecording}>
-									<Mic />
-								</Fab>
-								<Fab
-									color='primary'
-									aria-label='edit'
-									className={classes.fab}
-									onClick={stopRecording}>
-									<StopIcon />
-								</Fab>
+								<div>
+									<ReactMicPlus
+										className={classes.soundWave}
+										record={record}
+										onStop={onStop}
+										strokeColor='#000000'
+										backgroundColor='#3F5274'
+										nonstop={record}
+										duration={5}
+									/>
+								</div>
+								{record === false && (
+									<Fab
+										color='secondary'
+										aria-label='edit'
+										className={classes.fab}
+										onClick={startRecording}>
+										<Mic />
+									</Fab>
+								)}
+								{record === true && (
+									<Fab
+										color='primary'
+										aria-label='edit'
+										className={classes.fab}
+										onClick={stopRecording}>
+										<StopIcon />
+									</Fab>
+								)}
 								<Fab
 									color='primary'
 									aria-label='edit'
@@ -194,7 +210,7 @@ function BottomBar(props) {
 							</Toolbar>
 						</AppBar>
 					</Slide>
-					<VerseRecorder/>
+					<VerseRecorder />
 				</React.Fragment>
 			)}
 		</div>

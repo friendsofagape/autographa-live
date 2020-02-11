@@ -125,14 +125,21 @@ class TranslationPanel extends React.Component {
 		let vid="v"+(i+1);
 		if(recordedVerse !== null){
 			recordedVerse.map((recVerse, index) => {
-				// if(recVerse.match(i)!== -1){
-                //     recflag = recVerse
-                //     console.log(recVerse)
-                // }
+				if((recVerse-1) == i){
+					recflag = (recVerse-1)
+					console.log(recflag, i)
+                }
 			})
 		}
 		verseGroup.push(
 		<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
+		{
+			(recflag === i  && AutographaStore.AudioMount === true) && (
+					<span>
+					<MicIcon style={{ cursor: 'pointer'}} />
+					</span>
+			)
+		}
 			<span className='verse-num' key={i}>{(i+1)}</span>
 			<span contentEditable={true} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}
