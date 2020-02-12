@@ -96,6 +96,7 @@ class Footer extends React.Component {
     render() {
         const layout = AutographaStore.layout;
         const toggle = AutographaStore.toggle;
+        // console.log(AutographaStore.isPlaying)
         return (
             <React.Fragment>
         <nav className="navbar navbar-default navbar-fixed-bottom">
@@ -167,7 +168,7 @@ class Footer extends React.Component {
                 </div>
             </div>
         </nav>
-        <AudioApp isOpen={AutographaStore.AudioMount} />
+        <AudioApp isOpen={AutographaStore.AudioMount} isPlaying={AutographaStore.isPlaying} />
         </React.Fragment>
         )
     }

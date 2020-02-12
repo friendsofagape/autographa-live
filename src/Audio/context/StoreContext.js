@@ -17,6 +17,7 @@ class StoreContextProvider extends Component {
 		bible: sampleBible.default,
 		record: false,
 		recordedFiles: {},
+		storeRecord:[],
 		recVerse: [],
 		isWarning: false,
 		blob: '',
@@ -27,6 +28,7 @@ class StoreContextProvider extends Component {
 
 	selectPrev = (vId) => {
 		AutographaStore.isWarning = false;
+		AutographaStore.isPlaying = false
 		if (this.state.onselect > 1 && AutographaStore.isRecording === false) {
 			this.setState({ onselect: AutographaStore.vId - 1 });
 			AutographaStore.vId = AutographaStore.vId - 1;
@@ -53,6 +55,7 @@ class StoreContextProvider extends Component {
 		}
 	};
 	selectNext = (vId) => {
+		AutographaStore.isPlaying = false
 		AutographaStore.isWarning = false;
 		if (
 			this.state.onselect <= AutographaStore.chunkGroup.length - 1 &&
@@ -66,26 +69,29 @@ class StoreContextProvider extends Component {
 				}
 			});
 		} else {
-			swal({
-				title: 'Are you sure?',
-				text: 'You want stop the currently recording verse',
-				icon: 'warning',
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete) {
-					this.stopRecording();
-					swal('Stopped Recording!', {
-						icon: 'success',
-					});
-				}
-			});
+			if (this.state.onselect <= AutographaStore.chunkGroup.length - 1) {
+				swal({
+					title: 'Are you sure?',
+					text: 'You want stop the currently recording verse',
+					icon: 'warning',
+					buttons: true,
+					dangerMode: true,
+				}).then((willDelete) => {
+					if (willDelete) {
+						this.stopRecording();
+						swal('Stopped Recording!', {
+							icon: 'success',
+						});
+					}
+				});
+			}
 		}
 	};
 	resetVal = (value, event, index) => {
 		this.setState({ onselect: value });
 	};
 	startRecording = () => {
+		AutographaStore.reRecord = true
 		if (AutographaStore.isWarning === false) {
 			this.setState({ record: true });
 			AutographaStore.isRecording = true;
@@ -93,9 +99,11 @@ class StoreContextProvider extends Component {
 	};
 	stopRecording = () => {
 		AutographaStore.isRecording = false;
+		AutographaStore.reRecord = false
 		this.setState({ record: false });
 		if (AutographaStore.isWarning === false) {
 			this.state.recVerse.push(this.state.onselect);
+			AutographaStore.isWarning = true
 		}
 	};
 
@@ -103,30 +111,21 @@ class StoreContextProvider extends Component {
 		let save,
 			book = {};
 		value['verse'] = this.state.onselect;
-		// if (this.state.isWarning === false)
-		// 	this.state.recVerse.push(AutographaStore.vId);
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
 		this.setState({ recordedFiles: value });
+		this.state.storeRecord.push(value);
 		save = await saveRec.recSave(
 			book,
 			this.state.recordedFiles,
 			chapter,
 			this.state.onselect,
 		);
-		// save = await recSave.(
-		// 	this.state.bible,
-		// 	this.state.recordedFiles,
-		// 	1,
-		// 	this.state.onselect,
-		// );
 		AutographaStore.recVerse = this.state.recVerse;
 	};
+
 	render() {
-		console.log('onslect', this.state.onselect);
-		console.log('warning', AutographaStore.isWarning);
-		console.log('rec', this.state.recVerse);
 		return (
 			<StoreContext.Provider
 				value={{

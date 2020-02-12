@@ -14,6 +14,7 @@ import Mic from '@material-ui/icons/Mic';
 import StopIcon from '@material-ui/icons/Stop';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
@@ -67,6 +68,7 @@ const useStyles = makeStyles((theme) => ({
 		right: 0,
 		margin: theme.spacing(2),
 		marginLeft: -7,
+		float: 'center',
 	},
 	player: {
 		[theme.breakpoints.up('xl')]: {
@@ -82,7 +84,19 @@ const useStyles = makeStyles((theme) => ({
 		color: 'blue',
 		float: 'right',
 		position: 'static',
-		marginLeft: 600,
+		marginLeft: 850,
+	},
+	oscilloscopescrim: {
+		height: 125,
+		marginTop: -135,
+		scrim: {
+			height: 'inherit',
+			opacity: 0.4,
+			backgroundRepeat: 'repeat',
+		},
+	},
+	oscilloscope: {
+		width: 10,
 	},
 }));
 
@@ -103,28 +117,35 @@ function BottomBar(props) {
 		saveRecord(recordedBlob);
 		console.log(recordedBlob);
 	}
-
-	useEffect(() => {
+	function deleteRecordedVerse(){
 		if (AutographaStore.isWarning === true) {
 			swal({
-				title: 'Are you sure you want to Re-record this verse?',
+				title: 'Are you sure you want to Delete the Recording of this verse?',
 				text:
-					'Once deleted, you will not be able to recover this verse file!',
+					'Once deleted, you will not be able to recover!',
 				icon: 'warning',
 				buttons: true,
 				dangerMode: true,
 			}).then((willDelete) => {
 				if (willDelete) {
+					recVerse.splice(recVerse.indexOf(onselect), 1);
+					AutographaStore.recVerse = recVerse;
+					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
+					AutographaStore.reRecord = false;
 					swal(`Verse${onselect} recording has been deleted!`, {
 						icon: 'success',
 					});
 				} else {
 					AutographaStore.isWarning = true;
+					AutographaStore.reRecord = false;
 					swal(`Verse${onselect} recording is safe`);
 				}
 			});
 		}
+	}
+
+	useEffect(() => {
 		// var timerID = setInterval(() => stopRecording(), 6000);
 		// return function cleanup() {
 		// 	clearInterval(timerID);
@@ -141,16 +162,19 @@ function BottomBar(props) {
 							color='primary'
 							className={classes.appBar}>
 							<Toolbar>
-								<div>
-									<ReactMicPlus
-										className={classes.soundWave}
-										record={record}
-										onStop={onStop}
-										strokeColor='#000000'
-										backgroundColor='#3F5274'
-										nonstop={record}
-										duration={5}
-									/>
+								<ReactMicPlus
+									className={classes.oscilloscope}
+									visualSetting='oscilloscope'
+									record={record}
+									onStop={onStop}
+									strokeColor='#000000'
+									backgroundColor='#3F5274'
+									nonstop={true}
+								/>
+								<div className={classes.oscilloscopescrim}>
+									{!record && (
+										<div className={classes.scrim} />
+									)}
 								</div>
 								{record === false && (
 									<Fab
@@ -184,29 +208,19 @@ function BottomBar(props) {
 									onClick={selectNext}>
 									<SkipNextIcon />
 								</Fab>
-								{show && (
-									<>
-										<a
-											className='download'
-											download={`verse${onselect}.webm`}>
-											<Fab
-												aria-label='download'
-												className={classes.fab}>
-												<GetAppIcon />
-											</Fab>
-										</a>
-										<Fab
-											aria-label='download'
-											className={classes.fab}
-											// onClick={getDB}
-										>
-											<PlayCircleFilledIcon />
-										</Fab>
-										<span className={classes.player}>
-											<Player />
-										</span>
-									</>
+								{AutographaStore.isWarning === true && (
+									<Fab
+										aria-label='edit'
+										className={classes.fab}
+										onClick={deleteRecordedVerse}>
+										<DeleteForeverIcon />
+									</Fab>
 								)}
+								<span className={classes.player}>
+									<Player
+										isPlaying={props.isOpen.isPlaying}
+									/>
+								</span>
 							</Toolbar>
 						</AppBar>
 					</Slide>

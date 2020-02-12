@@ -3,7 +3,7 @@ module.exports = {
 	recSave: function(book, file, chapter, versenum) {
 		const path = require('path');
 		var appPath = path.join(__dirname, '..', '..');
-		var filePath = `${appPath}/recordings/${book.bookName}/${chapter}/verse${versenum}.webm`;
+		var filePath = `${appPath}/recordings/${book.bookName}/${chapter}/verse${versenum}.mp3`;
 		fs.exists(`${appPath}/recordings/${book.bookName}/${chapter}`, function(
 			exists,
 		) {

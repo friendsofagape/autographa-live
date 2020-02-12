@@ -82,5 +82,8 @@ export class AutographaStore {
   @observable recVerse = null
   @observable isWarning = false
   @observable isRecording = false
+  @observable isPlaying = false
+  @observable isPause = false
+  @observable reRecord = false
 }
 export default new AutographaStore();

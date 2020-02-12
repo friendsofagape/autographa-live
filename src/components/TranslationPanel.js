@@ -5,7 +5,10 @@ import Statistic  from '../components/Statistic';
 import { FormattedMessage } from 'react-intl';
 import * as mobx from 'mobx'
 import MicIcon from '@material-ui/icons/Mic';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
 import { StoreContext } from '../Audio/context/StoreContext';
+import Player from '../Audio/components/AudioPlayer';
 const i18n = new(require('../translations/i18n'))();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
 
@@ -24,8 +27,8 @@ class TranslationPanel extends React.Component {
 	componentDidUpdate(){
 		this.highlighttrans(AutographaStore.vId)
 		if(AutographaStore.AudioMount===true){
-		this.highlightRef(`v${AutographaStore.vId}`, AutographaStore.vId-1)
-		}
+        this.highlightRef(`v${AutographaStore.vId}`, AutographaStore.vId-1)
+        }
 	}
   	highlightRef(vId, refId, obj) {
       	let refContent = document.getElementsByClassName('ref-contents');
@@ -63,7 +66,7 @@ class TranslationPanel extends React.Component {
 				refContent[l].querySelectorAll('div')[num-1].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px;whitespace:pre-wrap;";
 			}
         }
-	}
+    }
 
 	handleKeyUp =(e)=> {
 		if(this.timeout) clearTimeout(this.timeout);
@@ -117,7 +120,8 @@ class TranslationPanel extends React.Component {
 	}
   
   	render (){
-		let recordedVerse = mobx.toJS(AutographaStore.recVerse)
+        let recordedVerse = mobx.toJS(AutographaStore.recVerse)
+        let verseId = mobx.toJS(AutographaStore.vId)
 		let recflag;
 		let verseGroup = [];
     	const toggle = AutographaStore.toggle;
@@ -127,7 +131,6 @@ class TranslationPanel extends React.Component {
 			recordedVerse.map((recVerse, index) => {
 				if((recVerse-1) == i){
 					recflag = (recVerse-1)
-					console.log(recflag, i)
                 }
 			})
 		}
@@ -136,7 +139,23 @@ class TranslationPanel extends React.Component {
 		{
 			(recflag === i  && AutographaStore.AudioMount === true) && (
 					<span>
-					<MicIcon style={{ cursor: 'pointer'}} />
+                    <MicIcon />
+                    { ((i+1 === verseId) && (AutographaStore.isPlaying===false))  && (
+                    <PlayCircleOutlineIcon
+                    edge='start'
+                    tabIndex={-1}
+                    style={{ color: 'red', cursor: 'pointer' }}
+                    onClick={()=> AutographaStore.isPlaying = true}
+					/>
+                    )}
+                    { ((i+1 === verseId) && (AutographaStore.isPlaying===true))  && (
+                    <PauseCircleOutlineIcon 
+                    edge='start'
+                    tabIndex={-1}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => AutographaStore.isPlaying =false}
+					/>
+                    )}
 					</span>
 			)
 		}
