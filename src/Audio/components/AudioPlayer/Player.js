@@ -26,7 +26,6 @@ const Player = (props) => {
 		if (AutographaStore.isPlaying === true) {
 			storeRecord.map((value, index) => {
 				if (value.verse === onselect) {
-                    console.log(value.verse, value.blobURL);
                     setblobURL(value.blobURL)
 				}
 			});
@@ -43,7 +42,7 @@ const Player = (props) => {
 					<AudioPlayer
 						className={classes.formControl}
 						src={blobURL}
-						onPlay={(e) => console.log('onPlay')}
+						onEnded={(e) => (AutographaStore.isPlaying=false)}
 					/>
 				</div>
 			)}

@@ -84,6 +84,7 @@ export class AutographaStore {
   @observable isRecording = false
   @observable isPlaying = false
   @observable isPause = false
-  @observable reRecord = false
+  @observable currentSession = true
+  @observable currentRefverse = ""
 }
 export default new AutographaStore();

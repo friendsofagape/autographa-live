@@ -24,6 +24,7 @@ import Player from '../AudioPlayer';
 import VerseRecorder from '../../../components/VerseRecorder';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
+import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 const path = ``;
 
 const useStyles = makeStyles((theme) => ({
@@ -64,11 +65,16 @@ const useStyles = makeStyles((theme) => ({
 	fab: {
 		zIndex: 1,
 		top: -40,
-		left: 0,
-		right: 0,
+		right: -750,
 		margin: theme.spacing(2),
 		marginLeft: -7,
-		float: 'center',
+	},
+	fab1: {
+		zIndex: 1,
+		top: -40,
+		right: -750,
+		margin: theme.spacing(2),
+		marginLeft: -7,
 	},
 	player: {
 		[theme.breakpoints.up('xl')]: {
@@ -105,7 +111,7 @@ function BottomBar(props) {
 	const [show, setShow] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
-	const { selectPrev } = useContext(StoreContext);
+	const { selectPrev, resetVal } = useContext(StoreContext);
 	const {
 		startRecording,
 		stopRecording,
@@ -121,8 +127,7 @@ function BottomBar(props) {
 		if (AutographaStore.isWarning === true) {
 			swal({
 				title: 'Are you sure you want to Delete the Recording of this verse?',
-				text:
-					'Once deleted, you will not be able to recover!',
+				text: 'Once deleted, you will not be able to recover!',
 				icon: 'warning',
 				buttons: true,
 				dangerMode: true,
@@ -133,9 +138,11 @@ function BottomBar(props) {
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
 					AutographaStore.reRecord = false;
+					AutographaStore.currentSession = true
 					swal(`Verse${onselect} recording has been deleted!`, {
 						icon: 'success',
 					});
+					resetVal(AutographaStore.vId)
 				} else {
 					AutographaStore.isWarning = true;
 					AutographaStore.reRecord = false;
@@ -150,6 +157,10 @@ function BottomBar(props) {
 		// return function cleanup() {
 		// 	clearInterval(timerID);
 		// };
+		(AutographaStore.isWarning===true)? AutographaStore.currentSession = false : AutographaStore.currentSession = true
+		if(record===true){
+			AutographaStore.currentSession = false
+		}
 	});
 
 	return (
@@ -176,6 +187,9 @@ function BottomBar(props) {
 										<div className={classes.scrim} />
 									)}
 								</div>
+								{/* <span>
+									<TexttoSpeech currentRefverse={props.isOpen.currentRefverse}  />
+								</span> */}
 								{record === false && (
 									<Fab
 										color='secondary'
@@ -204,6 +218,7 @@ function BottomBar(props) {
 								<Fab
 									color='primary'
 									aria-label='edit'
+									hidden={AutographaStore.currentSession===true}
 									className={classes.fab}
 									onClick={selectNext}>
 									<SkipNextIcon />
@@ -211,7 +226,7 @@ function BottomBar(props) {
 								{AutographaStore.isWarning === true && (
 									<Fab
 										aria-label='edit'
-										className={classes.fab}
+										className={classes.fab1}
 										onClick={deleteRecordedVerse}>
 										<DeleteForeverIcon />
 									</Fab>

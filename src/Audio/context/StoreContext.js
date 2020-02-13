@@ -7,6 +7,7 @@ import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
+let mergeAudio = require('../core/mergeAudios');
 
 export const StoreContext = createContext();
 
@@ -17,7 +18,7 @@ class StoreContextProvider extends Component {
 		bible: sampleBible.default,
 		record: false,
 		recordedFiles: {},
-		storeRecord:[],
+		storeRecord: [],
 		recVerse: [],
 		isWarning: false,
 		blob: '',
@@ -28,13 +29,15 @@ class StoreContextProvider extends Component {
 
 	selectPrev = (vId) => {
 		AutographaStore.isWarning = false;
-		AutographaStore.isPlaying = false
+		AutographaStore.isPlaying = false;
+		AutographaStore.currentSession = true;
 		if (this.state.onselect > 1 && AutographaStore.isRecording === false) {
 			this.setState({ onselect: AutographaStore.vId - 1 });
 			AutographaStore.vId = AutographaStore.vId - 1;
 			this.state.recVerse.map((value, index) => {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
+					AutographaStore.currentSession = false;
 				}
 			});
 		} else {
@@ -47,6 +50,7 @@ class StoreContextProvider extends Component {
 			}).then((willDelete) => {
 				if (willDelete) {
 					this.stopRecording();
+					AutographaStore.currentSession = false;
 					swal('Stopped Recording!', {
 						icon: 'success',
 					});
@@ -55,7 +59,11 @@ class StoreContextProvider extends Component {
 		}
 	};
 	selectNext = (vId) => {
-		AutographaStore.isPlaying = false
+		// if(AutographaStore.currentSession === false && AutographaStore.isWarning === false) {
+
+		// }
+		AutographaStore.currentSession = true;
+		AutographaStore.isPlaying = false;
 		AutographaStore.isWarning = false;
 		if (
 			this.state.onselect <= AutographaStore.chunkGroup.length - 1 &&
@@ -66,6 +74,7 @@ class StoreContextProvider extends Component {
 			this.state.recVerse.map((value, index) => {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
+					AutographaStore.currentSession = false;
 				}
 			});
 		} else {
@@ -91,19 +100,18 @@ class StoreContextProvider extends Component {
 		this.setState({ onselect: value });
 	};
 	startRecording = () => {
-		AutographaStore.reRecord = true
 		if (AutographaStore.isWarning === false) {
 			this.setState({ record: true });
 			AutographaStore.isRecording = true;
 		}
 	};
 	stopRecording = () => {
+		AutographaStore.currentSession = false;
 		AutographaStore.isRecording = false;
-		AutographaStore.reRecord = false
 		this.setState({ record: false });
 		if (AutographaStore.isWarning === false) {
 			this.state.recVerse.push(this.state.onselect);
-			AutographaStore.isWarning = true
+			AutographaStore.isWarning = true;
 		}
 	};
 
@@ -117,6 +125,12 @@ class StoreContextProvider extends Component {
 		this.setState({ recordedFiles: value });
 		this.state.storeRecord.push(value);
 		save = await saveRec.recSave(
+			book,
+			this.state.recordedFiles,
+			chapter,
+			this.state.onselect,
+		);
+		await mergeAudio.mergeAudio(
 			book,
 			this.state.recordedFiles,
 			chapter,

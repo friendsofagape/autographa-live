@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import * as mobx from 'mobx'
 import MicIcon from '@material-ui/icons/Mic';
 import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
-import PauseCircleOutlineIcon from '@material-ui/icons/PauseCircleOutline';
+import StopIcon from '@material-ui/icons/Stop';
 import { StoreContext } from '../Audio/context/StoreContext';
 import Player from '../Audio/components/AudioPlayer';
 const i18n = new(require('../translations/i18n'))();
@@ -39,9 +39,11 @@ class TranslationPanel extends React.Component {
             		ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
           		}
         	};
-        	if( refContent[l])
-          		refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
-        }
+        	if( refContent[l]){
+                refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
+                AutographaStore.currentRefverse = (refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].childNodes[1].innerHTML).toString()
+			}
+		}
         let focusIn = document.getElementById(vId);
 		focusIn.focus();
 		if(AutographaStore.AudioMount===true)
@@ -49,7 +51,7 @@ class TranslationPanel extends React.Component {
 	}
 
 	highlighttrans (vId) {
-		let num = AutographaStore.vId
+        let num = AutographaStore.vId
 		let refContent = document.getElementsByClassName('verse-input');
       	for(let l=0; l<AutographaStore.layout; l++){
 			let ref = refContent[l] ? refContent[l].querySelectorAll('div') : [];
@@ -149,7 +151,7 @@ class TranslationPanel extends React.Component {
 					/>
                     )}
                     { ((i+1 === verseId) && (AutographaStore.isPlaying===true))  && (
-                    <PauseCircleOutlineIcon 
+                    <StopIcon 
                     edge='start'
                     tabIndex={-1}
                     style={{ cursor: 'pointer' }}

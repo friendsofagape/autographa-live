@@ -104,8 +104,9 @@ class Navbar extends React.Component {
         AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
     }
     mountAudio = (status) => {
-        if(status === true)
+        if(status === true){}
         window.location.reload();
+        AutographaStore.toggle = true;
         AutographaStore.AudioMount = !AutographaStore.AudioMount
     }
     
