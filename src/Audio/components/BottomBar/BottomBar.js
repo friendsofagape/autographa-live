@@ -18,6 +18,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import BackupIcon from '@material-ui/icons/Backup';
 import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
 import Player from '../AudioPlayer';
@@ -76,6 +77,13 @@ const useStyles = makeStyles((theme) => ({
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
+	export: {
+		zIndex: 1,
+		top: -40,
+		right: -750,
+		margin: theme.spacing(2),
+		marginLeft: -7,
+	},
 	player: {
 		[theme.breakpoints.up('xl')]: {
 			display: 'block',
@@ -111,7 +119,7 @@ function BottomBar(props) {
 	const [show, setShow] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
-	const { selectPrev, resetVal } = useContext(StoreContext);
+	const { selectPrev, resetVal, exportAudio } = useContext(StoreContext);
 	const {
 		startRecording,
 		stopRecording,
@@ -123,10 +131,11 @@ function BottomBar(props) {
 		saveRecord(recordedBlob);
 		console.log(recordedBlob);
 	}
-	function deleteRecordedVerse(){
+	function deleteRecordedVerse() {
 		if (AutographaStore.isWarning === true) {
 			swal({
-				title: 'Are you sure you want to Delete the Recording of this verse?',
+				title:
+					'Are you sure you want to Delete the Recording of this verse?',
 				text: 'Once deleted, you will not be able to recover!',
 				icon: 'warning',
 				buttons: true,
@@ -138,11 +147,11 @@ function BottomBar(props) {
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
 					AutographaStore.reRecord = false;
-					AutographaStore.currentSession = true
+					AutographaStore.currentSession = true;
 					swal(`Verse${onselect} recording has been deleted!`, {
 						icon: 'success',
 					});
-					resetVal(AutographaStore.vId)
+					resetVal(AutographaStore.vId);
 				} else {
 					AutographaStore.isWarning = true;
 					AutographaStore.reRecord = false;
@@ -157,9 +166,11 @@ function BottomBar(props) {
 		// return function cleanup() {
 		// 	clearInterval(timerID);
 		// };
-		(AutographaStore.isWarning===true)? AutographaStore.currentSession = false : AutographaStore.currentSession = true
-		if(record===true){
-			AutographaStore.currentSession = false
+		AutographaStore.isWarning === true
+			? (AutographaStore.currentSession = false)
+			: (AutographaStore.currentSession = true);
+		if (record === true) {
+			AutographaStore.currentSession = false;
 		}
 	});
 
@@ -182,6 +193,13 @@ function BottomBar(props) {
 									backgroundColor='#3F5274'
 									nonstop={true}
 								/>
+								<span>
+									<Fab
+										className={classes.export}
+										onClick={exportAudio}>
+										<BackupIcon />
+									</Fab>
+								</span>
 								<div className={classes.oscilloscopescrim}>
 									{!record && (
 										<div className={classes.scrim} />
@@ -190,47 +208,60 @@ function BottomBar(props) {
 								{/* <span>
 									<TexttoSpeech currentRefverse={props.isOpen.currentRefverse}  />
 								</span> */}
-								{record === false && (
-									<Fab
-										color='secondary'
-										aria-label='edit'
-										className={classes.fab}
-										onClick={startRecording}>
-										<Mic />
-									</Fab>
-								)}
-								{record === true && (
+								<span>
+									{record === false && (
+										<Fab
+											color='secondary'
+											aria-label='start'
+											className={classes.fab}
+											onClick={startRecording}>
+											<Mic />
+										</Fab>
+									)}
+								</span>
+								<span>
+									{record === true && (
+										<Fab
+											color='primary'
+											aria-label='stop'
+											className={classes.fab}
+											onClick={stopRecording}>
+											<StopIcon />
+										</Fab>
+									)}
+								</span>
+								<span>
 									<Fab
 										color='primary'
-										aria-label='edit'
+										aria-label='previous'
 										className={classes.fab}
-										onClick={stopRecording}>
-										<StopIcon />
+										onClick={selectPrev}>
+										<SkipPreviousIcon />
 									</Fab>
-								)}
-								<Fab
-									color='primary'
-									aria-label='edit'
-									className={classes.fab}
-									onClick={selectPrev}>
-									<SkipPreviousIcon />
-								</Fab>
-								<Fab
-									color='primary'
-									aria-label='edit'
-									hidden={AutographaStore.currentSession===true}
-									className={classes.fab}
-									onClick={selectNext}>
-									<SkipNextIcon />
-								</Fab>
-								{AutographaStore.isWarning === true && (
+								</span>
+								<span>
 									<Fab
-										aria-label='edit'
-										className={classes.fab1}
-										onClick={deleteRecordedVerse}>
-										<DeleteForeverIcon />
+										color='primary'
+										aria-label='next'
+										hidden={
+											AutographaStore.currentSession ===
+											true
+										}
+										className={classes.fab}
+										onClick={selectNext}>
+										<SkipNextIcon />
 									</Fab>
-								)}
+								</span>
+								<span>
+									{AutographaStore.isWarning === true && (
+										<Fab
+											aria-label='delete'
+											className={classes.fab1}
+											onClick={deleteRecordedVerse}>
+											<DeleteForeverIcon />
+										</Fab>
+									)}
+								</span>
 								<span className={classes.player}>
 									<Player
 										isPlaying={props.isOpen.isPlaying}

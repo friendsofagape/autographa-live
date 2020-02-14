@@ -1,45 +1,25 @@
-var fs = require('fs');
+const { app } = require('electron').remote;
+const fs = require('fs');
+const path = require('path');
 module.exports = {
 	recSave: function(book, file, chapter, versenum) {
-		const path = require('path');
-		var appPath = path.join(__dirname, '..', '..');
-		var filePath = `${appPath}/recordings/${book.bookName}/${chapter}/verse${versenum}.mp3`;
-		fs.exists(`${appPath}/recordings/${book.bookName}/${chapter}`, function(
-			exists,
-		) {
-			if (exists) {
-				console.log('Directory Exists', file, filePath);
-				filePath = writeRecfile(file, filePath);
-			} else {
-				fs.exists(`${appPath}/recordings`, function(exists) {
-					if (exists) {
-						console.log('exists');
-					} else fs.mkdirSync(`${appPath}/recordings`);
-				});
-
-				fs.exists(`${appPath}/recordings/${book.bookName}`, function(
-					exists,
-				) {
-					if (exists) {
-						console.log('exists');
-					} else
-						fs.mkdirSync(`${appPath}/recordings/${book.bookName}`);
-				});
-
-				fs.exists(
-					`${appPath}/recordings/${book.bookName}/${chapter}`,
-					function(exists) {
-						if (exists) {
-							console.log('exists');
-						} else
-							fs.mkdirSync(
-								`${appPath}/recordings/${book.bookName}/${chapter}`,
-							);
-					},
-				);
-				filePath = writeRecfile(file, filePath);
+		var filePath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `verse${versenum}.mp3`)
+		if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
+			if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings'))){
+				fs.mkdirSync(path.join(app.getPath('userData'), 'recordings'));
 			}
-		});
+			if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings', book.bookName))){
+				fs.mkdirSync(path.join(app.getPath('userData'), 'recordings',book.bookName ));
+			}
+			if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings', book.bookName, chapter))){
+				fs.mkdirSync(path.join(app.getPath('userData'), 'recordings', book.bookName, chapter));
+			}
+			filePath = writeRecfile(file, filePath);
+		}
+		else{
+			console.log('Directory Exists', file, filePath);
+			filePath = writeRecfile(file, filePath);
+		}
 		return filePath;
 	},
 };

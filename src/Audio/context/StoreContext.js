@@ -130,13 +130,20 @@ class StoreContextProvider extends Component {
 			chapter,
 			this.state.onselect,
 		);
+		AutographaStore.recVerse = this.state.recVerse;
+	};
+
+	exportAudio = async () => {
+		let save,
+			book = {};
+		let chapter = 'Chapter' + AutographaStore.chapterId;
+		book.bookNumber = AutographaStore.bookId.toString();
+		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
 		await mergeAudio.mergeAudio(
 			book,
-			this.state.recordedFiles,
 			chapter,
-			this.state.onselect,
+			this.state.recVerse,
 		);
-		AutographaStore.recVerse = this.state.recVerse;
 	};
 
 	render() {
@@ -152,6 +159,7 @@ class StoreContextProvider extends Component {
 					stopRecording: this.stopRecording,
 					saveRecord: this.saveRecord,
 					getDB: this.getDB,
+					exportAudio: this.exportAudio
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>
