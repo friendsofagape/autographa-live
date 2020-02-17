@@ -20,6 +20,7 @@ class Footer extends React.Component {
 
     handleChange(key) {
         let translationContent = [];
+        console.log("footer");
         if (key === 4) {AutographaStore.disablediff = true}
         else {AutographaStore.disablediff = false}
         for(let i=0; i<AutographaStore.chunkGroup.length; i++){

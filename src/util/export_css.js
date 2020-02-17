@@ -96,6 +96,19 @@ body {
     box-sizing: border-box;
 }
 
+.verseDiv {
+    padding-left: 5%;
+    line-height: 125%;
+    margin-right: 3%;
+}
+
+.verseSpan {
+    margin-right: 8px;
+    float: left;
+    font-size: 62%;
+    font-weight: bold;
+}
+
 .firstLi {
     margin-bottom: 8px;
     line-height: 20px;
@@ -154,6 +167,9 @@ body {
 
 .firstLi {
     display: inline-flex;
+}
+.prespace {
+    white-space: pre-wrap
 }
 </style>`
 
@@ -255,6 +271,19 @@ body {
     box-sizing: border-box;
 }
 
+.verseDiv {
+    padding-left: 5%;
+    line-height: 125%;
+    margin-right: 3%;
+}
+
+.verseSpan {
+    margin-right: 8px;
+    float: left;
+    font-size: 62%;
+    font-weight: bold;
+}
+
 .firstLi {
     margin-bottom: 8px;
     line-height: 20px;
@@ -313,6 +342,9 @@ body {
 
 .firstLi {
     display: inline-flex;
+}
+.prespace {
+    white-space: pre-wrap
 }
 
 </style>`
@@ -421,6 +453,19 @@ const css_1_col_rtl = `<style>
         text-align: right;
     }
 
+    .verseDiv {
+        padding-right: 5%;
+        line-height: 125%;
+        margin-left: 3%;
+    }
+
+    .verseSpan {
+        margin-left: 8px;
+        float: right;
+        font-size: 62%;
+        font-weight: bold;
+    }
+
     /* Comment this out to match the LTR design. */
     /*      ul li span.chapter { float: right; display: inline-block !important; min-height: 11px; width: 6%;} */
 
@@ -431,6 +476,9 @@ const css_1_col_rtl = `<style>
     text-align: right;
     margin-right: 0px;
     width: 60%
+    }
+    .prespace {
+        white-space: pre-wrap
     }
 
 </style>`
@@ -539,6 +587,19 @@ const css_2_col_rtl = `<style>
     text-align: right;
     }
 
+    .verseDiv {
+        padding-right: 5%;
+        line-height: 125%;
+        margin-left: 3%;
+    }
+
+    .verseSpan {
+        margin-left: 8px;
+        float: right;
+        font-size: 62%;
+        font-weight: bold;
+    }
+
     /* Comment this out to match the LTR design. */
     /*        ul li span.chapter { float: right; display: inline-block !important; min-height: 11px; width: 6%;}	*/
 
@@ -549,6 +610,9 @@ const css_2_col_rtl = `<style>
     text-align: right;
     margin-right: 0px;	/* Changed 23px to 0px */
     width: 60%
+    }
+    .prespace {
+        white-space: pre-wrap
     }
     </style>`
 

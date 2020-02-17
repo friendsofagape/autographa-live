@@ -7,6 +7,7 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import '../assets/stylesheets/context-menu.css';
 const i18n = new(require('../translations/i18n'))();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
+let verseId = 0;
 
 @observer
 class TranslationPanel extends React.Component {
@@ -113,38 +114,32 @@ class TranslationPanel extends React.Component {
 	}
 	
 	addJoint = (event, data) => {
-		let verseNumber = (data.target.outerHTML).match(/id="v(\d+)"/);
+		let verseNumber = data.verseId;
 		db.get(AutographaStore.bookId.toString()).then((doc) => {
 			let verses = doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses;
-			verses.forEach( (verse, index) => {
-			console.log(verse);
-			});
-			console.log(doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses);
-			// Preceeding verse is joint verse then check for preceeding verse without joint
 			let jointVerse;
-			if (verses[parseInt(verseNumber[1]) - 2].joint_verse){
-				jointVerse = verses[parseInt(verseNumber[1]) - 2].joint_verse;
+			// Preceeding verse is joint verse then check for preceeding verse without joint
+			if (verses[verseNumber - 2].joint_verse){
+				jointVerse = verses[verseNumber - 2].joint_verse;
 			}
 			else {
-				jointVerse = (parseInt(verseNumber[1], 10) - 1);
+				jointVerse = (verseNumber - 1);
 			}
-			console.log("jointVerse---->",jointVerse);
 			// Add joint by adding the content to preceeding verse
 			doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[jointVerse - 1] = ({
 				"verse_number": jointVerse,
-				"verse": verses[jointVerse - 1].verse + " " + verses[parseInt(verseNumber[1])-1].verse
+				"verse": verses[jointVerse - 1].verse + " " + verses[verseNumber - 1].verse
 			});
-			doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[parseInt(verseNumber[1])-1] = ({
-				"verse_number": parseInt(verseNumber[1], 10),
-				"verse": "----- Joint with preceeding verse(s) -----",
+			doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[verseNumber - 1] = ({
+				"verse_number": verseNumber,
+				"verse": "",
 				"joint_verse": jointVerse
 			});
-			console.log(verses[parseInt(verseNumber[1])]);
 			// Change the "joint_verse" number to current verse for next verse, if they are join verses 
-			for ( let i = 0;(verses[parseInt(verseNumber[1]) + i].joint_verse === parseInt(verseNumber[1])); i++){
-				doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[parseInt(verseNumber[1]) + i] = ({
-					"verse_number": (parseInt(verseNumber[1], 10) + 1 + i),
-					"verse": "----- Joint with preceeding verse(s) -----",
+			for ( let i = 0;(verses.length) > (verseNumber + i) && (verses[verseNumber + i].joint_verse === verseNumber); i++){
+				doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[verseNumber + i] = ({
+					"verse_number": (verseNumber + 1 + i),
+					"verse": "",
 					"joint_verse": jointVerse
 				});
 			}
@@ -159,18 +154,18 @@ class TranslationPanel extends React.Component {
 	}
 
 	removeJoint = (event, data) => {
-		let verseNumber = (data.target.outerHTML).match(/id="v(\d+)"/);
+		let verseNumber = data.verseId;
 		db.get(AutographaStore.bookId.toString()).then((doc) => {
 			let verses = doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses;
-			doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[parseInt(verseNumber[1])-1] = ({
-				"verse_number": parseInt((verseNumber[1]), 10),
+			doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[verseNumber - 1] = ({
+				"verse_number": verseNumber,
 				"verse": ""
 			});
-			for ( let i = 0;(verses[parseInt(verseNumber[1]) + i].joint_verse); i++){
-				doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[parseInt(verseNumber[1]) + i] = ({
-					"verse_number": (parseInt(verseNumber[1], 10) + 1 + i),
-					"verse": "----- Joint with preceeding verse(s) -----",
-					"joint_verse": parseInt(verseNumber[1], 10)
+			for ( let i = 0;(verses.length) > (verseNumber + i) && (verses[verseNumber + i].joint_verse); i++){
+				doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses[verseNumber + i] = ({
+					"verse_number": (verseNumber + 1 + i),
+					"verse": "",
+					"joint_verse": verseNumber
 				});
 			}
 			db.put(doc, function (err, response) {
@@ -186,13 +181,12 @@ class TranslationPanel extends React.Component {
   	render (){
 		let verseGroup = [];
     	const toggle = AutographaStore.toggle;
-
 		for (let i = 0; i < AutographaStore.chunkGroup.length; i++) {
 		let vid="v"+(i+1);
 		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
-			<ContextMenuTrigger id={(i+1) === 1 ? undefined : (AutographaStore.jointVerse[i] === undefined ? "true" : "false")} data={vid}><span className='verse-num' key={i}>{(i+1)}</span>
+			<ContextMenuTrigger id={(i+1) === 1 ? undefined : (AutographaStore.jointVerse[i] === undefined ? "true" : "false")} verseId = {parseInt(i,10)+1}  collect = {props => props}><span className='verse-num' key={i}>{(i+1)}</span>
 			<span contentEditable={AutographaStore.jointVerse[i] === undefined ? true : false} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
-			{AutographaStore.translationContent[i]}
+			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
 			</span>
 			</ContextMenuTrigger>
 			</div>
@@ -211,21 +205,19 @@ class TranslationPanel extends React.Component {
 				<div id="input-verses" className={`col-12 col-ref verse-input ${AutographaStore.scriptDirection.toLowerCase()} ${tIns || tDel ? 'disable-input' : ''}`} dir={AutographaStore.scriptDirection} style={{pointerEvents: tIns || tDel ? 'none': ''}}>{verseGroup}</div>
 				</div>
 				<ContextMenu id={"false"}>
-				<MenuItem
-					data={{ action: 'Remove Joint' }}
-					onClick={this.removeJoint}
-				>
-					Unjoin this verse
-				</MenuItem>
-			</ContextMenu>
-			<ContextMenu id={"true"}>
-				<MenuItem
-					data={{ action: 'Joint' }}
-					onClick={this.addJoint}
-				>
-					Join to preceeding verse
-				</MenuItem>
-			</ContextMenu>
+					<MenuItem
+						onClick={this.removeJoint}
+					>
+					<FormattedMessage id="label-unjoin-this-verse" />
+					</MenuItem>
+				</ContextMenu>
+				<ContextMenu id={"true"}>
+					<MenuItem
+						onClick={this.addJoint}
+					>
+					<FormattedMessage id="label-join-to-preceding-verse" />
+					</MenuItem>
+				</ContextMenu>
 				<Statistic show={AutographaStore.showModalStat}  showReport = {this.showReport}/>
 			</div>
 		) 

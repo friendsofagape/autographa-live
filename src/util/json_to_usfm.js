@@ -71,7 +71,6 @@ async function toUsfmDoc(book, returnNullForEmptyBook=false) {
                 }
             }
         }
-        console.log(usfmContent);
         return (returnNullForEmptyBook && isEmpty)
             ? null
             : usfmContent.join('\n');

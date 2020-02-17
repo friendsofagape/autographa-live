@@ -216,7 +216,6 @@ class Navbar extends React.Component {
     updateTransContent = () => {
         let translationContent = [];
         let jointVerse = [];
-        console.log("Navbar--->updateTransContent");
         db.get(AutographaStore.bookId.toString()).then((doc) => {
           let verses = doc.chapters[parseInt(AutographaStore.chapterId, 10) - 1].verses;
           AutographaStore.verses = verses
