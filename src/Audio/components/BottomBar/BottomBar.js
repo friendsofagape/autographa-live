@@ -119,7 +119,7 @@ function BottomBar(props) {
 	const [show, setShow] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
-	const { selectPrev, resetVal, exportAudio } = useContext(StoreContext);
+	const { selectPrev, resetVal, exportAudio, storeRecord } = useContext(StoreContext);
 	const {
 		startRecording,
 		stopRecording,
@@ -143,6 +143,11 @@ function BottomBar(props) {
 			}).then((willDelete) => {
 				if (willDelete) {
 					recVerse.splice(recVerse.indexOf(onselect), 1);
+					storeRecord.map((value, index) => {
+						if(value.verse === onselect){
+							storeRecord.splice(index,1)
+						}
+					})
 					AutographaStore.recVerse = recVerse;
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;

@@ -13,13 +13,14 @@ export default class concatAudio {
     }
   
     async fetchAudio(...filepaths) {
-        console.log(...filepaths)
-      const files = filepaths.map(async filepath => {
+        const files = filepaths.map(async filepath => {
         const buffer = await fetch(filepath).then(response =>
           response.arrayBuffer()
         );
+        console.log(buffer)
         return await this._context.decodeAudioData(buffer);
       });
+      console.log(files)
       return await Promise.all(files);
     }
   

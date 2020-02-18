@@ -5,9 +5,10 @@ import * as verseRecorder from '../../components/VerseRecorder';
 import * as downloadURL from '../core/downloadWebm';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
+import mergeAudios from '../core/mergeAudios'
 const constants = require('../../util/constants');
+const saveTolocal = require('../core/saveTolocal')
 let saveRec = require('../core/savetodir');
-let mergeAudio = require('../core/mergeAudios');
 
 export const StoreContext = createContext();
 
@@ -60,7 +61,6 @@ class StoreContextProvider extends Component {
 	};
 	selectNext = (vId) => {
 		// if(AutographaStore.currentSession === false && AutographaStore.isWarning === false) {
-
 		// }
 		AutographaStore.currentSession = true;
 		AutographaStore.isPlaying = false;
@@ -130,6 +130,12 @@ class StoreContextProvider extends Component {
 			chapter,
 			this.state.onselect,
 		);
+		let saveTolocaldisk = await saveTolocal.recSave(
+			book,
+			this.state.recordedFiles,
+			chapter,
+			this.state.onselect,
+		);
 		AutographaStore.recVerse = this.state.recVerse;
 	};
 
@@ -139,11 +145,14 @@ class StoreContextProvider extends Component {
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
-		await mergeAudio.mergeAudio(
+		save = await mergeAudios(
 			book,
 			chapter,
 			this.state.recVerse,
+			this.state.storeRecord
 		);
+		if(save)
+		console.log(save)
 	};
 
 	render() {
