@@ -3,27 +3,24 @@ const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
 let audio = new ConcatAudio();
+const db = require(`${__dirname}/../../util/data-provider`).targetDb();
 const audioContext = new AudioContext()
 const fileReader = new FileReader();
 
 
-const mergeAudios = async(book, chapter, versenum, blob) => {
-		var merged, output,allarrayBuffer, resultantbuffer;
-		let newblob=[];
-		versenum = versenum.sort()
-        let blobsort = blob.sort((a,b) => (a.verse > b.verse)? 1 : -1)
-        blobsort.map((val,index) => {
-            newblob.push(val.blob)
-        })
+const mergeAudios = async(book, chapter, versenum) => {
+		var merged, output;
+        versenum = versenum.sort()
+        let doc = await db.get('targetBible');
         // let resultblob = await ConcatenateBlobs(newblob, 'audio/mp3')
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
-				let audiomp3 =[];
+                let audiomp3 =[];
 				for(var i =1; i<=versenum.length ; i++){
 					let audioImport;
 					audioImport = (path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${i}.mp3`))
 					audiomp3.push(audioImport)
-				}
+                }
 				console.log(audiomp3)
 				audio
 					.fetchAudio(...audiomp3)
@@ -38,13 +35,15 @@ const mergeAudios = async(book, chapter, versenum, blob) => {
 						output = audio.export(merged, 'audio/mp3');
 					})
 					.then(() => {
-						console.log('out', output);
-						// => {blob, element, url}
-						audio.download(
-							output.blob,
-							`${book.bookName}/${chapter}`,
-						);
-						document.body.append(output.element);
+                        console.log('out', output);
+                        writeRecfile(output.blob, doc.targetPath[0]+(`/${book.bookName}${chapter}.mp3`))
+                        // => {blob, element, url}
+						// audio.download(
+						// 	output.blob,
+						// 	`${book.bookName}/${chapter}`,
+                        // );
+                        // console.log(output.element)
+						// document.body.append(output.element);
 					})
 					.catch((error) => {
 						// => Error Message
@@ -104,12 +103,12 @@ const mergeAudios = async(book, chapter, versenum, blob) => {
     //     }
     // };
 
-    // function writeRecfile(file, filePath) {
-    //     var fileReader = new FileReader();
-    //     fileReader.onload = function() {
-    //         fs.writeFileSync(filePath, Buffer.from(new Uint16Array(this.result)));
-    //     };
-    //     fileReader.readAsArrayBuffer(file);
-    //     return filePath;
-    // }
+    function writeRecfile(file, filePath) {
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+            fs.writeFileSync(filePath, Buffer.from(new Uint16Array(this.result)));
+        };
+        fileReader.readAsArrayBuffer(file);
+        return filePath;
+    }
 export default mergeAudios;

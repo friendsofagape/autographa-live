@@ -161,8 +161,8 @@ class TranslationPanel extends React.Component {
 					</span>
 			)
 		}
-			<span className='verse-num' key={i}>{(i+1)}</span>
-			<span contentEditable={true} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
+			<span className='verse-num' style={{  marginRight: "4px" }} key={i}>{(i+1)}</span>
+			<span contentEditable={!AutographaStore.AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}
 			</span>
 			</div>

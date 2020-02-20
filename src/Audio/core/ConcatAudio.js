@@ -39,7 +39,6 @@ export default class concatAudio {
     }
   
     concatAudio(buffers) {
-      console.log(buffers)
       let output = this._context.createBuffer(
           1,
           this._totalLength(buffers),
@@ -63,7 +62,6 @@ export default class concatAudio {
   
     export(buffer, audioType) {
       const type = audioType || "audio/mp3";
-      console.log(buffer)
       const recorded = this._interleave(buffer);
       const dataview = this._writeHeaders(recorded);
       const audioBlob = new Blob([dataview], { type: type });
@@ -109,7 +107,6 @@ export default class concatAudio {
     _writeHeaders(buffer) {
       let arrayBuffer = new ArrayBuffer(44 + buffer.length * 2),
         view = new DataView(arrayBuffer);
-  
       this._writeString(view, 0, "RIFF");
       view.setUint32(4, 32 + buffer.length * 2, true);
       this._writeString(view, 8, "WAVE");

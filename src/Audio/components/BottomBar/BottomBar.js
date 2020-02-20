@@ -66,21 +66,21 @@ const useStyles = makeStyles((theme) => ({
 	fab: {
 		zIndex: 1,
 		top: -40,
-		right: -750,
+		right: -700,
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
 	fab1: {
 		zIndex: 1,
 		top: -40,
-		right: -750,
+		right: -700,
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
 	export: {
 		zIndex: 1,
 		top: -40,
-		right: -750,
+		right: -700,
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
@@ -98,7 +98,10 @@ const useStyles = makeStyles((theme) => ({
 		color: 'blue',
 		float: 'right',
 		position: 'static',
-		marginLeft: 850,
+		marginLeft: 720,
+		marginRight:-15,
+		right: 60
+		
 	},
 	oscilloscopescrim: {
 		height: 125,
