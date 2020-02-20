@@ -7,7 +7,6 @@ import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios'
 const constants = require('../../util/constants');
-const saveTolocal = require('../core/saveTolocal')
 let saveRec = require('../core/savetodir');
 
 export const StoreContext = createContext();
@@ -125,12 +124,6 @@ class StoreContextProvider extends Component {
 		this.setState({ recordedFiles: value });
 		this.state.storeRecord.push(value);
 		save = await saveRec.recSave(
-			book,
-			this.state.recordedFiles,
-			chapter,
-			this.state.onselect,
-		);
-		let saveTolocaldisk = await saveTolocal.recSave(
 			book,
 			this.state.recordedFiles,
 			chapter,

@@ -11,13 +11,17 @@ const mergeAudios = async(book, chapter, versenum, blob) => {
 		var merged, output,allarrayBuffer, resultantbuffer;
 		let newblob=[];
 		versenum = versenum.sort()
-		let blobsort = blob.sort((a,b) => (a.verse > b.verse)? 1 : -1)
+        let blobsort = blob.sort((a,b) => (a.verse > b.verse)? 1 : -1)
+        blobsort.map((val,index) => {
+            newblob.push(val.blob)
+        })
+        // let resultblob = await ConcatenateBlobs(newblob, 'audio/mp3')
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
 				let audiomp3 =[];
 				for(var i =1; i<=versenum.length ; i++){
 					let audioImport;
-					audioImport = require(`../../recordings/${book.bookName}/${chapter}/verse${i}.mp3`)
+					audioImport = (path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${i}.mp3`))
 					audiomp3.push(audioImport)
 				}
 				console.log(audiomp3)
@@ -40,7 +44,7 @@ const mergeAudios = async(book, chapter, versenum, blob) => {
 							output.blob,
 							`${book.bookName}/${chapter}`,
 						);
-						document.append(output.element);
+						document.body.append(output.element);
 					})
 					.catch((error) => {
 						// => Error Message
@@ -52,6 +56,60 @@ const mergeAudios = async(book, chapter, versenum, blob) => {
 				});
 			}
 			return output
-	}
+    }
+    
+	// function ConcatenateBlobs(blobs, type, callback) {
+    //     var buffers = [];
+    //     var index = 0;
+    //     var filePath = path.join(app.getPath('userData'), 'recordings', 'Exodus', "Chapter1", `combined.mp3`)
 
+    //     async function readAsArrayBuffer() {
+    //         if (!blobs[index]) {
+    //             writeRecfile( await concatenateBuffers(), filePath)
+    //             return concatenateBuffers();
+    //         }
+    //         var reader = new FileReader();
+    //         reader.onload = function(event) {
+    //             buffers.push(event.target.result);
+    //             index++;
+    //             readAsArrayBuffer();
+    //         };
+    //         reader.readAsArrayBuffer(blobs[index]);
+    //     }
+
+    //     readAsArrayBuffer();
+
+    //     function concatenateBuffers() {
+    //         var byteLength = 0;
+    //         buffers.forEach(function(buffer) {
+    //             byteLength += buffer.byteLength;
+    //         });
+            
+    //         var tmp = new Uint16Array(byteLength);
+    //         var lastOffset = 0;
+    //         buffers.forEach(function(buffer) {
+    //             // BYTES_PER_ELEMENT == 2 for Uint16Array
+    //             var reusableByteLength = buffer.byteLength;
+    //             if (reusableByteLength % 2 != 0) {
+    //                 buffer = buffer.slice(0, reusableByteLength - 1)
+    //             }
+    //             tmp.set(new Uint16Array(buffer), lastOffset);
+    //             lastOffset += reusableByteLength;
+    //         });
+
+    //         var blob = new Blob([tmp.buffer], {
+    //             type: type
+    //         });
+    //         return blob
+    //     }
+    // };
+
+    // function writeRecfile(file, filePath) {
+    //     var fileReader = new FileReader();
+    //     fileReader.onload = function() {
+    //         fs.writeFileSync(filePath, Buffer.from(new Uint16Array(this.result)));
+    //     };
+    //     fileReader.readAsArrayBuffer(file);
+    //     return filePath;
+    // }
 export default mergeAudios;

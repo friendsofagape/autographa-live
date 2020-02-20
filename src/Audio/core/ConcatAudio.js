@@ -17,10 +17,8 @@ export default class concatAudio {
         const buffer = await fetch(filepath).then(response =>
           response.arrayBuffer()
         );
-        console.log(buffer)
         return await this._context.decodeAudioData(buffer);
       });
-      console.log(files)
       return await Promise.all(files);
     }
   
@@ -41,6 +39,7 @@ export default class concatAudio {
     }
   
     concatAudio(buffers) {
+      console.log(buffers)
       let output = this._context.createBuffer(
           1,
           this._totalLength(buffers),
