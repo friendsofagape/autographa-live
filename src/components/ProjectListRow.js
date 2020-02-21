@@ -314,133 +314,18 @@ class ProjectListRow extends React.Component {
 				await this.asyncForEach(AutographaStore.paratextBook[projectId], async (bookId) => {
 					try{
 						let bookData =  await _this.props.syncAdapter.getUsxBookData(projectId, bookId);
-						let bookIndex = booksCodes.findIndex((book) => book === bookId);
-						db.get((bookIndex + 1).toString()).then( async (doc) => {
-							const xmlDoc = new DOMParser().parseFromString(bookData,"text/xml");
-							if (xmlDoc.evaluate) {
-								let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-								let verseNodes = xmlDoc.evaluate("//verse", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-								let dbVerses;
-								let currChapter=chapterNodes.snapshotItem(0);
-								let currVerse;
-								let v = 0;
-								let i = 0;
-								let count;
-								let verseNumber;
-								let verses;
-								let dbContent = ["test"];
-								let verseCount = 0;
-								while(v < verseNodes.snapshotLength){
-									currVerse = verseNodes.snapshotItem(v);
-									let xmlVerseNum = (currVerse.attributes["number"].value).match(/^(\d+)/g);
-									v++;
-									// verseCount + 1 is used to check the length of the dbContent
-									if(xmlVerseNum == 1 && (doc.chapters[currChapter.attributes["number"].value]).length != 0 && (verseCount + 1) === dbContent.length){
-										currChapter = chapterNodes.snapshotItem(i);
-										dbVerses = doc.chapters[currChapter.attributes["number"].value-1].verses;
-										i++;
-										count = 0;
-										verseCount = 0;
-										dbContent = [];
-										for (const verse of dbVerses) {
-											count = count + 1;
-											if (count < (dbVerses).length && dbVerses[count].joint_verse) {
-												// Finding out the join verses and get their verse number(s)
-												verseNumber = dbVerses[count].joint_verse + "-" + dbVerses[count].verse_number;
-												verses = dbVerses[(dbVerses[count].joint_verse)-1].verse;
-												continue;
-											} else {
-												if (verseNumber) {
-													// Push join verse number (1-3) and content.
-													dbContent.push({
-														"verse_number" : verseNumber,
-														"verse" : verses
-													});
-													verseNumber = undefined;
-													verses = undefined;
-												} else {
-													// Push verse number and content.
-													dbContent.push({
-														"verse_number" : verse.verse_number,
-														"verse" : verse.verse
-													});
-												}
-											}
-										}
-									} else {
-										if (xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
-											v = v-2;
-											currVerse = verseNodes.snapshotItem(v);
-										}
-									}
-
-									if (dbContent[verseCount] !== undefined && verseCount < dbContent.length) {
-										let dbVerseNum;
-										if (String(dbContent[verseCount].verse_number).match(/\W/gm)){
-											let dbVerseNum1 = String(dbContent[verseCount].verse_number).match(/^(\d+)/g);
-											dbVerseNum = dbVerseNum1[0];
-										} else {
-											dbVerseNum = (dbContent[verseCount].verse_number)
-										}
-										if (parseInt(xmlVerseNum[0],10) >= parseInt(dbVerseNum,10)) {
-											if(!currVerse.nextSibling){
-												currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
-												currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
-											}
-											else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
-												if(currVerse.nextElementSibling.nextSibling && currVerse.nextElementSibling.nextSibling.nodeName === "#text"){
-													currVerse.nextElementSibling.nextSibling.remove();
-												}
-												currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
-												currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
-											}else if(currVerse.nextSibling.nodeName === "#text"){
-												currVerse.nextSibling.remove();
-												currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
-												currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
-											}else{
-												currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
-												currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
-											}											
-											if ((verseCount + 1) !== dbContent.length) {
-												verseCount++;
-											}
-										} else if(parseInt(xmlVerseNum[0],10) < parseInt(dbVerseNum,10) && xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
-											// Add new verse node
-											for (let i = verseCount;i < dbContent.length;i++) {
-												console.log("i--->",i,dbContent[i]);
-												console.log(currVerse.parentNode.nodeName);
-												let newClone = currVerse.cloneNode([true]);
-												newClone.attributes["number"].value = dbContent[i].verse_number;
-												console.log("newClone---->",newClone);
-												currVerse.parentNode.appendChild(newClone);
-												newClone.insertAdjacentText('afterend', dbContent[i].verse);												
-											}
-											verseCount = (dbContent.length) - 1;
-											v = v + 1; 
-									 	} else {
-											currVerse.nextSibling.remove();
-											currVerse.remove();
-										}
-									} else {
-										currVerse.nextSibling.remove();
-										currVerse.remove();
-									}
-								}
+						if (!fs.existsSync(dir)){
+							fs.mkdirSync(dir);
+						}
+						if(bookData !== undefined || bookData !== null){
+							if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext_projects', projectName))){
+								fs.mkdirSync(path.join(app.getPath('userData'), 'paratext_projects', projectName));
 							}
-							if (!fs.existsSync(dir)){
-								fs.mkdirSync(dir);
+							if(fs.existsSync(path.join(app.getPath('userData'), 'paratext_projects', projectName))){
+								fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}.xml`), bookData, 'utf8');
+								// fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}_new.xml`), bookData, 'utf8');
 							}
-							if(bookData !== undefined || bookData !== null){
-								if (!fs.existsSync(path.join(app.getPath('userData'), 'paratext_projects', projectName))){
-									fs.mkdirSync(path.join(app.getPath('userData'), 'paratext_projects', projectName));
-								}
-								if(fs.existsSync(path.join(app.getPath('userData'), 'paratext_projects', projectName))){
-									fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}.xml`), bookData, 'utf8');
-									fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}_new.xml`), bookData, 'utf8');
-									fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}_new.xml`), xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
-								}
-							}
-						});	
+						}
 					}catch(err){
 						console.log(err);
 						return false
@@ -456,47 +341,118 @@ class ProjectListRow extends React.Component {
 								if (xmlDoc.evaluate) {
 									let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 									let verseNodes = xmlDoc.evaluate("//verse", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+									let dbVerses;
 									let currChapter=chapterNodes.snapshotItem(0);
-									book[currChapter.attributes["number"].value-1] = [];
-									let currVerse = verseNodes.snapshotItem(0);
+									let currVerse;
 									let v = 0;
 									let i = 0;
-									
+									let count;
+									let verseNumber;
+									let verses;
+									let dbContent = ["test"];
+									let verseCount = 0;
 									while(v < verseNodes.snapshotLength){
+										currVerse = verseNodes.snapshotItem(v);
+										let xmlVerseNum = (currVerse.attributes["number"].value).match(/^(\d+)/g);
 										v++;
-										 if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value-1].length != 0){
-											i++;
+										// verseCount + 1 is used to check the length of the dbContent
+										if(xmlVerseNum == 1 && (doc.chapters[currChapter.attributes["number"].value]).length != 0 && (verseCount + 1) === dbContent.length){
 											currChapter = chapterNodes.snapshotItem(i);
-											book[currChapter.attributes["number"].value-1] = [];
-										}
-										let verse_num = ((currVerse.attributes["number"].value).match(/^(\d+)/gm));
-										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[parseInt(verse_num[0])-1];
-											if(!currVerse.nextSibling){
-												currVerse.insertAdjacentText('afterend',verse.verse);
-											}
-											else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
-												if(currVerse.nextElementSibling.nextSibling && currVerse.nextElementSibling.nextSibling.nodeName === "#text"){
-													currVerse.nextElementSibling.nextSibling.remove();
+											dbVerses = doc.chapters[currChapter.attributes["number"].value-1].verses;
+											i++;
+											count = 0;
+											verseCount = 0;
+											dbContent = [];
+											for (const verse of dbVerses) {
+												count = count + 1;
+												if (count < (dbVerses).length && dbVerses[count].joint_verse) {
+													// Finding out the join verses and get their verse number(s)
+													verseNumber = dbVerses[count].joint_verse + "-" + dbVerses[count].verse_number;
+													verses = dbVerses[(dbVerses[count].joint_verse)-1].verse;
+													continue;
+												} else {
+													if (verseNumber) {
+														// Push join verse number (1-3) and content.
+														dbContent.push({
+															"verse_number" : verseNumber,
+															"verse" : verses
+														});
+														verseNumber = undefined;
+														verses = undefined;
+													} else {
+														// Push verse number and content.
+														dbContent.push({
+															"verse_number" : verse.verse_number,
+															"verse" : verse.verse
+														});
+													}
 												}
-												currVerse.nextElementSibling.insertAdjacentText('afterend', verse.verse);
-											}else if(currVerse.nextSibling.nodeName === "#text"){
-												currVerse.nextSibling.remove();
-												currVerse.insertAdjacentText('afterend', verse.verse);
-											}else{
-												currVerse.insertAdjacentText('afterend', verse.verse);
 											}
-											book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
-											currVerse = verseNodes.snapshotItem(v);
+										} else {
+											if (xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+												v = v-2;
+												currVerse = verseNodes.snapshotItem(v);
+											}
+										}
+	
+										if (dbContent[verseCount] !== undefined && verseCount < dbContent.length) {
+											let dbVerseNum;
+											if (String(dbContent[verseCount].verse_number).match(/\W/gm)){
+												let dbVerseNum1 = String(dbContent[verseCount].verse_number).match(/^(\d+)/g);
+												dbVerseNum = dbVerseNum1[0];
+											} else {
+												dbVerseNum = (dbContent[verseCount].verse_number)
+											}
+											if (parseInt(xmlVerseNum[0],10) >= parseInt(dbVerseNum,10)) {
+												if(!currVerse.nextSibling){
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}
+												else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
+													if(currVerse.nextElementSibling.nextSibling && currVerse.nextElementSibling.nextSibling.nodeName === "#text"){
+														currVerse.nextElementSibling.nextSibling.remove();
+													}
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}else if(currVerse.nextSibling.nodeName === "#text"){
+													currVerse.nextSibling.remove();
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}else{
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}											
+												if ((verseCount + 1) !== dbContent.length) {
+													verseCount++;
+												}
+											} else if(parseInt(xmlVerseNum[0],10) < parseInt(dbVerseNum,10) && xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+												// Add new verse node for extra/unjoined verses
+												for (let i = verseCount;i < dbContent.length;i++) {
+													let newClone = currVerse.cloneNode([true]);
+													newClone.attributes["number"].value = dbContent[i].verse_number;
+													currVerse.parentNode.appendChild(newClone);
+													newClone.insertAdjacentText('afterend', dbContent[i].verse);												
+												}
+												verseCount = (dbContent.length) - 1;
+												v = v + 1; 
+											} else {
+												currVerse.nextSibling.remove();
+												currVerse.remove();
+											}
+										} else {
+											currVerse.nextSibling.remove();
+											currVerse.remove();
+										}
 									}
-									try{
-										// _this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
-										// fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
-										swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
-									}catch(err){
-										swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
-									}finally{
-										this.props.showLoader(false);
-									}
+								}
+								try{
+									_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
+									fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
+									swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
+								}catch(err){
+									swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+								}finally{
+									this.props.showLoader(false);
 								}
 							}).catch((err) => {
 								this.props.showLoader(false);

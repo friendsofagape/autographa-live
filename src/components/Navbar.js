@@ -309,7 +309,6 @@ class Navbar extends React.Component {
     }
 
     getValue(chapter, bookId){
-        console.log("Navbar ---> getValue")
         AutographaStore.translationContent = "";
         AutographaStore.chapterId = chapter;
         AutographaStore.bookId = bookId;
@@ -394,7 +393,7 @@ class Navbar extends React.Component {
         return verse
         .replace(/&gt;/g, '>')
         .replace(/&lt;/g, '<')
-        .replace(/\n/g, ' ');
+        // .replace(/\n/g, ' ');
     }
 
     saveTarget = () => {
@@ -645,10 +644,8 @@ class Navbar extends React.Component {
                             tIns += diffCount["ins"];
                             tDel += diffCount["del"];
                             let ds = dmp_diff.diff_prettyHtml(verseDiff);
-                            console.log("toggled");
                             translationContent.push(<span dangerouslySetInnerHTML={{__html: ds}}></span>);
                         }else{
-                            console.log("toggled---else-->");
                             translationContent.push(AutographaStore.verses[i - 1].verse.toString());
                         }
                         chunkGroup.push(chunk);
