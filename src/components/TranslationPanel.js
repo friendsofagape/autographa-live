@@ -138,8 +138,8 @@ class TranslationPanel extends React.Component {
 		}
 		verseGroup.push(
 		<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
-		{
-			(recflag === i  && AutographaStore.AudioMount === true) && (
+				{AutographaStore.AudioMount && (
+					(recflag === i  && AutographaStore.AudioMount === true) ? (
 					<span>
                     <MicIcon />
                     { ((i+1 === verseId) && (AutographaStore.isPlaying===false))  && (
@@ -159,9 +159,12 @@ class TranslationPanel extends React.Component {
 					/>
                     )}
 					</span>
-			)
-		}
-			<span className='verse-num' style={{  marginRight: "4px" }} key={i}>{(i+1)}</span>
+				): <span style={{marginRight:'10px'}}></span>
+				)}
+				{(recflag !== i  && AutographaStore.AudioMount === true) ? (
+					<span style={{marginRight:'10px'}}></span>
+				): ""}
+			<span className={ AutographaStore.AudioMount? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
 			<span contentEditable={!AutographaStore.AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}
 			</span>

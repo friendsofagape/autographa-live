@@ -21,6 +21,7 @@ import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
 import VerseRecorder from './VerseRecorder';
+import Recorder from '../Audio/components/Recorder';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -103,11 +104,14 @@ class Navbar extends React.Component {
         })
         AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
     }
-    mountAudio = (status) => {
-        if(status === true)
-        window.location.reload();
-        AutographaStore.toggle = true;
-        AutographaStore.AudioMount = !AutographaStore.AudioMount
+    mountAudio = () => {
+        const currentTrans = AutographaStore.currentTrans;
+        db.get('targetBible').then((doc) => {
+            AutographaStore.AudioMount = true
+        }).catch(function(err) {
+            // handle any errors
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation-audio"], "error");
+        });
     }
     
     getContent = (id, chapter) => {
@@ -812,6 +816,7 @@ class Navbar extends React.Component {
                 <SearchModal show={AutographaStore.showModalSearch}/>
                 <DownloadModal show={AutographaStore.showModalDownload} />
                 <BookNameEditor show={AutographaStore.bookNameEditorPopup} />
+                <Recorder isOpen={AutographaStore.AudioMount} />
                 <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
                     <div className="container-fluid">
                     <div className="navbar-header">
@@ -860,7 +865,7 @@ class Navbar extends React.Component {
                             <li className="rec-btn">
                                     <FormattedMessage id="tooltip-recorder" >
                                     {(message) =>
-                                    <a onClick={() => this.mountAudio(AutographaStore.AudioMount)} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone fa-2x"></i></a>}
+                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone fa-2x"></i></a>}
                                 </FormattedMessage>
                             </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>
@@ -950,7 +955,7 @@ class Navbar extends React.Component {
                         </div>
                         <div  style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
-                }  
+                }
                 <Footer onSave={this.saveTarget} getRef = {this.getRefContents}/>
                 {this.state.showLoader ? <Loader /> : ""}
             </div>

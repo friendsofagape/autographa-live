@@ -41,6 +41,7 @@ class StoreContextProvider extends Component {
 				}
 			});
 		} else {
+			if (this.state.onselect > 1)
 			swal({
 				title: 'Are you sure?',
 				text: 'You want stop the currently recording verse',
@@ -59,8 +60,6 @@ class StoreContextProvider extends Component {
 		}
 	};
 	selectNext = (vId) => {
-		// if(AutographaStore.currentSession === false && AutographaStore.isWarning === false) {
-		// }
 		AutographaStore.currentSession = true;
 		AutographaStore.isPlaying = false;
 		AutographaStore.isWarning = false;
@@ -102,6 +101,7 @@ class StoreContextProvider extends Component {
 		if (AutographaStore.isWarning === false) {
 			this.setState({ record: true });
 			AutographaStore.isRecording = true;
+			AutographaStore.isAudioSave = false;
 		}
 	};
 	stopRecording = () => {
@@ -144,8 +144,6 @@ class StoreContextProvider extends Component {
 			this.state.recVerse,
 			this.state.storeRecord
 		);
-		if(save)
-		console.log(save)
 	};
 
 	render() {

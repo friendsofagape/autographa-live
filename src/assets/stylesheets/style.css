@@ -8926,3 +8926,8 @@ body::-webkit-scrollbar-thumb {
 background-color: darkgrey;
 outline: 1px solid slategrey;
 }
+.verse-num-onaudio {
+  font-size: 10px;
+  font-weight: bold;
+  margin-right: 7px;
+} 

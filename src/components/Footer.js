@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap/lib';
 import BottomBar from '../Audio/components/BottomBar';
 import AudioApp from '../Audio/AudioApp';
+import Recorder from '../Audio/components/Recorder';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
@@ -98,7 +99,7 @@ class Footer extends React.Component {
         const toggle = AutographaStore.toggle;
         // console.log(AutographaStore.isPlaying)
         return (
-            <React.Fragment>
+        <React.Fragment>
         <nav className="navbar navbar-default navbar-fixed-bottom">
             <div className="container-fluid">
                  <div className="collapse navbar-collapse">

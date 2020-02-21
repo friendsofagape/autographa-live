@@ -1,20 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar } from '@material-ui/core';
+import { Typography, AppBar, Slide } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Mic from '@material-ui/icons/Mic';
 import { ReactMicPlus } from 'react-mic-plus';
+import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
+import swal from 'sweetalert';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
 	},
 	appBar: {
+		top: 0,
+		position: 'fixed',
 		background: '#3F5274',
+		height: 65
 	},
 	menuButton: {
 		marginRight: theme.spacing(2),
@@ -37,28 +42,76 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Recorder() {
+export default function Recorder(props) {
 	const classes = useStyles();
-	const { toggleOpen, saveRecord } = useContext(StoreContext);
-	const { record } = useContext(StoreContext);
 
-	function onStop(recordedBlob) {
-		saveRecord(recordedBlob);
-	}
+	const mountAudio = () => {
+		if(AutographaStore.isAudioSave === true){
+			swal({
+				title: "Are you sure?",
+				text: "You want to trigger off Audio Recording!",
+				icon: "warning",
+				buttons: true,
+				dangerMode: true,
+			  })
+			  .then((willDelete) => {
+				if (willDelete) {
+					AutographaStore.AudioMount = false
+					window.location.reload();
+				} else {
+				  swal("Continue Recording Process");
+				}
+			  });
+			
+		}
+		else{
+			swal({
+				title: "Cannot switch off Audio",
+				text: "You have some newly recorded verses, Please export them to proceed!",
+				icon: "error",
+				buttons: true,
+				dangerMode: true,
+			  })
+		}
+		
+	};
 
 	return (
 		<div>
-			<div>
-				<ReactMicPlus
-					className={classes.soundWave}
-					record={record}
-					onStop={onStop}
-					strokeColor='#000000'
-					backgroundColor='#3F5274'
-					nonstop={true}
-					duration={5}
-				/>
-			</div>
+			{props.isOpen && (
+				<React.Fragment>
+					<Slide
+						direction='down'
+						in={props.isOpen}
+						mountOnEnter
+						unmountOnExit>
+						<AppBar position='static' className={classes.appBar}>
+							<Toolbar>
+								<IconButton
+									edge='start'
+									className={classes.menuButton}
+									color='inherit'
+									aria-label='menu'>
+									<MenuIcon />
+								</IconButton>
+								<Typography
+									variant='h6'
+									className={classes.title}>
+									Recorder
+								</Typography>
+								<IconButton
+									aria-label='account of current user'
+									aria-controls='menu-appbar'
+									aria-haspopup='true'
+									onClick={mountAudio}
+									color='inherit'>
+									<Mic />
+								</IconButton>
+							</Toolbar>
+						</AppBar>
+					</Slide>
+				</React.Fragment>
+			)}
 		</div>
 	);
 }

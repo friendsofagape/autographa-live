@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 		top: 'auto',
 		bottom: 0,
 		background: '#3F5274',
+		height:65
 	},
 	grow: {
 		flexGrow: 1,
@@ -186,7 +187,7 @@ function BottomBar(props) {
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-					<Slide direction='up' in={props} mountOnEnter unmountOnExit>
+					<Slide direction='up' in={props.isOpen.isOpen} mountOnEnter unmountOnExit>
 						<AppBar
 							position='fixed'
 							color='primary'

@@ -14,7 +14,7 @@ const AudioApp = (props) => {
 		<div>
 			<StoreContextProvider>
 				<BottomBar isOpen={props}/>
-				{/* <TexttoSpeech /> */}
+				<Recorder />
 				<Player />
 			</StoreContextProvider>
 		</div>
