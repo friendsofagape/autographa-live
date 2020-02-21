@@ -94,7 +94,6 @@ class ProjectListRow extends React.Component {
 		            let book = {};
 		            let parser = new DOMParser();
 					let xmlDoc = parser.parseFromString(bookData,"text/xml");
-					
 					//Modifying the exisitng dom and uploading to paratext
 					if (xmlDoc.evaluate) {
 						let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ANY_TYPE, null);
@@ -158,8 +157,30 @@ class ProjectListRow extends React.Component {
 									var versesLen = Math.min(book[j].length, doc.chapters[i].verses.length);
 									for (let k = 0; k < versesLen; k++) {
 										var verseNum = book[j][k].verse_number;
-	                                    doc.chapters[i].verses[verseNum - 1].verse = book[j][k].verse;
-	                                    book[j][k] = undefined;
+										if (verseNum.match((/\W/gm))){
+											let verseNumber = verseNum.match(/\d+/g);
+											doc.chapters[i].verses[parseInt(verseNumber[0], 10) - 1] = ({
+												"verse_number": parseInt(verseNumber[0], 10),
+												"verse": book[j][k].verse
+											});
+
+											// Here instead of i = verseNumber[1], used i = verseNumber[0] so that won't miss any number
+											// If the number is 1,3, therefore the verseNumber[1] will be 3 and will miss number 2
+
+											for (let count = (parseInt(verseNumber[0]))+1; count <= verseNumber[(verseNumber.length)-1]; count++) {
+												doc.chapters[i].verses[count - 1] = ({
+													"verse_number": parseInt(count, 10),
+													"verse": "",
+													"joint_verse": parseInt(verseNumber[0])
+												});
+											}
+										} else {
+											doc.chapters[i].verses[verseNum - 1] = ({
+												"verse_number": parseInt(verseNum, 10),
+												"verse": book[j][k].verse
+											});
+										}
+										book[j][k] = undefined;
 	                                }
 	                                //check for extra verses in the imported usfm here.
 	                                break;
@@ -302,6 +323,7 @@ class ProjectListRow extends React.Component {
 							}
 							if(fs.existsSync(path.join(app.getPath('userData'), 'paratext_projects', projectName))){
 								fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}.xml`), bookData, 'utf8');
+								// fs.writeFileSync(path.join(app.getPath('userData'), 'paratext_projects', projectName, `${bookId}_new.xml`), bookData, 'utf8');
 							}
 						}
 					}catch(err){
@@ -319,46 +341,118 @@ class ProjectListRow extends React.Component {
 								if (xmlDoc.evaluate) {
 									let chapterNodes =  xmlDoc.evaluate("//chapter", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 									let verseNodes = xmlDoc.evaluate("//verse", xmlDoc, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+									let dbVerses;
 									let currChapter=chapterNodes.snapshotItem(0);
-									book[currChapter.attributes["number"].value-1] = [];
-									let currVerse = verseNodes.snapshotItem(0);
+									let currVerse;
 									let v = 0;
 									let i = 0;
-									
+									let count;
+									let verseNumber;
+									let verses;
+									let dbContent = ["test"];
+									let verseCount = 0;
 									while(v < verseNodes.snapshotLength){
+										currVerse = verseNodes.snapshotItem(v);
+										let xmlVerseNum = (currVerse.attributes["number"].value).match(/^(\d+)/g);
 										v++;
-										 if(currVerse.attributes["number"].value == 1 && book[currChapter.attributes["number"].value-1].length != 0){
-											i++;
+										// verseCount + 1 is used to check the length of the dbContent
+										if(xmlVerseNum == 1 && (doc.chapters[currChapter.attributes["number"].value]).length != 0 && (verseCount + 1) === dbContent.length){
 											currChapter = chapterNodes.snapshotItem(i);
-											book[currChapter.attributes["number"].value-1] = [];
-										}
-										let verse = doc.chapters[currChapter.attributes["number"].value-1].verses[currVerse.attributes["number"].value-1];
-											if(!currVerse.nextSibling){
-												currVerse.insertAdjacentText('afterend',verse.verse);
-											}
-											else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
-												if(currVerse.nextElementSibling.nextSibling && currVerse.nextElementSibling.nextSibling.nodeName === "#text"){
-													currVerse.nextElementSibling.nextSibling.remove();
+											dbVerses = doc.chapters[currChapter.attributes["number"].value-1].verses;
+											i++;
+											count = 0;
+											verseCount = 0;
+											dbContent = [];
+											for (const verse of dbVerses) {
+												count = count + 1;
+												if (count < (dbVerses).length && dbVerses[count].joint_verse) {
+													// Finding out the join verses and get their verse number(s)
+													verseNumber = dbVerses[count].joint_verse + "-" + dbVerses[count].verse_number;
+													verses = dbVerses[(dbVerses[count].joint_verse)-1].verse;
+													continue;
+												} else {
+													if (verseNumber) {
+														// Push join verse number (1-3) and content.
+														dbContent.push({
+															"verse_number" : verseNumber,
+															"verse" : verses
+														});
+														verseNumber = undefined;
+														verses = undefined;
+													} else {
+														// Push verse number and content.
+														dbContent.push({
+															"verse_number" : verse.verse_number,
+															"verse" : verse.verse
+														});
+													}
 												}
-												currVerse.nextElementSibling.insertAdjacentText('afterend', verse.verse);
-											}else if(currVerse.nextSibling.nodeName === "#text"){
-												currVerse.nextSibling.remove();
-												currVerse.insertAdjacentText('afterend', verse.verse);
-											}else{
-												currVerse.insertAdjacentText('afterend', verse.verse);
 											}
-											book[currChapter.attributes["number"].value-1].push({verse_number: currVerse.attributes["number"].value, verse: currVerse.nextSibling !== null ? (currVerse.nextSibling.data !== undefined ? currVerse.nextSibling.data : "")   : ""})
-											currVerse = verseNodes.snapshotItem(v);
+										} else {
+											if (xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+												v = v-2;
+												currVerse = verseNodes.snapshotItem(v);
+											}
+										}
+	
+										if (dbContent[verseCount] !== undefined && verseCount < dbContent.length) {
+											let dbVerseNum;
+											if (String(dbContent[verseCount].verse_number).match(/\W/gm)){
+												let dbVerseNum1 = String(dbContent[verseCount].verse_number).match(/^(\d+)/g);
+												dbVerseNum = dbVerseNum1[0];
+											} else {
+												dbVerseNum = (dbContent[verseCount].verse_number)
+											}
+											if (parseInt(xmlVerseNum[0],10) >= parseInt(dbVerseNum,10)) {
+												if(!currVerse.nextSibling){
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}
+												else if(currVerse.nextElementSibling && currVerse.nextElementSibling.nodeName === "note"){
+													if(currVerse.nextElementSibling.nextSibling && currVerse.nextElementSibling.nextSibling.nodeName === "#text"){
+														currVerse.nextElementSibling.nextSibling.remove();
+													}
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}else if(currVerse.nextSibling.nodeName === "#text"){
+													currVerse.nextSibling.remove();
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}else{
+													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
+													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
+												}											
+												if ((verseCount + 1) !== dbContent.length) {
+													verseCount++;
+												}
+											} else if(parseInt(xmlVerseNum[0],10) < parseInt(dbVerseNum,10) && xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+												// Add new verse node for extra/unjoined verses
+												for (let i = verseCount;i < dbContent.length;i++) {
+													let newClone = currVerse.cloneNode([true]);
+													newClone.attributes["number"].value = dbContent[i].verse_number;
+													currVerse.parentNode.appendChild(newClone);
+													newClone.insertAdjacentText('afterend', dbContent[i].verse);												
+												}
+												verseCount = (dbContent.length) - 1;
+												v = v + 1; 
+											} else {
+												currVerse.nextSibling.remove();
+												currVerse.remove();
+											}
+										} else {
+											currVerse.nextSibling.remove();
+											currVerse.remove();
+										}
 									}
-									try{
-										_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
-										fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
-										swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
-									}catch(err){
-										swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
-									}finally{
-										this.props.showLoader(false);
-									}
+								}
+								try{
+									_this.props.syncAdapter.updateBookData(projectId, bookId, revision, xmlDoc.getElementsByTagName("usx")[0].outerHTML);
+									fs.writeFileSync(`${app.getPath('userData')}/paratext_projects/${projectName}/${bookId}.xml`, xmlDoc.getElementsByTagName("BookText")[0].outerHTML, 'utf8');
+									swal(currentTrans["dynamic-msg-book-exported"], currentTrans["label-exported-book"], "success");
+								}catch(err){
+									swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+								}finally{
+									this.props.showLoader(false);
 								}
 							}).catch((err) => {
 								this.props.showLoader(false);
