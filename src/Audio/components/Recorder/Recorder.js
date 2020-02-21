@@ -10,6 +10,7 @@ import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import swal from 'sweetalert';
+import Stopwatch from '../Timer';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 		top: 0,
 		position: 'fixed',
 		background: '#3F5274',
-		height: 65
+		height: 65,
 	},
 	menuButton: {
 		marginRight: theme.spacing(2),
@@ -46,34 +47,31 @@ export default function Recorder(props) {
 	const classes = useStyles();
 
 	const mountAudio = () => {
-		if(AutographaStore.isAudioSave === true){
+		if (AutographaStore.isAudioSave === true) {
 			swal({
-				title: "Are you sure?",
-				text: "You want to trigger off Audio Recording!",
-				icon: "warning",
+				title: 'Are you sure?',
+				text: 'You want to trigger off Audio Recording!',
+				icon: 'warning',
 				buttons: true,
 				dangerMode: true,
-			  })
-			  .then((willDelete) => {
+			}).then((willDelete) => {
 				if (willDelete) {
-					AutographaStore.AudioMount = false
+					AutographaStore.AudioMount = false;
 					window.location.reload();
 				} else {
-				  swal("Continue Recording Process");
+					swal('Continue Recording Process');
 				}
-			  });
-			
-		}
-		else{
+			});
+		} else {
 			swal({
-				title: "Cannot switch off Audio",
-				text: "You have some newly recorded verses, Please export them to proceed!",
-				icon: "error",
+				title: 'Cannot switch off Audio',
+				text:
+					'You have some newly recorded verses, Please export them to proceed!',
+				icon: 'error',
 				buttons: true,
 				dangerMode: true,
-			  })
+			});
 		}
-		
 	};
 
 	return (
@@ -99,6 +97,7 @@ export default function Recorder(props) {
 									className={classes.title}>
 									Recorder
 								</Typography>
+								<Stopwatch />
 								<IconButton
 									aria-label='account of current user'
 									aria-controls='menu-appbar'

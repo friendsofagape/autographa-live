@@ -2,11 +2,9 @@ import React from 'react';
 import StoreContextProvider from './context/StoreContext';
 import Recorder from './components/Recorder';
 import BottomBar from './components/BottomBar';
-import TranslationPanel from '../components/TranslationPanel';
-import { AutographaStore } from '../components/AutographaStore';
-import { VerseRecorder } from '../components/VerseRecorder';
 import Player from './components/AudioPlayer';
-import TexttoSpeech from './components/TexttoSpeech/TexttoSpeech';
+// import TexttoSpeech from './components/TexttoSpeech/TexttoSpeech';
+import Timer from './components/Timer';
 // import ExportWebm from './core/ExportWebm';
 
 const AudioApp = (props) => {
@@ -16,6 +14,7 @@ const AudioApp = (props) => {
 				<BottomBar isOpen={props}/>
 				<Recorder />
 				<Player />
+				<Timer />
 			</StoreContextProvider>
 		</div>
 	);

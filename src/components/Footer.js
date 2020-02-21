@@ -4,9 +4,7 @@ import { observer } from "mobx-react";
 import AutographaStore from "./AutographaStore";
 import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap/lib';
-import BottomBar from '../Audio/components/BottomBar';
 import AudioApp from '../Audio/AudioApp';
-import Recorder from '../Audio/components/Recorder';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
