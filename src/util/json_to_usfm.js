@@ -60,14 +60,12 @@ async function toUsfmDoc(book, returnNullForEmptyBook=false) {
                 } else {
                     if (verseNumber) {
                         // Push join verse number (1-3) and content.
-                        let newverse = addMtag(verses);
-                        usfmContent.push('\\v ' + verseNumber + ' ' + newverse);
+                        usfmContent.push('\\v ' + verseNumber + ' ' + verses);
                         verseNumber = undefined;
                         verses = undefined;
                     } else {
                         // Push verse number and content.
-                        let newverse = addMtag(verse.verse);
-                        usfmContent.push('\\v ' + verse.verse_number + ' ' + newverse);
+                        usfmContent.push('\\v ' + verse.verse_number + ' ' + verse.verse);
                     }
                     isEmpty = isEmpty && !verse.verse;
                 }
@@ -79,15 +77,6 @@ async function toUsfmDoc(book, returnNullForEmptyBook=false) {
     } catch(err) {
         console.log(err);
     }
-}
-
-function addMtag(verses) {
-	let newVerse = verses;
-	if(verses.indexOf('\n') !== -1 ){
-		newVerse = verses.trim().replace(new RegExp(/[\n\r]/, 'gu'), '\n\\m ')
-		verses = newVerse
-	}
-	return newVerse;
 }
 
 function buildFilePath(book, targetLangDoc, stage, date) {
