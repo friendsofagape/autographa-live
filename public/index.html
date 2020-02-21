@@ -27,9 +27,19 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Autographa Live</title>
+    <link rel="icon" href="../../favicon.ico" />
+		<link rel="stylesheet" href="./loader.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+			<div id="app">
+				<div id="loader-wrapper">
+					<div id="loader"></div>
+					<div class="loader-section section-left"></div>
+					<div class="loader-section section-right"></div>
+				</div>
+			</div>
+		</div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
