@@ -9,9 +9,9 @@ const useStyles = makeStyles((theme) => ({
 	timer: {
 		[theme.breakpoints.up('xl')]: {
 			float: 'left',
-			marginRight: 800,
+			marginRight: 818,
 		},
-		marginRight: 500,
+		marginRight: 540,
 	},
 }));
 

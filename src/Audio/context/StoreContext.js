@@ -73,17 +73,14 @@ class StoreContextProvider extends Component {
 		AutographaStore.currentSession = true;
 		AutographaStore.isPlaying = false;
 		AutographaStore.isWarning = false;
-		if (
-			this.state.onselect <= AutographaStore.chunkGroup.length - 1 &&
-			AutographaStore.isRecording === false
-		) {
+		if (this.state.onselect <= AutographaStore.chunkGroup.length - 1 && AutographaStore.isRecording === false) {
 			this.setState({ onselect: AutographaStore.vId + 1 });
+			this.resetTimer()
 			AutographaStore.vId = AutographaStore.vId + 1;
 			this.state.recVerse.map((value, index) => {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
 					AutographaStore.currentSession = false;
-					this.resetTimer()
 				}
 			});
 		} else {

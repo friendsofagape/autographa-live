@@ -1,16 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Slide } from '@material-ui/core';
+import { Typography, AppBar, Slide, Zoom } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Mic from '@material-ui/icons/Mic';
+import Fab from '@material-ui/core/Fab';
+import BookIcon from '@material-ui/icons/Book';
 import { ReactMicPlus } from 'react-mic-plus';
 import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import swal from 'sweetalert';
 import Timer from '../Timer';
+import Tooltip from 'material-ui/internal/Tooltip';
+const constants = require('../../../util/constants');
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -38,14 +42,30 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: 'white',
 		color: 'red',
 	},
+	mic:{
+		background: '#f9f1f1'
+	},
 	TexttoSpeech: {
 		marginLeft: 20,
 	},
+	extendedIcon: {
+		[theme.breakpoints.up('xl')]: {
+			right: 500,
+		},
+		right: 303,
+	},
+	chapter: {
+		[theme.breakpoints.up('xl')]: {
+			right: 495,
+		},
+		right: 300
+	}
 }));
 
 export default function Recorder(props) {
 	const classes = useStyles();
-
+	let bookId = AutographaStore.bookId.toString();
+	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	const mountAudio = () => {
 		if (AutographaStore.isAudioSave === true) {
 			swal({
@@ -97,13 +117,26 @@ export default function Recorder(props) {
 									className={classes.title}>
 									Recorder
 								</Typography>
-								<Timer open = {props.isOpen.isOpen}/>
+								<Fab
+									size='medium'
+									className={classes.extendedIcon}
+									variant='extended'>
+									<BookIcon />
+									{BookName}
+								</Fab>
+								<Fab
+									size='small'
+									aria-label='chapter'
+									className={classes.chapter}>
+									{AutographaStore.chapterId}
+								</Fab>
+								<Timer open={props.isOpen.isOpen} />
 								<IconButton
 									aria-label='account of current user'
 									aria-controls='menu-appbar'
 									aria-haspopup='true'
-									onClick={mountAudio}
-									color='inherit'>
+									className={classes.mic}
+									onClick={mountAudio}>
 									<Mic />
 								</IconButton>
 							</Toolbar>
