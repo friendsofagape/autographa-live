@@ -169,6 +169,10 @@ body {
     display: inline-flex;
 }
 
+.prespace {
+    white-space: pre-wrap
+}
+
 </style>`
 
 const css_2_col_ltr = `<style >
@@ -342,6 +346,9 @@ body {
     display: inline-flex;
 }
 
+.prespace {
+    white-space: pre-wrap
+}
 
 </style>`
 
@@ -474,6 +481,9 @@ const css_1_col_rtl = `<style>
     width: 60%
     }
 
+    .prespace {
+        white-space: pre-wrap
+    }
 
 </style>`
 
@@ -604,6 +614,10 @@ const css_2_col_rtl = `<style>
     text-align: right;
     margin-right: 0px;	/* Changed 23px to 0px */
     width: 60%
+    }
+
+    .prespace {
+        white-space: pre-wrap
     }
 
     </style>`
