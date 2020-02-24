@@ -123,7 +123,8 @@ class TranslationPanel extends React.Component {
   
   	render (){
         let recordedVerse = mobx.toJS(AutographaStore.recVerse)
-        let verseId = mobx.toJS(AutographaStore.vId)
+		let verseId = mobx.toJS(AutographaStore.vId)
+		let AudioMount = mobx.toJS(AutographaStore.AudioMount)
 		let recflag;
 		let verseGroup = [];
     	const toggle = AutographaStore.toggle;
@@ -181,7 +182,7 @@ class TranslationPanel extends React.Component {
 				</div>
 				<div className="row">
 				{tIns || tDel ? <div style={{textAlign: "center"}}><span style={{color: '#27b97e', fontWeight: 'bold'}}>(+) <span id="tIns">{tIns}</span></span> | <span style={{color: '#f50808', fontWeight: 'bold'}}> (-) <span id="tDel">{tDel}</span></span></div> : "" }
-				<div id="input-verses" className={`col-12 col-ref verse-input ${AutographaStore.scriptDirection.toLowerCase()} ${tIns || tDel ? 'disable-input' : ''}`} dir={AutographaStore.scriptDirection} style={{pointerEvents: tIns || tDel ? 'none': ''}}>{verseGroup}</div>
+				<div id="input-verses" className={`col-12 col-ref verse-input ${AutographaStore.scriptDirection.toLowerCase()} ${tIns || tDel ? 'disable-input' : ''}`} dir={AutographaStore.scriptDirection} style={{pointerEvents: tIns || tDel ? 'none': ''}} style={{ paddingBottom: (AudioMount) ? '50px' : '' }}>{verseGroup}</div>
 				</div>
 				<Statistic show={AutographaStore.showModalStat}  showReport = {this.showReport}/>
 			</div>

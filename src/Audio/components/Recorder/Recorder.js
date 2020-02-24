@@ -10,7 +10,7 @@ import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import swal from 'sweetalert';
-import Stopwatch from '../Timer';
+import Timer from '../Timer';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -76,11 +76,11 @@ export default function Recorder(props) {
 
 	return (
 		<div>
-			{props.isOpen && (
+			{props.isOpen.isOpen && (
 				<React.Fragment>
 					<Slide
 						direction='down'
-						in={props.isOpen}
+						in={props.isOpen.isOpen}
 						mountOnEnter
 						unmountOnExit>
 						<AppBar position='static' className={classes.appBar}>
@@ -97,7 +97,7 @@ export default function Recorder(props) {
 									className={classes.title}>
 									Recorder
 								</Typography>
-								<Stopwatch />
+								<Timer open = {props.isOpen.isOpen}/>
 								<IconButton
 									aria-label='account of current user'
 									aria-controls='menu-appbar'

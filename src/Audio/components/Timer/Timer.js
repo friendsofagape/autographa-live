@@ -1,36 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StoreContext } from '../../context/StoreContext';
+import { makeStyles } from '@material-ui/core/styles';
+import AutographaStore from '../../../components/AutographaStore';
 const formattedSeconds = (sec) =>
 	Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2);
 
-export default function Timer() {
-    const [secondsElapsed, setsecondsElapsed] = useState(0);
-    const [timer, setTimer] = useState(false)
+const useStyles = makeStyles((theme) => ({
+	timer: {
+		[theme.breakpoints.up('xl')]: {
+			float: 'left',
+			marginRight: 800,
+		},
+		marginRight: 500,
+	},
+}));
 
-	// const handleStartClick = (status) => {
-	// 	setTimer(status)
-	// };
+export default function Timer(props) {
+	const classes = useStyles();
+	const { timer, setTimer, secondsElapsed } = useContext(StoreContext);
+
 	useEffect(() => {
-        let interval
-        if(timer)
-            interval = setInterval(() => setsecondsElapsed(secondsElapsed + 1), 1000);
-        return () => clearInterval(interval)
+		let interval;
+		if (timer)
+			interval = setInterval(() => setTimer(secondsElapsed + 1), 1000);
+		return () => clearInterval(interval);
 	});
 
-	// const handleStopClick = (status) => {
-    //     setTimer(status)
-	// 	// clearInterval(handleStartClick);
-	// };
-
-	// const handleResetClick = () => {
-	// 	// clearInterval(handleStartClick);
-	// 	setsecondsElapsed(0);
-	// };
-
 	return (
-		<div className='stopwatch'>
-			<h1 className='stopwatch-timer'>
+		<div>
+			{props.open && (
+				<div className={classes.timer}>
+				<h1>
 				{formattedSeconds(secondsElapsed)}
-			</h1>
+				</h1>
+				</div>
+			)}
 		</div>
 	);
 }

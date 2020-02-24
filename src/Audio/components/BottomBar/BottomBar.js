@@ -22,10 +22,10 @@ import BackupIcon from '@material-ui/icons/Backup';
 import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
 import Player from '../AudioPlayer';
-import VerseRecorder from '../../../components/VerseRecorder';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
+import Recorder from '../Recorder';
 const path = ``;
 
 const useStyles = makeStyles((theme) => ({
@@ -128,7 +128,7 @@ function BottomBar(props) {
 		startRecording,
 		stopRecording,
 		saveRecord,
-		getDB,
+		resetTimer,
 		recVerse,
 	} = useContext(StoreContext);
 	function onStop(recordedBlob) {
@@ -152,6 +152,7 @@ function BottomBar(props) {
 							storeRecord.splice(index,1)
 						}
 					})
+					resetTimer();
 					AutographaStore.recVerse = recVerse;
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
@@ -187,6 +188,7 @@ function BottomBar(props) {
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
+				<Recorder isOpen={AutographaStore.AudioMount} />
 					<Slide direction='up' in={props.isOpen.isOpen} mountOnEnter unmountOnExit>
 						<AppBar
 							position='fixed'
@@ -279,7 +281,6 @@ function BottomBar(props) {
 							</Toolbar>
 						</AppBar>
 					</Slide>
-					<VerseRecorder />
 				</React.Fragment>
 			)}
 		</div>

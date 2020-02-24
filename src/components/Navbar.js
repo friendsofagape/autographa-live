@@ -20,8 +20,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
-import VerseRecorder from './VerseRecorder';
-import Recorder from '../Audio/components/Recorder';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -816,7 +814,6 @@ class Navbar extends React.Component {
                 <SearchModal show={AutographaStore.showModalSearch}/>
                 <DownloadModal show={AutographaStore.showModalDownload} />
                 <BookNameEditor show={AutographaStore.bookNameEditorPopup} />
-                <Recorder isOpen={AutographaStore.AudioMount} />
                 <nav className="navbar navbar-inverse navbar-fixed-top" role="navigation">
                     <div className="container-fluid">
                     <div className="navbar-header">

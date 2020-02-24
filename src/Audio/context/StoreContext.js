@@ -1,11 +1,10 @@
 import React, { createContext, Component } from 'react';
 import * as sampleBible from '../components/VerseGrid/verse';
 import { default as localforage } from 'localforage';
-import * as verseRecorder from '../../components/VerseRecorder';
 import * as downloadURL from '../core/downloadWebm';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
-import mergeAudios from '../core/mergeAudios'
+import mergeAudios from '../core/mergeAudios';
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
 
@@ -22,10 +21,19 @@ class StoreContextProvider extends Component {
 		recVerse: [],
 		isWarning: false,
 		blob: '',
+		secondsElapsed: 0,
+		timer: false,
 	};
 	toggleOpen = () => {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
+
+	setTimer = (time) => {
+		this.setState({ secondsElapsed : time })
+	}
+	resetTimer = () => {
+		this.setState({ secondsElapsed: 0 })
+	}
 
 	selectPrev = (vId) => {
 		AutographaStore.isWarning = false;
@@ -38,25 +46,27 @@ class StoreContextProvider extends Component {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
 					AutographaStore.currentSession = false;
+					this.resetTimer()
 				}
 			});
 		} else {
 			if (this.state.onselect > 1)
-			swal({
-				title: 'Are you sure?',
-				text: 'You want stop the currently recording verse',
-				icon: 'warning',
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete) {
-					this.stopRecording();
-					AutographaStore.currentSession = false;
-					swal('Stopped Recording!', {
-						icon: 'success',
-					});
-				}
-			});
+				swal({
+					title: 'Are you sure?',
+					text: 'You want stop the currently recording verse',
+					icon: 'warning',
+					buttons: true,
+					dangerMode: true,
+				}).then((willDelete) => {
+					if (willDelete) {
+						this.stopRecording();
+						this.setState({ secondsElapsed: 0 })
+						AutographaStore.currentSession = false;
+						swal('Stopped Recording!', {
+							icon: 'success',
+						});
+					}
+				});
 		}
 	};
 	selectNext = (vId) => {
@@ -73,6 +83,7 @@ class StoreContextProvider extends Component {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
 					AutographaStore.currentSession = false;
+					this.resetTimer()
 				}
 			});
 		} else {
@@ -85,6 +96,7 @@ class StoreContextProvider extends Component {
 					dangerMode: true,
 				}).then((willDelete) => {
 					if (willDelete) {
+						this.resetTimer();
 						this.stopRecording();
 						swal('Stopped Recording!', {
 							icon: 'success',
@@ -102,6 +114,7 @@ class StoreContextProvider extends Component {
 			this.setState({ record: true });
 			AutographaStore.isRecording = true;
 			AutographaStore.isAudioSave = false;
+			this.setState({ timer: true });
 		}
 	};
 	stopRecording = () => {
@@ -111,6 +124,7 @@ class StoreContextProvider extends Component {
 		if (AutographaStore.isWarning === false) {
 			this.state.recVerse.push(this.state.onselect);
 			AutographaStore.isWarning = true;
+			this.setState({ timer: false });
 		}
 	};
 
@@ -142,7 +156,7 @@ class StoreContextProvider extends Component {
 			book,
 			chapter,
 			this.state.recVerse,
-			this.state.storeRecord
+			this.state.storeRecord,
 		);
 	};
 
@@ -159,7 +173,9 @@ class StoreContextProvider extends Component {
 					stopRecording: this.stopRecording,
 					saveRecord: this.saveRecord,
 					getDB: this.getDB,
-					exportAudio: this.exportAudio
+					setTimer: this.setTimer,
+					resetTimer: this.resetTimer,
+					exportAudio: this.exportAudio,
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

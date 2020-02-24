@@ -5,14 +5,13 @@ import BottomBar from './components/BottomBar';
 import Player from './components/AudioPlayer';
 // import TexttoSpeech from './components/TexttoSpeech/TexttoSpeech';
 import Timer from './components/Timer';
-// import ExportWebm from './core/ExportWebm';
 
 const AudioApp = (props) => {
 	return (
 		<div>
 			<StoreContextProvider>
 				<BottomBar isOpen={props}/>
-				<Recorder />
+				<Recorder isOpen={props} />
 				<Player />
 				<Timer />
 			</StoreContextProvider>
