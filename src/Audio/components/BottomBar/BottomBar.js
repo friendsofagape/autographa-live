@@ -18,7 +18,6 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import BackupIcon from '@material-ui/icons/Backup';
 import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
 import Player from '../AudioPlayer';
@@ -59,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 		top: 'auto',
 		bottom: 0,
 		background: '#3F5274',
-		height:65
+		height: 65,
 	},
 	grow: {
 		flexGrow: 1,
@@ -67,42 +66,23 @@ const useStyles = makeStyles((theme) => ({
 	fab: {
 		zIndex: 1,
 		top: -40,
-		right: -700,
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
 	fab1: {
 		zIndex: 1,
 		top: -40,
-		right: -700,
-		margin: theme.spacing(2),
-		marginLeft: -7,
-	},
-	export: {
-		zIndex: 1,
-		top: -40,
-		right: -700,
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
 	player: {
-		[theme.breakpoints.up('xl')]: {
-			display: 'block',
-			width: 300,
-			color: 'blue',
-			float: 'right',
-			position: 'static',
-			marginLeft: 1200,
-		},
-		display: 'block',
-		width: 300,
-		color: 'blue',
-		float: 'right',
-		position: 'static',
-		marginLeft: 720,
-		marginRight:-15,
-		right: 60
-		
+		color: 'black',
+		float: 'left',
+		position: 'absolute',
+		width: 270
+	},
+	bottomIcons: {
+		position: 'absolute',
 	},
 	oscilloscopescrim: {
 		height: 125,
@@ -123,7 +103,7 @@ function BottomBar(props) {
 	const [show, setShow] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
-	const { selectPrev, resetVal, exportAudio, storeRecord } = useContext(StoreContext);
+	const { selectPrev, resetVal, storeRecord } = useContext(StoreContext);
 	const {
 		startRecording,
 		stopRecording,
@@ -148,10 +128,10 @@ function BottomBar(props) {
 				if (willDelete) {
 					recVerse.splice(recVerse.indexOf(onselect), 1);
 					storeRecord.map((value, index) => {
-						if(value.verse === onselect){
-							storeRecord.splice(index,1)
+						if (value.verse === onselect) {
+							storeRecord.splice(index, 1);
 						}
-					})
+					});
 					resetTimer();
 					AutographaStore.recVerse = recVerse;
 					AutographaStore.isPlaying = false;
@@ -188,8 +168,12 @@ function BottomBar(props) {
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-				<Recorder isOpen={AutographaStore.AudioMount} />
-					<Slide direction='up' in={props.isOpen.isOpen} mountOnEnter unmountOnExit>
+					<Recorder isOpen={AutographaStore.AudioMount} />
+					<Slide
+						direction='up'
+						in={props.isOpen.isOpen}
+						mountOnEnter
+						unmountOnExit>
 						<AppBar
 							position='fixed'
 							color='primary'
@@ -204,74 +188,70 @@ function BottomBar(props) {
 									backgroundColor='#3F5274'
 									nonstop={true}
 								/>
-								<span>
-									<Fab
-										className={classes.export}
-										onClick={exportAudio}>
-										<BackupIcon />
-									</Fab>
-								</span>
-								<div className={classes.oscilloscopescrim}>
+								{/* <div className={classes.oscilloscopescrim}>
 									{!record && (
 										<div className={classes.scrim} />
 									)}
-								</div>
+								</div> */}
 								{/* <span>
 									<TexttoSpeech currentRefverse={props.isOpen.currentRefverse}  />
 								</span> */}
-								<span>
-									{record === false && (
-										<Fab
-											color='secondary'
-											aria-label='start'
-											className={classes.fab}
-											onClick={startRecording}>
-											<Mic />
-										</Fab>
-									)}
-								</span>
-								<span>
-									{record === true && (
+								<span
+									className={classes.bottomIcons}
+									style={{ right: '50%' }}>
+									<span>
 										<Fab
 											color='primary'
-											aria-label='stop'
+											aria-label='previous'
 											className={classes.fab}
-											onClick={stopRecording}>
-											<StopIcon />
+											onClick={selectPrev}>
+											<SkipPreviousIcon />
 										</Fab>
-									)}
+									</span>
+									<span>
+										{record === false && (
+											<Fab
+												color='secondary'
+												aria-label='start'
+												className={classes.fab}
+												onClick={startRecording}>
+												<Mic />
+											</Fab>
+										)}
+									</span>
+									<span>
+										{record === true && (
+											<Fab
+												color='primary'
+												aria-label='stop'
+												className={classes.fab}
+												onClick={stopRecording}>
+												<StopIcon />
+											</Fab>
+										)}
+									</span>
 								</span>
-								<span>
-									<Fab
-										color='primary'
-										aria-label='previous'
-										className={classes.fab}
-										onClick={selectPrev}>
-										<SkipPreviousIcon />
-									</Fab>
-								</span>
-								<span>
-									<Fab
-										color='primary'
-										aria-label='next'
-										hidden={
-											AutographaStore.currentSession ===
-											true
-										}
-										className={classes.fab}
-										onClick={selectNext}>
-										<SkipNextIcon />
-									</Fab>
-								</span>
-								<span>
-									{AutographaStore.isWarning === true && (
+								<span style={{ right: '30%', left:'50%', position:'absolute' }}>
+									<span>
 										<Fab
-											aria-label='delete'
-											className={classes.fab1}
-											onClick={deleteRecordedVerse}>
-											<DeleteForeverIcon />
+											color='primary'
+											aria-label='next'
+											hidden={AutographaStore.currentSession === true}
+											className={classes.fab}
+											onClick={selectNext}>
+											<SkipNextIcon />
 										</Fab>
-									)}
+									</span>
+									<span>
+										{AutographaStore.isWarning === true && (
+											<Fab
+												aria-label='delete'
+												className={classes.fab}
+												onClick={deleteRecordedVerse}>
+												<DeleteForeverIcon />
+											</Fab>
+										)}
+									</span>
 								</span>
 								<span className={classes.player}>
 									<Player

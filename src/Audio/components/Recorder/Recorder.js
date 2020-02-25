@@ -4,13 +4,12 @@ import { Typography, AppBar, Slide, Zoom } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import BackupIcon from '@material-ui/icons/Backup';
 import Mic from '@material-ui/icons/Mic';
 import Fab from '@material-ui/core/Fab';
 import BookIcon from '@material-ui/icons/Book';
-import { ReactMicPlus } from 'react-mic-plus';
 import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
-import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import swal from 'sweetalert';
 import Timer from '../Timer';
 import Tooltip from 'material-ui/internal/Tooltip';
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 		top: 0,
 		position: 'fixed',
 		background: '#3F5274',
-		height: 65,
+		height: 68,
 	},
 	menuButton: {
 		marginRight: theme.spacing(2),
@@ -42,8 +41,9 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: 'white',
 		color: 'red',
 	},
-	mic:{
-		background: '#f9f1f1'
+	mic: {
+		background: '#f9f1f1',
+		right: 260,
 	},
 	TexttoSpeech: {
 		marginLeft: 20,
@@ -52,18 +52,22 @@ const useStyles = makeStyles((theme) => ({
 		[theme.breakpoints.up('xl')]: {
 			right: 500,
 		},
-		right: 303,
+		right: 260,
 	},
 	chapter: {
 		[theme.breakpoints.up('xl')]: {
 			right: 495,
 		},
-		right: 300
-	}
+		right: 257,
+	},
+	export: {
+		right: 120,
+	},
 }));
 
 export default function Recorder(props) {
 	const classes = useStyles();
+	const { exportAudio, storeRecord } = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	const mountAudio = () => {
@@ -117,28 +121,51 @@ export default function Recorder(props) {
 									className={classes.title}>
 									Recorder
 								</Typography>
+								<span
+									style={{
+										right: '30%',
+										left: '50%',
+										position: 'absolute',
+									}}>
+									<Fab
+										size='medium'
+										className={classes.extendedIcon}
+										variant='extended'>
+										<BookIcon />
+										{BookName}
+									</Fab>
+									<Fab
+										size='small'
+										aria-label='chapter'
+										className={classes.chapter}>
+										{AutographaStore.chapterId}
+									</Fab>
+								</span>
+								<span
+									style={{
+										right: '50%',
+										left: '48%',
+										position: 'absolute',
+									}}>
+									<Timer open={props.isOpen.isOpen} />
+								</span>
 								<Fab
-									size='medium'
-									className={classes.extendedIcon}
-									variant='extended'>
-									<BookIcon />
-									{BookName}
-								</Fab>
-								<Fab
-									size='small'
-									aria-label='chapter'
-									className={classes.chapter}>
-									{AutographaStore.chapterId}
-								</Fab>
-								<Timer open={props.isOpen.isOpen} />
-								<IconButton
-									aria-label='account of current user'
 									aria-controls='menu-appbar'
 									aria-haspopup='true'
+									size='medium'
 									className={classes.mic}
 									onClick={mountAudio}>
 									<Mic />
-								</IconButton>
+								</Fab>
+								<span>
+									<Fab
+										size='medium'
+										aria-haspopup='true'
+										className={classes.export}
+										onClick={exportAudio}>
+										<BackupIcon />
+									</Fab>
+								</span>
 							</Toolbar>
 						</AppBar>
 					</Slide>

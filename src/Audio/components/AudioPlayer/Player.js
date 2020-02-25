@@ -40,7 +40,6 @@ const Player = (props) => {
 			{AutographaStore.isPlaying && (
 				<div className={classes.root}>
 					<AudioPlayer
-						className={classes.formControl}
 						src={blobURL}
 						onEnded={(e) => (AutographaStore.isPlaying=false)}
 					/>

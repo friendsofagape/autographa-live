@@ -65,6 +65,7 @@ class TranslationPanel extends React.Component {
 				num = 1
 			}
 			if(AutographaStore.AudioMount === true && (num > 0)) {
+				if(refContent[l] !== undefined)
 				refContent[l].querySelectorAll('div')[num-1].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px;whitespace:pre-wrap;";
 			}
         }
@@ -149,22 +150,17 @@ class TranslationPanel extends React.Component {
                     tabIndex={-1}
                     style={{ color: 'red', cursor: 'pointer' }}
                     onClick={()=> AutographaStore.isPlaying = true}
-					/>
-                    )}
+					/> )}
                     { ((i+1 === verseId) && (AutographaStore.isPlaying===true))  && (
                     <StopIcon 
                     edge='start'
                     tabIndex={-1}
                     style={{ cursor: 'pointer' }}
                     onClick={() => AutographaStore.isPlaying =false}
-					/>
-                    )}
-					</span>
-				): <span style={{marginRight:'10px'}}></span>
-				)}
-				{(recflag !== i  && AutographaStore.AudioMount === true) ? (
-					<span style={{marginRight:'10px'}}></span>
-				): ""}
+					/> )}
+					</span>) : 
+					<span style={{ marginRight:'10px' }}></span>)}
+				{(recflag !== i  && AutographaStore.AudioMount === true) ? (<span style={{marginRight:'10px'}}></span>): ""}
 			<span className={ AutographaStore.AudioMount? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
 			<span contentEditable={!AutographaStore.AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.translationContent[i]}
