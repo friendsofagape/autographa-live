@@ -863,7 +863,7 @@ class Navbar extends React.Component {
                             <li className="rec-btn">
                                     <FormattedMessage id="tooltip-recorder" >
                                     {(message) =>
-                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i class="fa fa-microphone-slash fa-2x"></i></a>}
+                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone-slash fa-2x"></i></a>}
                                 </FormattedMessage>
                             </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>

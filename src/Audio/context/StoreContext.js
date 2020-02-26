@@ -23,6 +23,7 @@ class StoreContextProvider extends Component {
 		blob: '',
 		secondsElapsed: 0,
 		timer: false,
+		totalTime:0
 	};
 	toggleOpen = () => {
 		this.setState({ isOpen: !this.state.isOpen });
@@ -122,6 +123,7 @@ class StoreContextProvider extends Component {
 			this.state.recVerse.push(this.state.onselect);
 			AutographaStore.isWarning = true;
 			this.setState({ timer: false });
+			this.setState({ totalTime:  this.state.totalTime + this.state.secondsElapsed })
 		}
 	};
 
@@ -129,6 +131,7 @@ class StoreContextProvider extends Component {
 		let save,
 			book = {};
 		value['verse'] = this.state.onselect;
+		value['totaltime'] = this.state.secondsElapsed;
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
@@ -157,7 +160,12 @@ class StoreContextProvider extends Component {
 		);
 	};
 
+	reduceTimer = (deletedTime) => {
+		this.setState({ totalTime:  this.state.totalTime - deletedTime })
+	}
+
 	render() {
+		console.log("onselect" , this.state.onselect)
 		return (
 			<StoreContext.Provider
 				value={{
@@ -173,6 +181,7 @@ class StoreContextProvider extends Component {
 					setTimer: this.setTimer,
 					resetTimer: this.resetTimer,
 					exportAudio: this.exportAudio,
+					reduceTimer: this.reduceTimer
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

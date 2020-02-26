@@ -20,12 +20,16 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
+import RaisedButton from 'material-ui/RaisedButton';
 import Player from '../AudioPlayer';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import Recorder from '../Recorder';
+import { Box } from '@material-ui/core';
 const path = ``;
+const formattedSeconds = (sec) =>
+	Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2);
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -69,6 +73,12 @@ const useStyles = makeStyles((theme) => ({
 		margin: theme.spacing(2),
 		marginLeft: -7,
 	},
+	fab2: {
+		zIndex: 1,
+		top: -40,
+		margin: theme.spacing(2),
+		marginLeft: -7,
+	},
 	fab1: {
 		zIndex: 1,
 		top: -40,
@@ -79,7 +89,11 @@ const useStyles = makeStyles((theme) => ({
 		color: 'black',
 		float: 'left',
 		position: 'absolute',
-		width: 270
+		width: 270,
+	},
+	save: {
+		float: 'right',
+		position: 'absolute',
 	},
 	bottomIcons: {
 		position: 'absolute',
@@ -96,14 +110,30 @@ const useStyles = makeStyles((theme) => ({
 	oscilloscope: {
 		width: 10,
 	},
+	shadow: {
+		position: 'absolute',
+		top: -27,
+		width: 64,
+		height: 64,
+		background: 'rgba(0,0,0,.3)',
+	},
+	totaltime: {
+		float: 'right',
+		position: 'absolute',
+	}
 }));
 
 function BottomBar(props) {
 	const classes = useStyles();
-	const [show, setShow] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
-	const { selectPrev, resetVal, storeRecord } = useContext(StoreContext);
+	const {
+		selectPrev,
+		resetVal,
+		storeRecord,
+		reduceTimer,
+		totalTime,
+	} = useContext(StoreContext);
 	const {
 		startRecording,
 		stopRecording,
@@ -130,6 +160,7 @@ function BottomBar(props) {
 					storeRecord.map((value, index) => {
 						if (value.verse === onselect) {
 							storeRecord.splice(index, 1);
+							reduceTimer(value.totaltime);
 						}
 					});
 					resetTimer();
@@ -209,6 +240,10 @@ function BottomBar(props) {
 										</Fab>
 									</span>
 									<span>
+										<Fab
+											aria-label='start'
+											style={{ left: '42%' }}
+											className={classes.shadow}></Fab>
 										{record === false && (
 											<Fab
 												color='secondary'
@@ -222,21 +257,29 @@ function BottomBar(props) {
 									<span>
 										{record === true && (
 											<Fab
-												color='primary'
+												color='secondary'
 												aria-label='stop'
-												className={classes.fab}
+												className={classes.fab2}
 												onClick={stopRecording}>
 												<StopIcon />
 											</Fab>
 										)}
 									</span>
 								</span>
-								<span style={{ right: '30%', left:'50%', position:'absolute' }}>
+								<span
+									style={{
+										right: '30%',
+										left: '50%',
+										position: 'absolute',
+									}}>
 									<span>
 										<Fab
 											color='primary'
 											aria-label='next'
-											hidden={AutographaStore.currentSession === true}
+											hidden={
+												AutographaStore.currentSession ===
+												true
+											}
 											className={classes.fab}
 											onClick={selectNext}>
 											<SkipNextIcon />
@@ -257,6 +300,15 @@ function BottomBar(props) {
 									<Player
 										isPlaying={props.isOpen.isPlaying}
 									/>
+								</span>
+								<span className={classes.totaltime}
+									style={{ left: '80%' }}>
+										<Box fontSize={13} fontStyle='italic' >Total Time recorded: {formattedSeconds(totalTime)}s</Box>
+									</span>
+								<span
+									className={classes.save}
+									style={{ left: '92%' }}>
+									<RaisedButton> Save </RaisedButton>
 								</span>
 							</Toolbar>
 						</AppBar>
