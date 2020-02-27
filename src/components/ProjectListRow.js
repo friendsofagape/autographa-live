@@ -140,7 +140,9 @@ class ProjectListRow extends React.Component {
 									if(foundVerse) {
 										break;
 									}
-									verseText += " "+temp.textContent;
+									if ((temp.attributes.getNamedItem("style").nodeValue).match(/p|(q(\d)?)/g) && currVerse.parentElement.lastChild.previousSibling === currVerse) {
+										verseText += " "+temp.textContent;
+									}
 									temp = temp.nextElementSibling;
 								}
 								book[currChapter.attributes["number"].value].push({verse_number: currVerse.attributes["number"].value, verse: verseText});
@@ -350,13 +352,13 @@ class ProjectListRow extends React.Component {
 									let verseNumber;
 									let verses;
 									let dbContent = ["test"];
-									let verseCount = 0;
+									let verseCount = 1;
 									while(v < verseNodes.snapshotLength){
 										currVerse = verseNodes.snapshotItem(v);
 										let xmlVerseNum = (currVerse.attributes["number"].value).match(/^(\d+)/g);
 										v++;
 										// verseCount + 1 is used to check the length of the dbContent
-										if(xmlVerseNum == 1 && (doc.chapters[currChapter.attributes["number"].value]).length != 0 && (verseCount + 1) === dbContent.length){
+										if(xmlVerseNum == 1 && (doc.chapters[currChapter.attributes["number"].value]).length != 0 && (verseCount + 1) > dbContent.length){
 											currChapter = chapterNodes.snapshotItem(i);
 											dbVerses = doc.chapters[currChapter.attributes["number"].value-1].verses;
 											i++;
@@ -389,7 +391,7 @@ class ProjectListRow extends React.Component {
 												}
 											}
 										} else {
-											if (xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+											if (xmlVerseNum == 1 && (verseCount + 1) <= dbContent.length) {
 												v = v-2;
 												currVerse = verseNodes.snapshotItem(v);
 											}
@@ -422,18 +424,23 @@ class ProjectListRow extends React.Component {
 													currVerse.insertAdjacentText('afterend', dbContent[verseCount].verse);
 													currVerse.attributes["number"].value = dbContent[verseCount].verse_number;
 												}											
-												if ((verseCount + 1) !== dbContent.length) {
+												if ((verseCount + 1) <= dbContent.length) {
 													verseCount++;
 												}
-											} else if(parseInt(xmlVerseNum[0],10) < parseInt(dbVerseNum,10) && xmlVerseNum == 1 && (verseCount + 1) !== dbContent.length) {
+											} else if(parseInt(xmlVerseNum[0],10) < parseInt(dbVerseNum,10) && xmlVerseNum == 1 && (verseCount + 1) <= dbContent.length) {
 												// Add new verse node for extra/unjoined verses
-												for (let i = verseCount;i < dbContent.length;i++) {
+												for (let j = verseCount;j < dbContent.length;j++) {
 													let newClone = currVerse.cloneNode([true]);
-													newClone.attributes["number"].value = dbContent[i].verse_number;
-													currVerse.parentNode.appendChild(newClone);
-													newClone.insertAdjacentText('afterend', dbContent[i].verse);												
+													newClone.attributes["number"].value = dbContent[j].verse_number;
+													// Node can be added on the basis parentNode
+													if (currVerse.parentNode.nodeName === "para") {
+														currVerse.parentNode.appendChild(newClone);
+													} else {
+														currVerse.parentNode.insertBefore(newClone, chapterNodes.snapshotItem(i));
+													}
+													newClone.insertAdjacentText('afterend', dbContent[j].verse);												
 												}
-												verseCount = (dbContent.length) - 1;
+												verseCount = dbContent.length;
 												v = v + 1; 
 											} else {
 												currVerse.nextSibling.remove();
