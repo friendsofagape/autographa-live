@@ -17,7 +17,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import SaveIcon from '@material-ui/icons/Save';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import BackupIcon from '@material-ui/icons/Backup';
 import { StoreContext } from '../../context/StoreContext';
 import { ReactMicPlus } from 'react-mic-plus';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -26,8 +26,11 @@ import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import Recorder from '../Recorder';
-import { Box } from '@material-ui/core';
-const path = ``;
+import { Box, Tooltip, Zoom } from '@material-ui/core';
+const { app } = require('electron').remote;
+const fs = require('fs');
+const constants = require('../../../util/constants');
+const path = require('path');
 const formattedSeconds = (sec) =>
 	Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2);
 
@@ -120,7 +123,7 @@ const useStyles = makeStyles((theme) => ({
 	totaltime: {
 		float: 'right',
 		position: 'absolute',
-	}
+	},
 }));
 
 function BottomBar(props) {
@@ -133,6 +136,8 @@ function BottomBar(props) {
 		storeRecord,
 		reduceTimer,
 		totalTime,
+		setOnselect,
+		exportAudio,
 	} = useContext(StoreContext);
 	const {
 		startRecording,
@@ -141,9 +146,12 @@ function BottomBar(props) {
 		resetTimer,
 		recVerse,
 	} = useContext(StoreContext);
+	let bookId = AutographaStore.bookId.toString();
+	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
+	var newfilepath = path.join(app.getPath('userData'), 'recordings', BookName, `Chapter${AutographaStore.chapterId}`, `output.json`)
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob);
-		console.log(recordedBlob);
+		console.log(recordedBlob)
 	}
 	function deleteRecordedVerse() {
 		if (AutographaStore.isWarning === true) {
@@ -164,23 +172,41 @@ function BottomBar(props) {
 						}
 					});
 					resetTimer();
+					let recordedJSON = { ...recVerse }
+					if (fs.existsSync(newfilepath)) {
+						fs.writeFile( newfilepath , JSON.stringify(recordedJSON), 'utf8', function (err) {
+							if (err) {
+								console.log("An error occured while writing JSON Object to File.");
+								return console.log(err);
+							}
+						 
+							console.log("JSON file has been saved.");
+						});
+					}
 					AutographaStore.recVerse = recVerse;
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
 					AutographaStore.reRecord = false;
 					AutographaStore.currentSession = true;
-					swal(`Verse${onselect} recording has been deleted!`, {
+					swal(`Verse${AutographaStore.vId} recording has been deleted!`, {
 						icon: 'success',
 					});
 					resetVal(AutographaStore.vId);
 				} else {
 					AutographaStore.isWarning = true;
 					AutographaStore.reRecord = false;
-					swal(`Verse${onselect} recording is safe`);
+					swal(`Verse${AutographaStore.vId} recording is safe`);
 				}
 			});
 		}
 	}
+
+	useEffect(() => {
+		if (AutographaStore.vId !== onselect) {
+			setOnselect(AutographaStore.vId);
+			resetTimer();
+		}
+	}, [AutographaStore.vId]);
 
 	useEffect(() => {
 		// var timerID = setInterval(() => stopRecording(), 6000);
@@ -231,38 +257,52 @@ function BottomBar(props) {
 									className={classes.bottomIcons}
 									style={{ right: '50%' }}>
 									<span>
-										<Fab
-											color='primary'
-											aria-label='previous'
-											className={classes.fab}
-											onClick={selectPrev}>
-											<SkipPreviousIcon />
-										</Fab>
+										<Tooltip
+											title='Goto Previous Verse'
+											TransitionComponent={Zoom}>
+											<Fab
+												color='primary'
+												aria-label='previous'
+												className={classes.fab}
+												onClick={selectPrev}>
+												<SkipPreviousIcon />
+											</Fab>
+										</Tooltip>
 									</span>
 									<span>
 										<Fab
 											aria-label='start'
 											style={{ left: '42%' }}
-											className={classes.shadow}></Fab>
+											className={classes.shadow}>
+											""
+										</Fab>
 										{record === false && (
-											<Fab
-												color='secondary'
-												aria-label='start'
-												className={classes.fab}
-												onClick={startRecording}>
-												<Mic />
-											</Fab>
+											<Tooltip
+												title='Start Recording'
+												TransitionComponent={Zoom}>
+												<Fab
+													color='secondary'
+													aria-label='start'
+													className={classes.fab}
+													onClick={startRecording}>
+													<Mic />
+												</Fab>
+											</Tooltip>
 										)}
 									</span>
 									<span>
 										{record === true && (
-											<Fab
-												color='secondary'
-												aria-label='stop'
-												className={classes.fab2}
-												onClick={stopRecording}>
-												<StopIcon />
-											</Fab>
+											<Tooltip
+												title='Stop Recording'
+												TransitionComponent={Zoom}>
+												<Fab
+													color='secondary'
+													aria-label='stop'
+													className={classes.fab2}
+													onClick={stopRecording}>
+													<StopIcon />
+												</Fab>
+											</Tooltip>
 										)}
 									</span>
 								</span>
@@ -273,42 +313,78 @@ function BottomBar(props) {
 										position: 'absolute',
 									}}>
 									<span>
-										<Fab
-											color='primary'
-											aria-label='next'
-											hidden={
-												AutographaStore.currentSession ===
-												true
-											}
-											className={classes.fab}
-											onClick={selectNext}>
-											<SkipNextIcon />
-										</Fab>
+										<Tooltip
+											title='Goto Next Verse'
+											TransitionComponent={Zoom}>
+											<Fab
+												color='primary'
+												aria-label='next'
+												hidden={
+													AutographaStore.currentSession ===
+													true
+												}
+												className={classes.fab}
+												onClick={selectNext}>
+												<SkipNextIcon />
+											</Fab>
+										</Tooltip>
 									</span>
 									<span>
 										{AutographaStore.isWarning === true && (
-											<Fab
-												aria-label='delete'
-												className={classes.fab}
-												onClick={deleteRecordedVerse}>
-												<DeleteForeverIcon />
-											</Fab>
+											<Tooltip
+												title='Delete Current Verse'
+												TransitionComponent={Zoom}>
+												<Fab
+													aria-label='delete'
+													className={classes.fab}
+													onClick={
+														deleteRecordedVerse
+													}>
+													<DeleteForeverIcon />
+												</Fab>
+											</Tooltip>
 										)}
 									</span>
 								</span>
 								<span className={classes.player}>
 									<Player
-										isPlaying={props.isOpen.isPlaying}
+										isPlaying={props.isOpen.blob}
 									/>
 								</span>
-								<span className={classes.totaltime}
+								<span
+									className={classes.totaltime}
 									style={{ left: '80%' }}>
-										<Box fontSize={13} fontStyle='italic' >Total Time recorded: {formattedSeconds(totalTime)}s</Box>
-									</span>
+									<Box fontSize={13} fontStyle='italic'>
+										Total Time recorded:{' '}
+										{formattedSeconds(totalTime)}s
+									</Box>
+								</span>
 								<span
 									className={classes.save}
-									style={{ left: '92%' }}>
-									<RaisedButton> Save </RaisedButton>
+									style={{ left: '91.5%' }}>
+									<Tooltip
+									backgroundcolor='black'
+										title={
+											<span
+												style={{
+													fontSize: '11px',
+												}}>
+												Export Currently Recorded
+												Chapter
+											</span>
+										}
+										TransitionComponent={Zoom}>
+										<Fab
+											variant='extended'
+											size='medium'
+											aria-label='Export'
+											onClick={exportAudio}>
+											<BackupIcon
+												style={{ marginRight: '5px' }}
+											/>
+											Export
+										</Fab>
+									</Tooltip>
 								</span>
 							</Toolbar>
 						</AppBar>

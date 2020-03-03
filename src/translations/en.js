@@ -137,7 +137,8 @@ export default {
 	'dynamic-msg-trans-data': 'Translation Data',
 	'dynamic-msg-enter-translation':
         'Please enter Translation Details in the Settings to continue with Export.',
-    'dynamic-msg-enter-translation-audio' : 'Please Set the Output Path in the Settings for Audio-Export',
+	'dynamic-msg-enter-translation-audio' : 'Please Set the Output Path in the Settings for Audio-Export',
+	"dynamic-not-compatible-with-translation-help": 'Recorder not compatible with translation help, Please change the layout',
 	'dynamic-msg-process-req': 'Unable to process request.',
 	'compare-mode-heading': 'Unable to Show Comparison',
 	'dynamic-compare-mode':

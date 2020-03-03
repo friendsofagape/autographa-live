@@ -2,8 +2,11 @@ const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
 module.exports = {
-	recSave: function(book, file, chapter, versenum) {
+	recSave: function(book, file, chapter, versenum, recVerse) {
+		recVerse = recVerse.sort((a,b)=> a-b)
+		var recordedJSON = { ...recVerse }
 		var filePath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `verse${versenum}.mp3`)
+		var newfilepath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `output.json`)
 		if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 			if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings'))){
 				fs.mkdirSync(path.join(app.getPath('userData'), 'recordings'));
@@ -15,9 +18,25 @@ module.exports = {
 				fs.mkdirSync(path.join(app.getPath('userData'), 'recordings', book.bookName, chapter));
 			}
 			filePath = writeRecfile(file, filePath);
+			fs.writeFile( newfilepath , JSON.stringify(recordedJSON), 'utf8', function (err) {
+				if (err) {
+					console.log("An error occured while writing JSON Object to File.");
+					return console.log(err);
+				}
+			 
+				console.log("JSON file has been saved.");
+			});
 		}
 		else{
-			console.log('Directory Exists', file, filePath);
+			fs.writeFile( newfilepath , JSON.stringify(recordedJSON), 'utf8', function (err) {
+				if (err) {
+					console.log("An error occured while writing JSON Object to File.");
+					return console.log(err);
+				}
+			 
+				console.log("JSON file has been saved.");
+			});
+			
 			filePath = writeRecfile(file, filePath);
 		}
 		return filePath;

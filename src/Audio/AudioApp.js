@@ -10,7 +10,7 @@ const AudioApp = (props) => {
 	return (
 		<div>
 			<StoreContextProvider>
-				<BottomBar isOpen={props}/>
+				<BottomBar isOpen={props} />
 				<Recorder isOpen={props} />
 				<Player />
 				<Timer />

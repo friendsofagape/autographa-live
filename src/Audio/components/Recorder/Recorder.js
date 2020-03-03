@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, AppBar, Slide, Zoom } from '@material-ui/core';
+import { Typography, AppBar, Slide, Zoom, Tooltip } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -12,8 +12,10 @@ import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import swal from 'sweetalert';
 import Timer from '../Timer';
-import Tooltip from 'material-ui/internal/Tooltip';
 const constants = require('../../../util/constants');
+const { app } = require('electron').remote;
+const fs = require('fs');
+const path = require('path');
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -23,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 		top: 0,
 		position: 'fixed',
 		background: '#3F5274',
-		height: 68,
+		height: 65,
 	},
 	menuButton: {
 		marginRight: theme.spacing(2),
@@ -67,10 +69,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Recorder(props) {
 	const classes = useStyles();
-	const { exportAudio, storeRecord } = useContext(StoreContext);
+	const { exportAudio, recVerse, setRecverse } = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	const mountAudio = () => {
+		if (AutographaStore.isAudioSave !== true)
+			recVerse.length === 0
+				? (AutographaStore.isAudioSave = true)
+				: (AutographaStore.isAudioSave = false);
 		if (AutographaStore.isAudioSave === true) {
 			swal({
 				title: 'Are you sure?',
@@ -98,6 +104,37 @@ export default function Recorder(props) {
 		}
 	};
 
+	const importAudio = () => {
+		var newfilepath = path.join(
+			app.getPath('userData'),
+			'recordings',
+			BookName,
+			`Chapter${AutographaStore.chapterId}`,
+			`output.json`,
+		);
+		if (fs.existsSync(newfilepath)) {
+			fs.readFile(
+				newfilepath,
+				// callback function that is called when reading file is done
+				function(err, data) {
+					// json data
+					var jsonData = data;
+
+					// parse json
+					var jsonParsed = JSON.parse(jsonData);
+
+					// access elements
+					for (var key in jsonParsed) {
+						if (jsonParsed.hasOwnProperty(key)) {
+							var val = jsonParsed[key];
+							setRecverse(val);
+						}
+					}
+				},
+			);
+		}
+	};
+
 	return (
 		<div>
 			{props.isOpen.isOpen && (
@@ -113,6 +150,7 @@ export default function Recorder(props) {
 									edge='start'
 									className={classes.menuButton}
 									color='inherit'
+									onClick={importAudio}
 									aria-label='menu'>
 									<MenuIcon />
 								</IconButton>
@@ -149,15 +187,21 @@ export default function Recorder(props) {
 									}}>
 									<Timer open={props.isOpen.isOpen} />
 								</span>
-								<Fab
-									aria-controls='menu-appbar'
-									aria-haspopup='true'
-									size='medium'
-									className={classes.mic}
-									onClick={mountAudio}>
-									<Mic />
-								</Fab>
-								<span>
+								<Tooltip
+									title='Turn-Off Recording Mode'
+									TransitionComponent={Zoom}>
+									<Fab
+										aria-controls='menu-appbar'
+										aria-haspopup='true'
+										variant='extended'
+										size='medium'
+										className={classes.mic}
+										onClick={mountAudio}>
+										<Mic />
+										Turn Off
+									</Fab>
+								</Tooltip>
+								{/* <span>
 									<Fab
 										size='medium'
 										aria-haspopup='true'
@@ -165,7 +209,7 @@ export default function Recorder(props) {
 										onClick={exportAudio}>
 										<BackupIcon />
 									</Fab>
-								</span>
+								</span> */}
 							</Toolbar>
 						</AppBar>
 					</Slide>

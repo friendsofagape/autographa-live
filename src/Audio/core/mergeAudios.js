@@ -10,22 +10,19 @@ const audioContext = new AudioContext()
 const fileReader = new FileReader();
 
 
-const mergeAudios = async(book, chapter, versenum) => {
+const mergeAudios = async(book, chapter, versenum,) => {
 		var merged, output;
-        versenum = versenum.sort()
         let doc = await db.get('targetBible');
         let filepath = doc.targetPath
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
                 let audiomp3 =[];
-                // let audioImport;
-                // audioImport = require('./verse2.mp3')
-                // audiomp3.push(audioImport)
-				for(var i =1; i<=versenum.length ; i++){
-					let audioImport;
-					audioImport = (path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${i}.mp3`))
-					audiomp3.push(audioImport)
-                }
+                versenum = versenum.sort((a,b)=> a-b)
+                versenum.forEach(function(verse, i) {
+                    let audioImport;
+					audioImport = (path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${verse}.mp3`))
+                    audiomp3.push(audioImport)
+                  });
 				audio
 					.fetchAudio(...audiomp3)
 					.then((buffers) => {
@@ -42,18 +39,18 @@ const mergeAudios = async(book, chapter, versenum) => {
                         console.log('out', output);
                         let filepath = doc.targetPath
                         if (fs.existsSync(`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}.mp3`)){
-                            writeRecfile(output.blob,`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`)
+                            writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
                         }
                         else{
                             if (!fs.existsSync(`${filepath[0]}`+`/recordings/`)){
                                 fs.mkdirSync(`${filepath[0]}`+`/recordings`)
                             }
                             if (fs.existsSync(`${filepath[0]}`+`/recordings/${book.bookName}`)){ 
-                                writeRecfile(output.blob,`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`)
+                                writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
                             }
                             else {
                                 fs.mkdirSync(`${filepath[0]}`+`/recordings/${book.bookName}`)
-                                writeRecfile(output.blob,`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`)
+                                writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
                             }
                         }
                         // => {blob, element, url}
@@ -64,7 +61,7 @@ const mergeAudios = async(book, chapter, versenum) => {
                         // console.log(output.element)
 						// document.body.append(output.element);
 					}).then(() => {
-                        let filePath = `${filepath[0]}`+`/recordings/${book.bookName}`;
+                        let filePath = (`${filepath[0]}`+`/recordings/${book.bookName}`);
                         AutographaStore.isAudioSave = true
                         swal("Record Export Success!", `on Directory: ${filePath}`, "success");
                     })

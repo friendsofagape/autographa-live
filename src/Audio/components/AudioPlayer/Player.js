@@ -20,28 +20,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Player = (props) => {
-    const { onselect, storeRecord } = useContext(StoreContext);
-    const [ blobURL , setblobURL] = useState(null)
-	useEffect(() => {
-		if (AutographaStore.isPlaying === true) {
-			storeRecord.map((value, index) => {
-				if (value.verse === onselect) {
-                    setblobURL(value.blobURL)
-				}
-			});
-        }
-        else
-        {
-            setblobURL(null)
-        }
-	});
+	const { onselect, storeRecord, recVerse, blob } = useContext(StoreContext);
+	console.log('blob', AutographaStore.isPlaying, AutographaStore.blobURL);
 	return (
 		<div>
 			{AutographaStore.isPlaying && (
 				<div className={classes.root}>
 					<AudioPlayer
-						src={blobURL}
-						onEnded={(e) => (AutographaStore.isPlaying=false)}
+						src={AutographaStore.blobURL}
+						onPause={() => (AutographaStore.isPlaying = false)}
+						showDownloadProgress={true}
+						showVolumeControl={true}
+						showJumpControls={true}
+						onEnded={(e) => (AutographaStore.isPlaying = false)}
 					/>
 				</div>
 			)}

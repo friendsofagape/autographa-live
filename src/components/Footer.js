@@ -167,7 +167,7 @@ class Footer extends React.Component {
                 </div>
             </div>
         </nav>
-        <AudioApp isOpen={AutographaStore.AudioMount} isPlaying={AutographaStore.isPlaying} currentRefverse ={AutographaStore.currentRefverse}/>
+        <AudioApp isOpen={AutographaStore.AudioMount} isPlaying={AutographaStore.isPlaying} Blob={AutographaStore.blobURL} currentRefverse ={AutographaStore.currentRefverse}/>
         </React.Fragment>
         )
     }

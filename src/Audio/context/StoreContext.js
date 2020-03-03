@@ -142,6 +142,7 @@ class StoreContextProvider extends Component {
 			this.state.recordedFiles,
 			chapter,
 			this.state.onselect,
+			this.state.recVerse,
 		);
 		AutographaStore.recVerse = this.state.recVerse;
 	};
@@ -164,8 +165,16 @@ class StoreContextProvider extends Component {
 		this.setState({ totalTime:  this.state.totalTime - deletedTime })
 	}
 
+	setOnselect = (vId) => {
+		this.setState({ onselect: vId })
+	}
+
+	setRecverse = (value) => {
+		this.state.recVerse.push(value);
+		AutographaStore.recVerse = this.state.recVerse;
+	}
+
 	render() {
-		console.log("onselect" , this.state.onselect)
 		return (
 			<StoreContext.Provider
 				value={{
@@ -181,7 +190,9 @@ class StoreContextProvider extends Component {
 					setTimer: this.setTimer,
 					resetTimer: this.resetTimer,
 					exportAudio: this.exportAudio,
-					reduceTimer: this.reduceTimer
+					reduceTimer: this.reduceTimer,
+					setOnselect: this.setOnselect,
+					setRecverse: this.setRecverse
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

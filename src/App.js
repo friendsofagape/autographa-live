@@ -9,8 +9,8 @@ function App(props) {
 		// username: 'STR',
 		// username: 'unfoldingword',
 		username: 'Door43-Catalog',
-		languageId: 'en',
-		resourceId: 'ult',
+		languageId: 'hi',
+		resourceId: 'ulb',
 		reference: {
 			bookId: `${props.book ? Constant.bookCodeList[parseInt(props.book, 10) - 1].toLowerCase() : 'gen' }`,
 			chapter: props.chapter ? props.chapter : '1',
