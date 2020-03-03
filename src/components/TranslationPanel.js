@@ -150,7 +150,6 @@ class TranslationPanel extends React.Component {
 		let bookId = AutographaStore.bookId.toString();
 		let recordedVerse = mobx.toJS(AutographaStore.recVerse)
 		let BookName = constants.booksList[parseInt(bookId, 10) - 1];
-
 			if (AutographaStore.isPlaying === true) {
 				recordedVerse.map((versenum, index) => {
 					if (versenum === AutographaStore.vId) {
@@ -165,7 +164,6 @@ class TranslationPanel extends React.Component {
 						audiomp3.push(newfilepath)
 					}
 				});
-				console.log("audiomp3",audiomp3)
 				audio
 					.fetchAudio( ...audiomp3 )
 					.then((buffers) => {
@@ -179,7 +177,6 @@ class TranslationPanel extends React.Component {
 					})
 					.then(() => {
 						AutographaStore.blobURL = output.url
-						console.log('out', AutographaStore.blobURL);
 					});
 			}
 

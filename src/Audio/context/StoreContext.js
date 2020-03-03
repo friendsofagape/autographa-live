@@ -23,18 +23,19 @@ class StoreContextProvider extends Component {
 		blob: '',
 		secondsElapsed: 0,
 		timer: false,
-		totalTime:0
+		totalTime: 0,
+		recVerseTime: [],
 	};
 	toggleOpen = () => {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
 
 	setTimer = (time) => {
-		this.setState({ secondsElapsed : time })
-	}
+		this.setState({ secondsElapsed: time });
+	};
 	resetTimer = () => {
-		this.setState({ secondsElapsed: 0 })
-	}
+		this.setState({ secondsElapsed: 0 });
+	};
 
 	selectPrev = (vId) => {
 		AutographaStore.isWarning = false;
@@ -47,7 +48,7 @@ class StoreContextProvider extends Component {
 				if (value.toString() === AutographaStore.vId.toString()) {
 					AutographaStore.isWarning = true;
 					AutographaStore.currentSession = false;
-					this.resetTimer()
+					this.resetTimer();
 				}
 			});
 		} else {
@@ -61,7 +62,7 @@ class StoreContextProvider extends Component {
 				}).then((willDelete) => {
 					if (willDelete) {
 						this.stopRecording();
-						this.setState({ secondsElapsed: 0 })
+						this.setState({ secondsElapsed: 0 });
 						AutographaStore.currentSession = false;
 						swal('Stopped Recording!', {
 							icon: 'success',
@@ -74,9 +75,12 @@ class StoreContextProvider extends Component {
 		AutographaStore.currentSession = true;
 		AutographaStore.isPlaying = false;
 		AutographaStore.isWarning = false;
-		if (this.state.onselect <= AutographaStore.chunkGroup.length - 1 && AutographaStore.isRecording === false) {
+		if (
+			this.state.onselect <= AutographaStore.chunkGroup.length - 1 &&
+			AutographaStore.isRecording === false
+		) {
 			this.setState({ onselect: AutographaStore.vId + 1 });
-			this.resetTimer()
+			this.resetTimer();
 			AutographaStore.vId = AutographaStore.vId + 1;
 			this.state.recVerse.map((value, index) => {
 				if (value.toString() === AutographaStore.vId.toString()) {
@@ -121,9 +125,15 @@ class StoreContextProvider extends Component {
 		this.setState({ record: false });
 		if (AutographaStore.isWarning === false) {
 			this.state.recVerse.push(this.state.onselect);
+			this.state.recVerseTime.push({
+				verse: this.state.onselect,
+				totaltime: this.state.secondsElapsed,
+			});
 			AutographaStore.isWarning = true;
 			this.setState({ timer: false });
-			this.setState({ totalTime:  this.state.totalTime + this.state.secondsElapsed })
+			this.setState({
+				totalTime: this.state.totalTime + this.state.secondsElapsed,
+			});
 		}
 	};
 
@@ -143,6 +153,7 @@ class StoreContextProvider extends Component {
 			chapter,
 			this.state.onselect,
 			this.state.recVerse,
+			this.state.recVerseTime,
 		);
 		AutographaStore.recVerse = this.state.recVerse;
 	};
@@ -162,16 +173,25 @@ class StoreContextProvider extends Component {
 	};
 
 	reduceTimer = (deletedTime) => {
-		this.setState({ totalTime:  this.state.totalTime - deletedTime })
-	}
+		this.setState({ totalTime: this.state.totalTime - deletedTime });
+	};
 
 	setOnselect = (vId) => {
-		this.setState({ onselect: vId })
-	}
+		this.setState({ onselect: vId });
+	};
 
 	setRecverse = (value) => {
 		this.state.recVerse.push(value);
 		AutographaStore.recVerse = this.state.recVerse;
+	};
+
+	fetchTimer = (time) => {
+		this.setState({
+			totalTime: this.state.totalTime + time,
+		});
+	};
+	updateJSON = (json) => {
+		this.state.recVerseTime.push(json)
 	}
 
 	render() {
@@ -192,7 +212,9 @@ class StoreContextProvider extends Component {
 					exportAudio: this.exportAudio,
 					reduceTimer: this.reduceTimer,
 					setOnselect: this.setOnselect,
-					setRecverse: this.setRecverse
+					setRecverse: this.setRecverse,
+					fetchTimer: this.fetchTimer,
+					updateJSON: this.updateJSON
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

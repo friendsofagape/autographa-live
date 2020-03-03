@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, AppBar, Slide, Zoom, Tooltip } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
+import ImportExportSharpIcon from '@material-ui/icons/ImportExportSharp';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import BackupIcon from '@material-ui/icons/Backup';
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Recorder(props) {
 	const classes = useStyles();
-	const { exportAudio, recVerse, setRecverse } = useContext(StoreContext);
+	const { exportAudio, recVerse, setRecverse, fetchTimer, updateJSON } = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	const mountAudio = () => {
@@ -127,7 +128,9 @@ export default function Recorder(props) {
 					for (var key in jsonParsed) {
 						if (jsonParsed.hasOwnProperty(key)) {
 							var val = jsonParsed[key];
-							setRecverse(val);
+							setRecverse(val.verse);
+							fetchTimer(val.totaltime)
+							updateJSON(val)
 						}
 					}
 				},
@@ -152,7 +155,7 @@ export default function Recorder(props) {
 									color='inherit'
 									onClick={importAudio}
 									aria-label='menu'>
-									<MenuIcon />
+									<ImportExportSharpIcon />
 								</IconButton>
 								<Typography
 									variant='h6'

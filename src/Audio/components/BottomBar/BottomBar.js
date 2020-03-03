@@ -145,13 +145,13 @@ function BottomBar(props) {
 		saveRecord,
 		resetTimer,
 		recVerse,
+		recVerseTime
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	var newfilepath = path.join(app.getPath('userData'), 'recordings', BookName, `Chapter${AutographaStore.chapterId}`, `output.json`)
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob);
-		console.log(recordedBlob)
 	}
 	function deleteRecordedVerse() {
 		if (AutographaStore.isWarning === true) {
@@ -165,14 +165,14 @@ function BottomBar(props) {
 			}).then((willDelete) => {
 				if (willDelete) {
 					recVerse.splice(recVerse.indexOf(onselect), 1);
-					storeRecord.map((value, index) => {
+					recVerseTime.map((value, index) => {
 						if (value.verse === onselect) {
-							storeRecord.splice(index, 1);
+							recVerseTime.splice(index, 1);
 							reduceTimer(value.totaltime);
 						}
 					});
 					resetTimer();
-					let recordedJSON = { ...recVerse }
+					let recordedJSON = { ...recVerseTime }
 					if (fs.existsSync(newfilepath)) {
 						fs.writeFile( newfilepath , JSON.stringify(recordedJSON), 'utf8', function (err) {
 							if (err) {

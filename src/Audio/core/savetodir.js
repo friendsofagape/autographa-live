@@ -2,9 +2,11 @@ const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
 module.exports = {
-	recSave: function(book, file, chapter, versenum, recVerse) {
-		recVerse = recVerse.sort((a,b)=> a-b)
-		var recordedJSON = { ...recVerse }
+	recSave: function(book, file, chapter, versenum, recVerse, rectime) {
+		rectime = rectime.sort((a, b) => a.verse - b.verse);
+		recVerse = recVerse.sort((a,b) => a-b)
+		var recordedJSON = { ...rectime }
+		console.log(recordedJSON)
 		var filePath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `verse${versenum}.mp3`)
 		var newfilepath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `output.json`)
 		if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
@@ -23,7 +25,6 @@ module.exports = {
 					console.log("An error occured while writing JSON Object to File.");
 					return console.log(err);
 				}
-			 
 				console.log("JSON file has been saved.");
 			});
 		}
