@@ -443,12 +443,20 @@ class ProjectListRow extends React.Component {
 												verseCount = dbContent.length;
 												v = v + 1; 
 											} else {
-												currVerse.nextSibling.remove();
-												currVerse.remove();
+												if (currVerse.nextSibling) {
+													currVerse.nextSibling.remove();
+												}
+												if (currVerse) {
+													currVerse.remove();
+												}
 											}
 										} else {
-											currVerse.nextSibling.remove();
-											currVerse.remove();
+											if (currVerse.nextSibling) {
+												currVerse.nextSibling.remove();
+											}
+											if (currVerse) {
+												currVerse.remove();
+											}
 										}
 									}
 								}
