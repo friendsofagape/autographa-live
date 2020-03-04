@@ -20,33 +20,6 @@ class TranslationPanel extends React.Component {
   	}
 
   	highlightRef(vId, refId, obj) {
-		{/*var content = ReactDOM.findDOMNode(this);
-		let verses = content.getElementsByClassName("verse-input")[0].querySelectorAll("span[id^=v]");
-		var refContent = document.getElementsByClassName('ref-contents');
-		for (var a=0; a< refContent.length; a++) {
-		var refContent2 = refContent[a];
-		for (var i = 0; i < AutographaStore.verses.length; i++) {
-			var refDiv = refContent2.querySelectorAll('div[data-verse^='+'"'+"r"+(i+1)+'"'+']');
-			if (refDiv != 'undefined') {
-			refDiv[0].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
-			}            
-		};
-		let chunk = document.getElementById(obj).getAttribute("data-chunk-group");
-		if (chunk) {
-			refContent2.querySelectorAll('div[data-verse^="r"]').style="background-color: '';font-weight: '';padding-left:10px;padding-right:10px";
-			var limits = chunk.split("-").map(function(element) { return parseInt(element, 10) - 1; });
-			for(var j=limits[0]; j<=limits[1];j++){
-			refContent2.querySelectorAll("div[data-verse=r"+(j+1)+"]")[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;margin-right:10px";
-			}
-			$('div[data-verse="r' + (limits[0] + 1) + '"]').css({ "border-radius": "10px 10px 0px 0px" });
-			$('div[data-verse="r' + (limits[1] + 1) + '"]').css({ "border-radius": "0px 0px 10px 10px" });
-		}
-        }*/}
-        // document.getElementById(vId).addEventListener("paste", function (e) {
-		// 	e.preventDefault();
-		// 	var text = e.clipboardData.getData("text/plain");
-		// 	document.execCommand("insertHTML", false, text);
-		// })
       	let refContent = document.getElementsByClassName('ref-contents');
       	for(let l=0; l<AutographaStore.layout; l++){
         	let ref = refContent[l] ? refContent[l].querySelectorAll('div[data-verse^="r"]') : [];
