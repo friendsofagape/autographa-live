@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import AudioPlayer from 'react-h5-audio-player';
 import { makeStyles } from '@material-ui/core/styles';
 import { StoreContext } from '../../context/StoreContext';
-import { classes } from 'istanbul-lib-coverage';
 import AutographaStore from '../../../components/AutographaStore';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Player = (props) => {
+	const classes = useStyles();
 	return (
 		<div>
 			{AutographaStore.isPlaying && (
