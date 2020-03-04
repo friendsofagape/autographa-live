@@ -88,5 +88,6 @@ export class AutographaStore {
   @observable currentRefverse = ""
   @observable isAudioSave = true
   @observable blobURL = null
+  @observable audioImport = false
 }
 export default new AutographaStore();

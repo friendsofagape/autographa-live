@@ -145,13 +145,21 @@ function BottomBar(props) {
 		saveRecord,
 		resetTimer,
 		recVerse,
-		recVerseTime
+		recVerseTime,
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
-	var newfilepath = path.join(app.getPath('userData'), 'recordings', BookName, `Chapter${AutographaStore.chapterId}`, `output.json`)
+	let buttonPressTimer;
+	var newfilepath = path.join(
+		app.getPath('userData'),
+		'recordings',
+		BookName,
+		`Chapter${AutographaStore.chapterId}`,
+		`output.json`,
+	);
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob);
+		console.log(recordedBlob);
 	}
 	function deleteRecordedVerse() {
 		if (AutographaStore.isWarning === true) {
@@ -172,25 +180,35 @@ function BottomBar(props) {
 						}
 					});
 					resetTimer();
-					let recordedJSON = { ...recVerseTime }
+					let recordedJSON = { ...recVerseTime };
 					if (fs.existsSync(newfilepath)) {
-						fs.writeFile( newfilepath , JSON.stringify(recordedJSON), 'utf8', function (err) {
-							if (err) {
-								console.log("An error occured while writing JSON Object to File.");
-								return console.log(err);
-							}
-						 
-							console.log("JSON file has been saved.");
-						});
+						fs.writeFile(
+							newfilepath,
+							JSON.stringify(recordedJSON),
+							'utf8',
+							function(err) {
+								if (err) {
+									console.log(
+										'An error occured while writing JSON Object to File.',
+									);
+									return console.log(err);
+								}
+
+								console.log('JSON file has been saved.');
+							},
+						);
 					}
 					AutographaStore.recVerse = recVerse;
 					AutographaStore.isPlaying = false;
 					AutographaStore.isWarning = false;
 					AutographaStore.reRecord = false;
 					AutographaStore.currentSession = true;
-					swal(`Verse${AutographaStore.vId} recording has been deleted!`, {
-						icon: 'success',
-					});
+					swal(
+						`Verse${AutographaStore.vId} recording has been deleted!`,
+						{
+							icon: 'success',
+						},
+					);
 					resetVal(AutographaStore.vId);
 				} else {
 					AutographaStore.isWarning = true;
@@ -221,11 +239,21 @@ function BottomBar(props) {
 		}
 	});
 
+	function handleButtonPress() {
+		startRecording();
+	}
+
+	function handleButtonRelease() {
+		if (record === true) {
+			stopRecording();
+		}
+	}
+
 	return (
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-					<Recorder isOpen={AutographaStore.AudioMount} />
+					<Recorder isOpen={AutographaStore.AudioMount} audioImport={AutographaStore.audioImport}/>
 					<Slide
 						direction='up'
 						in={props.isOpen.isOpen}
@@ -276,21 +304,22 @@ function BottomBar(props) {
 											className={classes.shadow}>
 											""
 										</Fab>
-										{record === false && (
-											<Tooltip
-												title='Start Recording'
-												TransitionComponent={Zoom}>
-												<Fab
-													color='secondary'
-													aria-label='start'
-													className={classes.fab}
-													onClick={startRecording}>
-													<Mic />
-												</Fab>
-											</Tooltip>
-										)}
+										{/* {record === false && ( */}
+										<Tooltip
+											title='Start Recording'
+											TransitionComponent={Zoom}>
+											<Fab
+												color='secondary'
+												aria-label='start'
+												className={classes.fab}
+												onMouseDown={handleButtonPress}
+												onMouseUp={handleButtonRelease}>
+												<Mic />
+											</Fab>
+										</Tooltip>
+										{/* )} */}
 									</span>
-									<span>
+									{/* <span>
 										{record === true && (
 											<Tooltip
 												title='Stop Recording'
@@ -299,12 +328,12 @@ function BottomBar(props) {
 													color='secondary'
 													aria-label='stop'
 													className={classes.fab2}
-													onClick={stopRecording}>
+													onClick={handleButtonRelease}>
 													<StopIcon />
 												</Fab>
 											</Tooltip>
 										)}
-									</span>
+									</span> */}
 								</span>
 								<span
 									style={{
@@ -312,23 +341,21 @@ function BottomBar(props) {
 										left: '50%',
 										position: 'absolute',
 									}}>
-									<span>
-										<Tooltip
-											title='Goto Next Verse'
-											TransitionComponent={Zoom}>
-											<Fab
-												color='primary'
-												aria-label='next'
-												hidden={
-													AutographaStore.currentSession ===
-													true
-												}
-												className={classes.fab}
-												onClick={selectNext}>
-												<SkipNextIcon />
-											</Fab>
-										</Tooltip>
-									</span>
+									{AutographaStore.currentSession ===false && (
+										<span>
+											<Tooltip
+												title='Goto Next Verse'
+												TransitionComponent={Zoom}>
+												<Fab
+													color='primary'
+													aria-label='next'
+													className={classes.fab}
+													onClick={selectNext}>
+													<SkipNextIcon />
+												</Fab>
+											</Tooltip>
+										</span>
+									)}
 									<span>
 										{AutographaStore.isWarning === true && (
 											<Tooltip
@@ -347,9 +374,7 @@ function BottomBar(props) {
 									</span>
 								</span>
 								<span className={classes.player}>
-									<Player
-										isPlaying={props.isOpen.blob}
-									/>
+									<Player isPlaying={props.isOpen.blob} />
 								</span>
 								<span
 									className={classes.totaltime}
@@ -363,7 +388,7 @@ function BottomBar(props) {
 									className={classes.save}
 									style={{ left: '91.5%' }}>
 									<Tooltip
-									backgroundcolor='black'
+										backgroundcolor='black'
 										title={
 											<span
 												style={{

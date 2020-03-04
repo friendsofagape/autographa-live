@@ -38,19 +38,19 @@ const mergeAudios = async(book, chapter, versenum,) => {
 					.then(() => {
                         console.log('out', output);
                         let filepath = doc.targetPath
-                        if (fs.existsSync(`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}.mp3`)){
-                            writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
+                        if (fs.existsSync(path.join(filepath[0],'recordings',book.bookName, `${chapter}.mp3`))){
+                            writeRecfile(output.blob, path.join(filepath[0],'recordings',book.bookName, `${chapter}.mp3`))
                         }
-                        else{
-                            if (!fs.existsSync(`${filepath[0]}`+`/recordings/`)){
-                                fs.mkdirSync(`${filepath[0]}`+`/recordings`)
+                        else {
+                            if (!fs.existsSync(path.join(filepath[0],'recordings'))){
+                                fs.mkdirSync(path.join(filepath[0],'recordings'))
                             }
-                            if (fs.existsSync(`${filepath[0]}`+`/recordings/${book.bookName}`)){ 
-                                writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
+                            if (fs.existsSync(path.join(filepath[0], 'recordings', book.bookName))){ 
+                                writeRecfile(output.blob, path.join(filepath[0], 'recordings', book.bookName, `${chapter}.mp3`))
                             }
                             else {
-                                fs.mkdirSync(`${filepath[0]}`+`/recordings/${book.bookName}`)
-                                writeRecfile(output.blob, (`${filepath[0]}`+`/recordings/${book.bookName}/${chapter}_${new Date()}.mp3`))
+                                fs.mkdirSync(path.join(filepath[0],'recordings',book.bookName))
+                                writeRecfile(output.blob, path.join(filepath[0],'recordings',book.bookName, `${chapter}.mp3`))
                             }
                         }
                         // => {blob, element, url}
@@ -61,7 +61,7 @@ const mergeAudios = async(book, chapter, versenum,) => {
                         // console.log(output.element)
 						// document.body.append(output.element);
 					}).then(() => {
-                        let filePath = (`${filepath[0]}`+`/recordings/${book.bookName}`);
+                        let filePath = path.join(filepath[0],'recordings',book.bookName);
                         AutographaStore.isAudioSave = true
                         swal("Record Export Success!", `on Directory: ${filePath}`, "success");
                     })

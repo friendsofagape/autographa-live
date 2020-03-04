@@ -20,8 +20,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Player = (props) => {
-	const { onselect, storeRecord, recVerse, blob } = useContext(StoreContext);
-	console.log('blob', AutographaStore.isPlaying, AutographaStore.blobURL);
 	return (
 		<div>
 			{AutographaStore.isPlaying && (

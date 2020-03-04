@@ -7,7 +7,7 @@ import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
-
+let timerfuction;
 export const StoreContext = createContext();
 
 class StoreContextProvider extends Component {
@@ -26,6 +26,7 @@ class StoreContextProvider extends Component {
 		totalTime: 0,
 		recVerseTime: [],
 	};
+
 	toggleOpen = () => {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
@@ -71,6 +72,7 @@ class StoreContextProvider extends Component {
 				});
 		}
 	};
+
 	selectNext = (vId) => {
 		AutographaStore.currentSession = true;
 		AutographaStore.isPlaying = false;
@@ -108,22 +110,28 @@ class StoreContextProvider extends Component {
 			}
 		}
 	};
+
 	resetVal = (value, event, index) => {
 		this.setState({ onselect: value });
 	};
+
 	startRecording = () => {
 		if (AutographaStore.isWarning === false) {
+			this.setState({ timer: true });
 			this.setState({ record: true });
 			AutographaStore.isRecording = true;
 			AutographaStore.isAudioSave = false;
-			this.setState({ timer: true });
 		}
 	};
+
 	stopRecording = () => {
 		AutographaStore.currentSession = false;
 		AutographaStore.isRecording = false;
 		this.setState({ record: false });
-		if (AutographaStore.isWarning === false) {
+		if (
+			AutographaStore.isWarning === false &&
+			this.state.secondsElapsed > 0
+		) {
 			this.state.recVerse.push(this.state.onselect);
 			this.state.recVerseTime.push({
 				verse: this.state.onselect,
@@ -134,28 +142,34 @@ class StoreContextProvider extends Component {
 			this.setState({
 				totalTime: this.state.totalTime + this.state.secondsElapsed,
 			});
+		} else {
+			this.setState({ timer: false });
+			this.resetTimer();
 		}
 	};
 
 	saveRecord = async (value, event) => {
-		let save,
-			book = {};
-		value['verse'] = this.state.onselect;
-		value['totaltime'] = this.state.secondsElapsed;
-		let chapter = 'Chapter' + AutographaStore.chapterId;
-		book.bookNumber = AutographaStore.bookId.toString();
-		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
-		this.setState({ recordedFiles: value });
-		this.state.storeRecord.push(value);
-		save = await saveRec.recSave(
-			book,
-			this.state.recordedFiles,
-			chapter,
-			this.state.onselect,
-			this.state.recVerse,
-			this.state.recVerseTime,
-		);
-		AutographaStore.recVerse = this.state.recVerse;
+		if (this.state.secondsElapsed > 0) {
+			let save,
+				book = {};
+			value['verse'] = this.state.onselect;
+			value['totaltime'] = this.state.secondsElapsed;
+			let chapter = 'Chapter' + AutographaStore.chapterId;
+			book.bookNumber = AutographaStore.bookId.toString();
+			book.bookName =
+				constants.booksList[parseInt(book.bookNumber, 10) - 1];
+			this.setState({ recordedFiles: value });
+			this.state.storeRecord.push(value);
+			save = await saveRec.recSave(
+				book,
+				this.state.recordedFiles,
+				chapter,
+				this.state.onselect,
+				this.state.recVerse,
+				this.state.recVerseTime,
+			);
+			AutographaStore.recVerse = this.state.recVerse;
+		}
 	};
 
 	exportAudio = async () => {
@@ -191,8 +205,8 @@ class StoreContextProvider extends Component {
 		});
 	};
 	updateJSON = (json) => {
-		this.state.recVerseTime.push(json)
-	}
+		this.state.recVerseTime.push(json);
+	};
 
 	render() {
 		return (
@@ -214,7 +228,7 @@ class StoreContextProvider extends Component {
 					setOnselect: this.setOnselect,
 					setRecverse: this.setRecverse,
 					fetchTimer: this.fetchTimer,
-					updateJSON: this.updateJSON
+					updateJSON: this.updateJSON,
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

@@ -70,9 +70,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Recorder(props) {
 	const classes = useStyles();
-	const { exportAudio, recVerse, setRecverse, fetchTimer, updateJSON } = useContext(StoreContext);
+	const {
+		exportAudio,
+		recVerse,
+		setRecverse,
+		fetchTimer,
+		updateJSON,
+		startRecording,
+		stopRecording
+	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
+
+	useEffect(() => {
+		if(props.isOpen.audioImport === true)
+		importAudio()
+	})
 	const mountAudio = () => {
 		if (AutographaStore.isAudioSave !== true)
 			recVerse.length === 0
@@ -106,6 +119,7 @@ export default function Recorder(props) {
 	};
 
 	const importAudio = () => {
+		AutographaStore.audioImport=false
 		var newfilepath = path.join(
 			app.getPath('userData'),
 			'recordings',
@@ -129,14 +143,29 @@ export default function Recorder(props) {
 						if (jsonParsed.hasOwnProperty(key)) {
 							var val = jsonParsed[key];
 							setRecverse(val.verse);
-							fetchTimer(val.totaltime)
-							updateJSON(val)
+							fetchTimer(val.totaltime);
+							updateJSON(val);
 						}
 					}
 				},
 			);
 		}
 	};
+
+	// const handleKeyPress = (event) => {
+	// 	console.log(event.key)
+	// 	if(event.key === ' '){
+	// 	  console.log('enter press here! ')
+	// 	  startRecording()
+	// 	}
+	//   }
+	//   const handleKeyPressUp = (event) => {
+	// 	console.log(event.key)
+	// 	if(event.key === ' '){
+	// 	  console.log('enter press down! ')
+	// 	  stopRecording()
+	// 	}
+	//   }
 
 	return (
 		<div>
@@ -157,6 +186,14 @@ export default function Recorder(props) {
 									aria-label='menu'>
 									<ImportExportSharpIcon />
 								</IconButton>
+								{/* <div>
+									<input
+										type='text'
+										id='one'
+										onKeyDown={handleKeyPress}
+										// onKeyUp={handleKeyPressUp}
+									/>
+								</div> */}
 								<Typography
 									variant='h6'
 									className={classes.title}>

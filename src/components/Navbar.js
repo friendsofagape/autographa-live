@@ -105,8 +105,10 @@ class Navbar extends React.Component {
     mountAudio = () => {
         const currentTrans = AutographaStore.currentTrans;
         db.get('targetBible').then((doc) => {
-            if(AutographaStore.layout !== 4)
-            AutographaStore.AudioMount = true
+            if(AutographaStore.layout !== 4){
+                AutographaStore.AudioMount = true
+                AutographaStore.audioImport = true
+            }
             else
             swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-not-compatible-with-translation-help"], "error");
         }).catch(function(err) {
