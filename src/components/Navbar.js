@@ -52,8 +52,8 @@ class Navbar extends React.Component {
             replaceVal:"",
             toggled: false,
             setDiff: false,
-            showLoader: false
-
+            showLoader: false,
+            showAudio: false
         };
        
         var verses, chapter;
@@ -103,6 +103,21 @@ class Navbar extends React.Component {
         AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
     }
     
+    mountAudio = () => {
+        const currentTrans = AutographaStore.currentTrans;
+        db.get('targetBible').then((doc) => {
+            if(AutographaStore.layout !== 4){
+                AutographaStore.AudioMount = true
+                AutographaStore.audioImport = true
+            }
+            else
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-not-compatible-with-translation-help"], "error");
+        }).catch(function(err) {
+            // handle any errors
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation-audio"], "error");
+        });
+    }
+
     getContent = (id, chapter) => {
         return refDb.get(id.toString()).then( (doc) => {
             for (var i = 0; i < doc.chapters.length; i++) {
@@ -853,6 +868,12 @@ class Navbar extends React.Component {
                             </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right nav-pills verse-diff-on">
+                            <li className="rec-btn">
+                                    <FormattedMessage id="tooltip-recorder" >
+                                    {(message) =>
+                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone-slash fa-2x"></i></a>}
+                                </FormattedMessage>
+                            </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>
                             <li>
 
