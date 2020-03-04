@@ -273,7 +273,7 @@ class TranslationPanel extends React.Component {
 		}
 
 		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
-        {AutographaStore.AudioMount && ((recflag === i  && AutographaStore.AudioMount === true) ? (
+        {AudioMount && ((recflag === i  && AutographaStore.AudioMount === true) ? (
 					<span onClick ={this.fetchAudio}>
                             {(AutographaStore.isPlaying===false)  && (
                                 <Tooltip
@@ -300,13 +300,21 @@ class TranslationPanel extends React.Component {
                     	        onClick={ () => AutographaStore.isPlaying = true }/>
                             }
 					</span>) : <span style={{ marginRight:'10px' }}></span>)}
-				{(recflag !== i  && AutographaStore.AudioMount === true) ? (<span style={{marginRight:'10px'}}></span>): ""}
-			<ContextMenuTrigger id={(i+1) === 1 ? undefined : (AutographaStore.jointVerse[i] === undefined ? "true" : "false")} verseId = {parseInt(i,10)+1}  collect = {props => props}>
+				{(recflag !== i  && AudioMount === true) ? (<span style={{marginRight:'10px'}}></span>): ""}
+			{AudioMount ?
+            <React.Fragment>
+            <span className={ AudioMount? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
+			<span contentEditable={!AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
+			{AutographaStore.translationContent[i]}
+			</span>
+            </React.Fragment>
+            :
+            (<ContextMenuTrigger id={(i+1) === 1 ? undefined : (AutographaStore.jointVerse[i] === undefined ? "true" : "false")} verseId = {parseInt(i,10)+1}  collect = {props => props}>
             <span className={ AudioMount ? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
 			<span contentEditable={AutographaStore.jointVerse[i] === undefined ? true : false} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
 			</span>
-			</ContextMenuTrigger>
+			</ContextMenuTrigger>)}
 			</div>
 		); 
 		}
