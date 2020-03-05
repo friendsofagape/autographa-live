@@ -1,7 +1,5 @@
 import React, { createContext, Component } from 'react';
-import * as sampleBible from '../components/VerseGrid/verse';
 import { default as localforage } from 'localforage';
-import * as downloadURL from '../core/downloadWebm';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
@@ -14,7 +12,6 @@ class StoreContextProvider extends Component {
 	state = {
 		isOpen: true,
 		onselect: 1,
-		bible: sampleBible.default,
 		record: false,
 		recordedFiles: {},
 		storeRecord: [],
@@ -34,6 +31,7 @@ class StoreContextProvider extends Component {
 	setTimer = (time) => {
 		this.setState({ secondsElapsed: time });
 	};
+	
 	resetTimer = () => {
 		this.setState({ secondsElapsed: 0 });
 	};

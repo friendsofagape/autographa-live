@@ -6,7 +6,6 @@ module.exports = {
 		rectime = rectime.sort((a, b) => a.verse - b.verse);
 		recVerse = recVerse.sort((a,b) => a-b)
 		var recordedJSON = { ...rectime }
-		console.log(recordedJSON)
 		var filePath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `verse${versenum}.mp3`)
 		var newfilepath = path.join(app.getPath('userData'), 'recordings', book.bookName, chapter, `output.json`)
 		if (!fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
@@ -25,7 +24,6 @@ module.exports = {
 					console.log("An error occured while writing JSON Object to File.");
 					return console.log(err);
 				}
-				console.log("JSON file has been saved.");
 			});
 		}
 		else{
@@ -34,8 +32,6 @@ module.exports = {
 					console.log("An error occured while writing JSON Object to File.");
 					return console.log(err);
 				}
-			 
-				console.log("JSON file has been saved.");
 			});
 			
 			filePath = await writeRecfile(file, filePath);

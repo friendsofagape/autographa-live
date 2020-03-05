@@ -149,7 +149,6 @@ function BottomBar(props) {
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
-	let buttonPressTimer;
 	var newfilepath = path.join(
 		app.getPath('userData'),
 		'recordings',
