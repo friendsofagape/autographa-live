@@ -40,41 +40,46 @@ class TranslationPanel extends React.Component {
 	}  
 
   	highlightRef(vId, refId, obj) {
-      	let refContent = document.getElementsByClassName('ref-contents');
-      	for(let l=0; l<AutographaStore.layout; l++){
-        	let ref = refContent[l] ? refContent[l].querySelectorAll('div[data-verse^="r"]') : [];
-        	for (let i=0; i < ref.length; i++) {
-          		if (ref[i] !== 'undefined') {
-            		ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
-          		}
-        	};
-        	if( refContent[l]){
-                refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
-                AutographaStore.currentRefverse = (refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].childNodes[1].innerHTML).toString()
-			}
+		if(AutographaStore.layout !== 0) {
+			let refContent = document.getElementsByClassName('ref-contents');
+			for(let l=0; l<AutographaStore.layout; l++){
+			  let ref = refContent[l] ? refContent[l].querySelectorAll('div[data-verse^="r"]') : [];
+			  for (let i=0; i < ref.length; i++) {
+					if (ref[i] !== 'undefined') {
+					  ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px";
+					}
+			  };
+			  if( refContent[l]){
+				  refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].style = "background-color: rgba(11, 130, 255, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px";
+				  AutographaStore.currentRefverse = (refContent[l].querySelectorAll('div[data-verse^='+'"'+"r"+(refId+1)+'"'+']')[0].childNodes[1].innerHTML).toString()
+			  }
+		  }
+		  let focusIn = document.getElementById(vId);
+		  focusIn.focus();
+  
+		  // To sync highlight withtranslation pannel
 		}
-        let focusIn = document.getElementById(vId);
-        focusIn.focus();
-
-        // To sync highlight withtranslation pannel
-        if(AutographaStore.AudioMount===true)
-		this.highlighttrans(vId, refId,  obj);
+		if(AutographaStore.AudioMount===true)
+		  this.highlighttrans(vId, refId,  obj);
     }
     
     highlighttrans (vId) {
 		let recordedVerse = mobx.toJS(AutographaStore.recVerse)
         if(AutographaStore.isRecording === false && AutographaStore.isPlaying === false){
-            let newVId;
+			let newVId;
             if(typeof vId === 'string') newVId = vId.match(/\d+/g)
-            else newVId = vId
+			else newVId = vId
             if(newVId[0]){
                 AutographaStore.vId = parseInt(newVId[0])
                 if(AutographaStore.recVerse !== null && AutographaStore.vId !== undefined){
+					console.log((recordedVerse.indexOf(AutographaStore.vId) === -1))
                         if (recordedVerse.indexOf(AutographaStore.vId) !== -1) {
+							console.log("hi")
                             AutographaStore.isWarning = true;
 							AutographaStore.currentSession = false;
                         }
                         if (recordedVerse.indexOf(AutographaStore.vId) === -1){
+							console.log("elsehi")
                             AutographaStore.isWarning = false;
                             AutographaStore.currentSession = true;
                         }
@@ -83,13 +88,13 @@ class TranslationPanel extends React.Component {
         }
         let num = AutographaStore.vId
 		let refContent = document.getElementsByClassName('verse-input');
-      	for(let l=0; l<AutographaStore.layout; l++){
+      	for(let l=0; l<=AutographaStore.layout; l++){
 			let ref = refContent[l] ? refContent[l].querySelectorAll('div') : [];
         	for (let i=0; i < ref.length; i++) {
           		if (ref[i] !== 'undefined') {
             		ref[i].style="background-color:none;font-weight:none;padding-left:10px;padding-right:10px;whitespace:pre-wrap;"
           		}
-        	};
+			};
 			if( refContent[l])
 			if(num<=0){
 				num = 1
@@ -320,7 +325,7 @@ class TranslationPanel extends React.Component {
 		}
 		const {tIns, tDel} = this.props;
 		return (
-			<div className="col-editor container-fluid trans-margin">
+			<div className="col-editor container-fluid trans-margin" style={{width: AutographaStore.layout===0? "200%" : ""}}>
 				<div className="row">
 				<div className="col-12 center-align">
 					<p className="translation"><a href="javscript:;" style = {{fontWeight: "bold", pointerEvents: toggle ? "none" : "" }} onClick={() => AudioMount ? "" : this.openStatPopup()}><FormattedMessage id="label-translation" /></a></p>

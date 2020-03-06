@@ -925,6 +925,12 @@ class Navbar extends React.Component {
                     </div>
                 </nav>
                 {
+                    AutographaStore.layout === 0   &&
+                        <div className="parentdiv">
+                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                        </div>
+                }
+                {
                     AutographaStore.layout === 1   &&
                         <div className="parentdiv">
                             <div className="layoutx"> <Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id = {1} layout={1}/><ReferencePanel refContent ={refContent}  /></div>

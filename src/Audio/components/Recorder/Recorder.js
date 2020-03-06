@@ -11,6 +11,8 @@ import Fab from '@material-ui/core/Fab';
 import BookIcon from '@material-ui/icons/Book';
 import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
+import LayersIcon from '@material-ui/icons/Layers';
+import LayersClearIcon from '@material-ui/icons/LayersClear';
 import swal from 'sweetalert';
 import Timer from '../Timer';
 const constants = require('../../../util/constants');
@@ -151,7 +153,6 @@ export default function Recorder(props) {
 			);
 		}
 	};
-
 	// const handleKeyPress = (event) => {
 	// 	console.log(event.key)
 	// 	if(event.key === ' '){
@@ -178,14 +179,26 @@ export default function Recorder(props) {
 						unmountOnExit>
 						<AppBar position='static' className={classes.appBar}>
 							<Toolbar>
+							{AutographaStore.layout !== 0 ?
 								<IconButton
 									edge='start'
 									className={classes.menuButton}
 									color='inherit'
-									onClick={importAudio}
+									onClick={() => AutographaStore.layout !== 0 ? AutographaStore.layout = 0 : "" }
 									aria-label='menu'>
-									<ImportExportSharpIcon />
+									<LayersIcon />
+								</IconButton> :
+								<IconButton
+									edge='start'
+									className={classes.menuButton}
+									color='inherit'
+									onClick={() => AutographaStore.layout === 0 ? AutographaStore.layout = 1 : "" }
+									aria-label='menu'>
+									<LayersClearIcon />
 								</IconButton>
+							}
+								
+								
 								{/* <div>
 									<input
 										type='text'
@@ -241,15 +254,6 @@ export default function Recorder(props) {
 										Turn Off
 									</Fab>
 								</Tooltip>
-								{/* <span>
-									<Fab
-										size='medium'
-										aria-haspopup='true'
-										className={classes.export}
-										onClick={exportAudio}>
-										<BackupIcon />
-									</Fab>
-								</span> */}
 							</Toolbar>
 						</AppBar>
 					</Slide>

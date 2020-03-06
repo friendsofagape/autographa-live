@@ -25,6 +25,7 @@ import Player from '../AudioPlayer';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
 import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
+import FontSlider from '../FontSlider/FontSlider';
 import Recorder from '../Recorder';
 import { Box, Tooltip, Zoom } from '@material-ui/core';
 const { app } = require('electron').remote;
@@ -128,6 +129,7 @@ const useStyles = makeStyles((theme) => ({
 
 function BottomBar(props) {
 	const classes = useStyles();
+	const [spacekey, setspacekey] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
 	const {
@@ -226,10 +228,10 @@ function BottomBar(props) {
 	}, [AutographaStore.vId]);
 
 	useEffect(() => {
-		// var timerID = setInterval(() => stopRecording(), 6000);
-		// return function cleanup() {
-		// 	clearInterval(timerID);
-		// };
+		//check for joint verse  
+
+		// if(AutographaStore.jointVerse[onselect])
+		// console.log(AutographaStore.jointVerse[onselect])
 		AutographaStore.isWarning === true
 			? (AutographaStore.currentSession = false)
 			: (AutographaStore.currentSession = true);
@@ -237,14 +239,21 @@ function BottomBar(props) {
 			AutographaStore.currentSession = false;
 		}
 	});
-
-	function handleButtonPress() {
-		startRecording();
+	// For space press and hold
+	function handleButtonPress(event) {
+		if (event.key === ' ' && record === false) {
+			setspacekey(true);
+		}
+		if (spacekey === true || event.type === 'mousedown') {
+			startRecording();
+			setspacekey(false);
+		}
 	}
 
-	function handleButtonRelease() {
+	function handleButtonRelease(event) {
 		if (record === true) {
 			stopRecording();
+			setspacekey(false);
 		}
 	}
 
@@ -252,7 +261,10 @@ function BottomBar(props) {
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-					<Recorder isOpen={AutographaStore.AudioMount} audioImport={AutographaStore.audioImport}/>
+					<Recorder
+						isOpen={AutographaStore.AudioMount}
+						audioImport={AutographaStore.audioImport}
+					/>
 					<Slide
 						direction='up'
 						in={props.isOpen.isOpen}
@@ -277,6 +289,7 @@ function BottomBar(props) {
 										<div className={classes.scrim} />
 									)}
 								</div> */}
+								<FontSlider />
 								<span
 									className={classes.bottomIcons}
 									style={{ right: '50%' }}>
@@ -308,6 +321,8 @@ function BottomBar(props) {
 												color='secondary'
 												aria-label='start'
 												className={classes.fab}
+												onKeyDown={handleButtonPress}
+												onKeyUp={handleButtonRelease}
 												onMouseDown={handleButtonPress}
 												onMouseUp={handleButtonRelease}>
 												<Mic />
@@ -337,7 +352,8 @@ function BottomBar(props) {
 										left: '50%',
 										position: 'absolute',
 									}}>
-									{AutographaStore.currentSession ===false && (
+									{AutographaStore.currentSession ===
+										false && (
 										<span>
 											<Tooltip
 												title='Goto Next Verse'
