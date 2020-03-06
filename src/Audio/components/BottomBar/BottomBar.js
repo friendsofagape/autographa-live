@@ -94,6 +94,8 @@ const useStyles = makeStyles((theme) => ({
 		float: 'left',
 		position: 'absolute',
 		width: 270,
+		marginLeft: 190,
+		height: 64
 	},
 	save: {
 		float: 'right',

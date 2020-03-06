@@ -89,16 +89,10 @@ const FontSlider = withStyles({
 
 export default function CustomizedSlider() {
 	const classes = useStyles();
-
-	const openmic = () => {
-        console.log("hello")
-		const { shell } = require('electron');
-		shell.openExternal("ms-settings:privacy-microphone");
-	};
 	return (
 		<div className={classes.root}>
 			<div className={classes.margin} />
-			<FontDownloadIcon onClick={openmic} />
+			<FontDownloadIcon />
 			<span>
 				<FontSlider
 					ValueLabelComponent={ValueLabelComponent}

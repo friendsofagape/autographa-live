@@ -6,6 +6,7 @@ import ImportExportSharpIcon from '@material-ui/icons/ImportExportSharp';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import BackupIcon from '@material-ui/icons/Backup';
+import SettingsIcon from '@material-ui/icons/Settings';
 import Mic from '@material-ui/icons/Mic';
 import Fab from '@material-ui/core/Fab';
 import BookIcon from '@material-ui/icons/Book';
@@ -153,6 +154,12 @@ export default function Recorder(props) {
 			);
 		}
 	};
+
+	const openmic = () => {
+        console.log("hello")
+		const { shell } = require('electron');
+		shell.openExternal("ms-settings:sound");
+	};
 	// const handleKeyPress = (event) => {
 	// 	console.log(event.key)
 	// 	if(event.key === ' '){
@@ -254,6 +261,25 @@ export default function Recorder(props) {
 										Turn Off
 									</Fab>
 								</Tooltip>
+								<span
+									style={{
+										right: '100%',
+										left: '96%',
+										position: 'absolute',
+									}}>
+								<Tooltip
+									title='Mic Settings'
+									TransitionComponent={Zoom}>
+									<IconButton
+										aria-controls='menu-appbar'
+										aria-haspopup='true'
+										size='medium'
+										color="inherit"
+										onClick={openmic}>
+										<SettingsIcon />
+									</IconButton>
+								</Tooltip>
+								</span>
 							</Toolbar>
 						</AppBar>
 					</Slide>
