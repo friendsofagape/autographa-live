@@ -205,6 +205,16 @@ class StoreContextProvider extends Component {
 	updateJSON = (json) => {
 		this.state.recVerseTime.push(json);
 	};
+	findBook = () => {
+		AutographaStore.showModalBooks=true
+		AutographaStore.aId=1
+		AutographaStore.activeTab=1
+	}
+	findChapter = () => {
+		AutographaStore.showModalBooks=true
+		AutographaStore.aId=2
+		AutographaStore.activeTab=2
+	}
 
 	render() {
 		return (
@@ -227,6 +237,8 @@ class StoreContextProvider extends Component {
 					setRecverse: this.setRecverse,
 					fetchTimer: this.fetchTimer,
 					updateJSON: this.updateJSON,
+					findBook: this.findBook,
+					findChapter: this.findChapter
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

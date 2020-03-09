@@ -24,10 +24,13 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Player from '../AudioPlayer';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
-import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
+// import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
+import IconButton from '@material-ui/core/IconButton';
+import LayersIcon from '@material-ui/icons/Layers';
+import LayersClearIcon from '@material-ui/icons/LayersClear';
 import FontSlider from '../FontSlider/FontSlider';
 import Recorder from '../Recorder';
-import { Box, Tooltip, Zoom } from '@material-ui/core';
+import { Box, Tooltip, Zoom, useTheme } from '@material-ui/core';
 const { app } = require('electron').remote;
 const fs = require('fs');
 const constants = require('../../../util/constants');
@@ -40,7 +43,8 @@ const useStyles = makeStyles((theme) => ({
 		flexGrow: 1,
 	},
 	menuButton: {
-		marginRight: theme.spacing(2),
+		marginRight: -67,
+		marginLeft: 69,
 	},
 	title: {
 		flexGrow: 1,
@@ -66,36 +70,43 @@ const useStyles = makeStyles((theme) => ({
 		top: 'auto',
 		bottom: 0,
 		background: '#3F5274',
-		height: 65,
+		height: 72,
 	},
 	grow: {
 		flexGrow: 1,
 	},
 	fab: {
 		zIndex: 1,
-		top: -40,
 		margin: theme.spacing(2),
 		marginLeft: -7,
+		backgroundColor: 'rgba(346, 279, 296, 0.87)',
+		top: 3
+	},
+	start: {
+		zIndex: 1,
+		margin: theme.spacing(2),
+		marginLeft: -7,
+		top: 3
 	},
 	fab2: {
 		zIndex: 1,
-		top: -40,
 		margin: theme.spacing(2),
 		marginLeft: -7,
+		top: 3
 	},
 	fab1: {
 		zIndex: 1,
-		top: -40,
 		margin: theme.spacing(2),
 		marginLeft: -7,
+		top: 3
 	},
 	player: {
 		color: 'black',
 		float: 'left',
 		position: 'absolute',
-		width: 270,
+		width: 257,
 		marginLeft: 190,
-		height: 64
+		height: 64,
 	},
 	save: {
 		float: 'right',
@@ -118,10 +129,10 @@ const useStyles = makeStyles((theme) => ({
 	},
 	shadow: {
 		position: 'absolute',
-		top: -27,
+		top: 15,
 		width: 64,
 		height: 64,
-		background: 'rgba(0,0,0,.3)',
+		background: 'rgba(0,0,0,.5)',
 	},
 	totaltime: {
 		float: 'right',
@@ -131,6 +142,7 @@ const useStyles = makeStyles((theme) => ({
 
 function BottomBar(props) {
 	const classes = useStyles();
+	const theme = useTheme();
 	const [spacekey, setspacekey] = useState(false);
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
@@ -160,6 +172,10 @@ function BottomBar(props) {
 		`Chapter${AutographaStore.chapterId}`,
 		`output.json`,
 	);
+	const transitionDuration = {
+		enter: theme.transitions.duration.enteringScreen,
+		exit: theme.transitions.duration.leavingScreen,
+	};
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob);
 		console.log(recordedBlob);
@@ -230,7 +246,7 @@ function BottomBar(props) {
 	}, [AutographaStore.vId]);
 
 	useEffect(() => {
-		//check for joint verse  
+		//check for joint verse
 
 		// if(AutographaStore.jointVerse[onselect])
 		// console.log(AutographaStore.jointVerse[onselect])
@@ -273,8 +289,8 @@ function BottomBar(props) {
 						mountOnEnter
 						unmountOnExit>
 						<AppBar
+							hidden={AutographaStore.showModalBooks}
 							position='fixed'
-							color='primary'
 							className={classes.appBar}>
 							<Toolbar>
 								<ReactMicPlus
@@ -292,6 +308,24 @@ function BottomBar(props) {
 									)}
 								</div> */}
 								<FontSlider />
+								<RaisedButton
+									edge='start'
+									className={classes.menuButton}
+									color='inherit'
+									backgroundColor= {AutographaStore.layout !== 0 ? 'rgba(0,0,0,.5)' : "" }
+									onClick={() => AutographaStore.layout !== 0 ? AutographaStore.layout = 0 : "" }
+									aria-label='1x'>
+									1x&nbsp; <i className="fa fa-columns fa-lg" />
+								</RaisedButton>
+								<RaisedButton
+									edge='start'
+									className={classes.menuButton}
+									color='inherit'
+									backgroundColor= {AutographaStore.layout === 0 ? 'rgba(0,0,0,.5)' : "" }
+									onClick={() => AutographaStore.layout === 0 ? AutographaStore.layout = 1 : "" }
+									aria-label='2x'>
+									2x&nbsp; <i className="fa fa-columns fa-lg" />
+								</RaisedButton>
 								<span
 									className={classes.bottomIcons}
 									style={{ right: '50%' }}>
@@ -300,11 +334,10 @@ function BottomBar(props) {
 											title='Goto Previous Verse'
 											TransitionComponent={Zoom}>
 											<Fab
-												color='primary'
 												aria-label='previous'
 												className={classes.fab}
 												onClick={selectPrev}>
-												<SkipPreviousIcon />
+												<SkipPreviousIcon style={{ fontSize: '1.8rem' }} />
 											</Fab>
 										</Tooltip>
 									</span>
@@ -322,12 +355,12 @@ function BottomBar(props) {
 											<Fab
 												color='secondary'
 												aria-label='start'
-												className={classes.fab}
+												className={classes.start}
 												onKeyDown={handleButtonPress}
 												onKeyUp={handleButtonRelease}
 												onMouseDown={handleButtonPress}
 												onMouseUp={handleButtonRelease}>
-												<Mic />
+												<Mic style={{ fontSize: '1.8rem' }} />
 											</Fab>
 										</Tooltip>
 										{/* )} */}
@@ -357,37 +390,64 @@ function BottomBar(props) {
 									{AutographaStore.currentSession ===
 										false && (
 										<span>
-											<Tooltip
-												title='Goto Next Verse'
-												TransitionComponent={Zoom}>
-												<Fab
-													color='primary'
-													aria-label='next'
-													className={classes.fab}
-													onClick={selectNext}>
-													<SkipNextIcon />
-												</Fab>
-											</Tooltip>
+											<Zoom
+												in={AutographaStore.currentSession === false}
+												timeout={transitionDuration}
+												style={{
+													transitionDelay: `${
+														AutographaStore.currentSession === false
+															? transitionDuration.exit
+															: 0
+													}ms`,
+												}}
+												unmountOnExit>
+												<Tooltip
+													title='Goto Next Verse'
+													TransitionComponent={Zoom}>
+													<Fab
+														aria-label='next'
+														className={classes.fab}
+														onClick={selectNext}>
+														<SkipNextIcon style={{ fontSize: '1.8rem' }}/>
+													</Fab>
+												</Tooltip>
+											</Zoom>
 										</span>
 									)}
 									<span>
 										{AutographaStore.isWarning === true && (
-											<Tooltip
-												title='Delete Current Verse'
-												TransitionComponent={Zoom}>
-												<Fab
-													aria-label='delete'
-													className={classes.fab}
-													onClick={
-														deleteRecordedVerse
-													}>
-													<DeleteForeverIcon />
-												</Fab>
-											</Tooltip>
+											<Zoom
+												in={AutographaStore.isWarning}
+												timeout={transitionDuration}
+												style={{
+													transitionDelay: `${
+														AutographaStore.isWarning
+															? transitionDuration.exit
+															: 0
+													}ms`,
+												}}
+												unmountOnExit>
+												<Tooltip
+													title='Delete Current Verse'
+													TransitionComponent={Zoom}>
+													<Fab
+														color='secondary'
+														size='large'
+														aria-label='delete'
+														className={
+															classes.start
+														}
+														onClick={
+															deleteRecordedVerse
+														}>
+														<DeleteForeverIcon style={{ fontSize: '1.8rem' }} />
+													</Fab>
+												</Tooltip>
+											</Zoom>
 										)}
 									</span>
 								</span>
-								<span className={classes.player}>
+								<span style={{ left:'47%' }} className={classes.player}>
 									<Player isPlaying={props.isOpen.blob} />
 								</span>
 								<span

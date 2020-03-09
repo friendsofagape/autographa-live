@@ -91,5 +91,6 @@ export class AutographaStore {
   @observable blobURL = null
   @observable audioImport = false
   @observable multiplier = 0
+  @observable Tab=null
 }
 export default new AutographaStore();

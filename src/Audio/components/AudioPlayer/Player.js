@@ -23,7 +23,7 @@ const Player = (props) => {
 	return (
 		<div>
 			{AutographaStore.isPlaying && (
-				<div className={classes.root}>
+				<div className={classes.root} >
 					<AudioPlayer
 						src={AutographaStore.blobURL}
 						onPause={() => (AutographaStore.isPlaying = false)}

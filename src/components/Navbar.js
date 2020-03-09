@@ -20,6 +20,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
+import Navigator from '../Audio/components/Navigator';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -741,7 +742,7 @@ class Navbar extends React.Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Book and Chapter</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body   style={{ top:'-38px' }}>
                         <Tabs 
                             animation={false}
                             activeKey={AutographaStore.activeTab}

@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, AppBar, Slide, Zoom, Tooltip } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
-import ImportExportSharpIcon from '@material-ui/icons/ImportExportSharp';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import BackupIcon from '@material-ui/icons/Backup';
@@ -12,10 +11,9 @@ import Fab from '@material-ui/core/Fab';
 import BookIcon from '@material-ui/icons/Book';
 import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
-import LayersIcon from '@material-ui/icons/Layers';
-import LayersClearIcon from '@material-ui/icons/LayersClear';
 import swal from 'sweetalert';
 import Timer from '../Timer';
+import Navigator from '../Navigator';
 const constants = require('../../../util/constants');
 const { app } = require('electron').remote;
 const fs = require('fs');
@@ -36,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	title: {
 		flexGrow: 1,
+		marginLeft: 9
 	},
 	soundWave: {
 		maxWidth: 300,
@@ -80,7 +79,9 @@ export default function Recorder(props) {
 		fetchTimer,
 		updateJSON,
 		startRecording,
-		stopRecording
+		stopRecording,
+		findBook,
+		findChapter
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
@@ -122,6 +123,7 @@ export default function Recorder(props) {
 	};
 
 	const importAudio = () => {
+		console.log(window.navigator.platform)
 		AutographaStore.audioImport=false
 		var newfilepath = path.join(
 			app.getPath('userData'),
@@ -156,7 +158,6 @@ export default function Recorder(props) {
 	};
 
 	const openmic = () => {
-        console.log("hello")
 		const { shell } = require('electron');
 		shell.openExternal("ms-settings:sound");
 	};
@@ -174,7 +175,6 @@ export default function Recorder(props) {
 	// 	  stopRecording()
 	// 	}
 	//   }
-
 	return (
 		<div>
 			{props.isOpen.isOpen && (
@@ -184,38 +184,11 @@ export default function Recorder(props) {
 						in={props.isOpen.isOpen}
 						mountOnEnter
 						unmountOnExit>
-						<AppBar position='static' className={classes.appBar}>
-							<Toolbar>
-							{AutographaStore.layout !== 0 ?
-								<IconButton
-									edge='start'
-									className={classes.menuButton}
-									color='inherit'
-									onClick={() => AutographaStore.layout !== 0 ? AutographaStore.layout = 0 : "" }
-									aria-label='menu'>
-									<LayersIcon />
-								</IconButton> :
-								<IconButton
-									edge='start'
-									className={classes.menuButton}
-									color='inherit'
-									onClick={() => AutographaStore.layout === 0 ? AutographaStore.layout = 1 : "" }
-									aria-label='menu'>
-									<LayersClearIcon />
-								</IconButton>
-							}
-								
-								
-								{/* <div>
-									<input
-										type='text'
-										id='one'
-										onKeyDown={handleKeyPress}
-										// onKeyUp={handleKeyPressUp}
-									/>
-								</div> */}
+						<AppBar position='static' hidden={AutographaStore.showModalBooks===true} className={classes.appBar}>
+							<Toolbar>	
+							<img alt="Brand" src = {require("../../../assets/images/logo.png")}/>
 								<Typography
-									variant='h6'
+									variant='h5'
 									className={classes.title}>
 									Recorder
 								</Typography>
@@ -227,6 +200,7 @@ export default function Recorder(props) {
 									}}>
 									<Fab
 										size='medium'
+										onClick={findBook}
 										className={classes.extendedIcon}
 										variant='extended'>
 										<BookIcon />
@@ -235,6 +209,7 @@ export default function Recorder(props) {
 									<Fab
 										size='small'
 										aria-label='chapter'
+										onClick={findChapter}
 										className={classes.chapter}>
 										{AutographaStore.chapterId}
 									</Fab>

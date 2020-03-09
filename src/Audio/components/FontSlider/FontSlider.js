@@ -12,6 +12,24 @@ const useStyles = makeStyles((theme) => ({
 	margin: {
 		height: theme.spacing(1),
 	},
+	plus: {
+		fontSize: 20,
+		float: 'right',
+		marginLeft: 15,
+		position: 'absolute',
+		backgroundColor: '#3F5274',
+		color:'#FFFF',
+		fontWeight: 'bolder'
+	},
+	minus: {
+		float: 'left',
+		position: 'fixed',
+		left: 2,
+		backgroundColor: '#3F5274',
+		color:'#FFFF', 
+		marginTop:3,
+		fontWeight: 'bolder'
+	}
 }));
 
 function ValueLabelComponent(props) {
@@ -92,7 +110,7 @@ export default function CustomizedSlider() {
 	return (
 		<div className={classes.root}>
 			<div className={classes.margin} />
-			<FontDownloadIcon />
+			<span className={classes.minus}>A-</span>
 			<span>
 				<FontSlider
 					ValueLabelComponent={ValueLabelComponent}
@@ -102,6 +120,7 @@ export default function CustomizedSlider() {
 					max={40}
 				/>
 			</span>
+			<span className={classes.plus} >A+</span>
 		</div>
 	);
 }
