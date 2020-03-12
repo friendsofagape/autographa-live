@@ -92,5 +92,6 @@ export class AutographaStore {
   @observable audioImport = false
   @observable multiplier = 0
   @observable Tab=null
+  @observable recordedChapters = []
 }
 export default new AutographaStore();

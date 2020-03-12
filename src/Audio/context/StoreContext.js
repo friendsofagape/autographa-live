@@ -3,6 +3,7 @@ import { default as localforage } from 'localforage';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
+const refDb = require(`${__dirname}/../../util/data-provider`).referenceDb();
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
 let timerfuction;
@@ -211,9 +212,18 @@ class StoreContextProvider extends Component {
 		AutographaStore.activeTab=1
 	}
 	findChapter = () => {
-		AutographaStore.showModalBooks=true
-		AutographaStore.aId=2
-		AutographaStore.activeTab=2
+		AutographaStore.aId = 2;
+        AutographaStore.showModalBooks = true;
+        AutographaStore.activeTab = 2;
+        AutographaStore.bookActive = AutographaStore.bookId;
+        AutographaStore.bookName = AutographaStore.editBookNamesMode && (AutographaStore.translatedBookNames !== null) ? AutographaStore.translatedBookNames[parseInt(AutographaStore.bookId, 10) - 1] : constants.booksList[parseInt(AutographaStore.bookId, 10) - 1];
+		AutographaStore.chapterActive = AutographaStore.chapterId;
+		refDb.get(AutographaStore.currentRef +"_"+ constants.bookCodeList[parseInt(AutographaStore.bookId, 10)-1]).then(function(doc) {
+            AutographaStore.bookChapter["chapterLength"] = doc.chapters.length;
+            AutographaStore.bookChapter["bookId"] = AutographaStore.bookId;
+        }).catch(function(err){
+            console.log(err);
+        })
 	}
 
 	render() {

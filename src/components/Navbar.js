@@ -81,7 +81,7 @@ class Navbar extends React.Component {
         this.resetDiffValue();        
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         db.get('translatedBookNames', function (err, doc) {
             if (err) {
                 localStorage.setItem('editBookNamesMode', false);
@@ -709,6 +709,8 @@ class Navbar extends React.Component {
 
     render() {
         // const layout = AutographaStore.layout;
+        let recordedChapters = (mobx.toJS(AutographaStore.recordedChapters))
+        console.log((recordedChapters))
         var OTbooksstart = 0;
         var OTbooksend = 38;
         var NTbooksstart= 39;
@@ -730,7 +732,7 @@ class Navbar extends React.Component {
         var chapterList = [];
         const toggle = AutographaStore.toggle;
         for(var i=0; i<AutographaStore.bookChapter["chapterLength"]; i++){
-            chapterList.push( <li key={i} value={i+1} ><a href="javascript:void(0);"  className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
+            chapterList.push( <li key={i} value={i+1} ><a href="#" id={(recordedChapters.indexOf((i+1).toString()) !== -1)? "selected": ""} className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
         }
         if (localStorage.getItem('editBookNamesMode') === false) {
             bookData = AutographaStore.bookData
@@ -788,6 +790,7 @@ class Navbar extends React.Component {
                                 </div>
                                  ) : ''
                             }
+                            {AutographaStore.AudioMount===false && ( 
                             <Tab eventKey={1} title="Book">
                                 <div className="wrap-center"></div>
                                 <div className="row books-li" id="bookdata">
@@ -808,7 +811,7 @@ class Navbar extends React.Component {
                                     </ul>
                                 </div>
                                 <div className= "clearfix"></div>
-                            </Tab>
+                            </Tab>)}
                             <Tab eventKey={2} title="Chapters" > 
                                 <div className="chapter-no">
                                     <ul id="chaptersList">
@@ -839,7 +842,7 @@ class Navbar extends React.Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a href="javascript:;" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
+                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
                     </div>
                     <div className="navbar-collapse collapse" id="navbar">
                         <ul className="nav navbar-nav" style={{padding: "3px 0 0 0px"}}>
@@ -895,7 +898,7 @@ class Navbar extends React.Component {
                             <li>
                                 <FormattedMessage id="tooltip-find-and-replace">
                                 {(message) =>
-                                <a onClick={() => this.openpopupSearch()} href="javascript:;" data-toggle="tooltip" data-placement="bottom" title={message} id="searchText" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}>
+                                <a onClick={() => this.openpopupSearch()} href="#" data-toggle="tooltip" data-placement="bottom" title={message} id="searchText" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}>
                                 <i className="fa fa-search fa-2x"></i>
                                 </a>}
                                 </FormattedMessage>
@@ -917,7 +920,7 @@ class Navbar extends React.Component {
                             <li>
                                 <FormattedMessage id="tooltip-settings" >
                                 {(message) =>
-                                <a onClick={() => this.openpopupSettings()} href="javascript:;" id="btnSettings" data-target="#bannerformmodal" data-toggle="tooltip" data-placement="bottom" title={message} disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-cog fa-2x"></i>
+                                <a onClick={() => this.openpopupSettings()} href="#" id="btnSettings" data-target="#bannerformmodal" data-toggle="tooltip" data-placement="bottom" title={message} disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-cog fa-2x"></i>
                                 </a>}
                                 </FormattedMessage>
                             </li>

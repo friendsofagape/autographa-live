@@ -8931,4 +8931,9 @@ outline: 1px solid slategrey;
   font-size: 10px;
   font-weight: bold;
   margin-right: 7px;
-}  
+}
+#selected {
+  font-weight: bold !important;
+  background-color: rgba(45, 180, 79, 0.8) !important;
+  color: white !important;
+}

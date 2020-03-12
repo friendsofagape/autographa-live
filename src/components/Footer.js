@@ -120,7 +120,7 @@ class Footer extends React.Component {
                             <span>
                             <FormattedMessage id="tooltip-plus-font-size" >
                             {(message) =>
-                                <a href="javascript:void(0);" className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
+                                <a href="#" className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
                             }
                             </FormattedMessage>
                             </span>
@@ -172,6 +172,8 @@ class Footer extends React.Component {
         audioImport={AutographaStore.audioImport} 
         isPlaying={AutographaStore.isPlaying} 
         Blob={AutographaStore.blobURL}
+        chapter={AutographaStore.chapterId}
+        bookName={AutographaStore.bookName}
         showModalBooks={AutographaStore.showModalBooks}
         currentRefverse ={AutographaStore.currentRefverse} />
         </React.Fragment> )

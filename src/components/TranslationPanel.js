@@ -72,14 +72,11 @@ class TranslationPanel extends React.Component {
             if(newVId[0]){
                 AutographaStore.vId = parseInt(newVId[0])
                 if(AutographaStore.recVerse !== null && AutographaStore.vId !== undefined){
-					console.log((recordedVerse.indexOf(AutographaStore.vId) === -1))
                         if (recordedVerse.indexOf(AutographaStore.vId) !== -1) {
-							console.log("hi")
                             AutographaStore.isWarning = true;
 							AutographaStore.currentSession = false;
                         }
                         if (recordedVerse.indexOf(AutographaStore.vId) === -1){
-							console.log("elsehi")
                             AutographaStore.isWarning = false;
                             AutographaStore.currentSession = true;
                         }

@@ -13,7 +13,8 @@ import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import swal from 'sweetalert';
 import Timer from '../Timer';
-import Navigator from '../Navigator';
+import { default as localforage } from 'localforage';
+const db = require(`${__dirname}/../../../util/data-provider`).targetDb();
 const constants = require('../../../util/constants');
 const { app } = require('electron').remote;
 const fs = require('fs');
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 	title: {
 		flexGrow: 1,
-		marginLeft: 9
+		marginLeft: 9,
 	},
 	soundWave: {
 		maxWidth: 300,
@@ -72,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Recorder(props) {
 	const classes = useStyles();
+	const [chapter, setChapter] = useState(AutographaStore.chapterId);
+	const [isOpen, SetisOpen] = useState(false);
+	const [done, setdone] = useState(false);
 	const {
 		exportAudio,
 		recVerse,
@@ -81,16 +85,46 @@ export default function Recorder(props) {
 		startRecording,
 		stopRecording,
 		findBook,
-		findChapter
+		findChapter,
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
-	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
+    let BookName = constants.booksList[parseInt(bookId, 10) - 1];
+    const [book, setbook] = useState(BookName)
+	let tempArr = [];
 
 	useEffect(() => {
-		if(props.isOpen.audioImport === true)
-		importAudio()
-	})
+		if (props.isOpen.audioImport === true) {
+			importAudio();
+		}
+		if ((chapter.toString() !== AutographaStore.chapterId.toString()) && isOpen === true) {
+			window.location.reload();
+		}
+		if (isOpen === true) {
+			if (AutographaStore.chunkGroup.length === recVerse.length) {
+				// Get the existing data
+				let existing = localStorage.getItem(BookName);
+				// If no existing data, create an array
+				// Otherwise, convert the localStorage string to an array
+				existing = existing ? existing.split(',') : [];
+                // Add new data to localStorage Array
+                if(existing.indexOf(chapter.toString()) === -1){
+                    existing.push(chapter);
+                    localStorage.setItem(BookName, existing.toString());
+                }
+				setdone(true);
+            } else setdone(false);
+            let existingValue = localStorage.getItem(BookName);
+				// If no existing data, create an array
+				// Otherwise, convert the localStorage string to an array
+                existingValue = existingValue ? existingValue.split(',') : [];
+                AutographaStore.recordedChapters = existingValue
+                
+            
+		}
+	});
+
 	const mountAudio = () => {
+		setChapter(AutographaStore.chapterId);
 		if (AutographaStore.isAudioSave !== true)
 			recVerse.length === 0
 				? (AutographaStore.isAudioSave = true)
@@ -105,6 +139,8 @@ export default function Recorder(props) {
 			}).then((willDelete) => {
 				if (willDelete) {
 					AutographaStore.AudioMount = false;
+					SetisOpen(false);
+					localStorage.setItem('AudioMount', false);
 					window.location.reload();
 				} else {
 					swal('Continue Recording Process');
@@ -123,8 +159,13 @@ export default function Recorder(props) {
 	};
 
 	const importAudio = () => {
-		console.log(window.navigator.platform)
-		AutographaStore.audioImport=false
+		clearTimeout();
+		localStorage.setItem('AudioMount', true);
+        SetisOpen(true);
+        setbook(BookName)
+		setChapter(AutographaStore.chapterId);
+		console.log(window.navigator.platform);
+		AutographaStore.audioImport = false;
 		var newfilepath = path.join(
 			app.getPath('userData'),
 			'recordings',
@@ -158,8 +199,9 @@ export default function Recorder(props) {
 	};
 
 	const openmic = () => {
+		console.log(done);
 		const { shell } = require('electron');
-		shell.openExternal("ms-settings:sound");
+		shell.openExternal('ms-settings:sound');
 	};
 	// const handleKeyPress = (event) => {
 	// 	console.log(event.key)
@@ -184,9 +226,15 @@ export default function Recorder(props) {
 						in={props.isOpen.isOpen}
 						mountOnEnter
 						unmountOnExit>
-						<AppBar position='static' hidden={AutographaStore.showModalBooks===true} className={classes.appBar}>
-							<Toolbar>	
-							<img alt="Brand" src = {require("../../../assets/images/logo.png")}/>
+						<AppBar
+							position='static'
+							hidden={AutographaStore.showModalBooks === true}
+							className={classes.appBar}>
+							<Toolbar>
+								<img
+									alt='Brand'
+									src={require('../../../assets/images/logo.png')}
+								/>
 								<Typography
 									variant='h5'
 									className={classes.title}>
@@ -200,7 +248,6 @@ export default function Recorder(props) {
 									}}>
 									<Fab
 										size='medium'
-										onClick={findBook}
 										className={classes.extendedIcon}
 										variant='extended'>
 										<BookIcon />
@@ -242,18 +289,18 @@ export default function Recorder(props) {
 										left: '96%',
 										position: 'absolute',
 									}}>
-								<Tooltip
-									title='Mic Settings'
-									TransitionComponent={Zoom}>
-									<IconButton
-										aria-controls='menu-appbar'
-										aria-haspopup='true'
-										size='medium'
-										color="inherit"
-										onClick={openmic}>
-										<SettingsIcon />
-									</IconButton>
-								</Tooltip>
+									<Tooltip
+										title='Mic Settings'
+										TransitionComponent={Zoom}>
+										<IconButton
+											aria-controls='menu-appbar'
+											aria-haspopup='true'
+											size='medium'
+											color='inherit'
+											onClick={openmic}>
+											<SettingsIcon />
+										</IconButton>
+									</Tooltip>
 								</span>
 							</Toolbar>
 						</AppBar>
