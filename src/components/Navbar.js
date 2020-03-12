@@ -20,6 +20,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
+import Navigator from '../Audio/components/Navigator';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -52,8 +53,8 @@ class Navbar extends React.Component {
             replaceVal:"",
             toggled: false,
             setDiff: false,
-            showLoader: false
-
+            showLoader: false,
+            showAudio: false
         };
        
         var verses, chapter;
@@ -80,7 +81,7 @@ class Navbar extends React.Component {
         this.resetDiffValue();        
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         db.get('translatedBookNames', function (err, doc) {
             if (err) {
                 localStorage.setItem('editBookNamesMode', false);
@@ -103,6 +104,21 @@ class Navbar extends React.Component {
         AutographaStore.editBookNamesMode = localStorage.getItem('editBookNamesMode');
     }
     
+    mountAudio = () => {
+        const currentTrans = AutographaStore.currentTrans;
+        db.get('targetBible').then((doc) => {
+            if(AutographaStore.layout !== 4){
+                AutographaStore.AudioMount = true
+                AutographaStore.audioImport = true
+            }
+            else
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-not-compatible-with-translation-help"], "error");
+        }).catch(function(err) {
+            // handle any errors
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation-audio"], "error");
+        });
+    }
+
     getContent = (id, chapter) => {
         return refDb.get(id.toString()).then( (doc) => {
             for (var i = 0; i < doc.chapters.length; i++) {
@@ -693,6 +709,8 @@ class Navbar extends React.Component {
 
     render() {
         // const layout = AutographaStore.layout;
+        let recordedChapters = (mobx.toJS(AutographaStore.recordedChapters))
+        console.log((recordedChapters))
         var OTbooksstart = 0;
         var OTbooksend = 38;
         var NTbooksstart= 39;
@@ -714,7 +732,7 @@ class Navbar extends React.Component {
         var chapterList = [];
         const toggle = AutographaStore.toggle;
         for(var i=0; i<AutographaStore.bookChapter["chapterLength"]; i++){
-            chapterList.push( <li key={i} value={i+1} ><a href="javascript:void(0);"  className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
+            chapterList.push( <li key={i} value={i+1} ><a href="#" id={(recordedChapters.indexOf((i+1).toString()) !== -1)? "selected": ""} className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
         }
         if (localStorage.getItem('editBookNamesMode') === false) {
             bookData = AutographaStore.bookData
@@ -726,7 +744,7 @@ class Navbar extends React.Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Book and Chapter</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body   style={{ top:'-38px' }}>
                         <Tabs 
                             animation={false}
                             activeKey={AutographaStore.activeTab}
@@ -772,6 +790,7 @@ class Navbar extends React.Component {
                                 </div>
                                  ) : ''
                             }
+                            {AutographaStore.AudioMount===false && ( 
                             <Tab eventKey={1} title="Book">
                                 <div className="wrap-center"></div>
                                 <div className="row books-li" id="bookdata">
@@ -792,7 +811,7 @@ class Navbar extends React.Component {
                                     </ul>
                                 </div>
                                 <div className= "clearfix"></div>
-                            </Tab>
+                            </Tab>)}
                             <Tab eventKey={2} title="Chapters" > 
                                 <div className="chapter-no">
                                     <ul id="chaptersList">
@@ -823,7 +842,7 @@ class Navbar extends React.Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a href="javascript:;" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
+                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
                     </div>
                     <div className="navbar-collapse collapse" id="navbar">
                         <ul className="nav navbar-nav" style={{padding: "3px 0 0 0px"}}>
@@ -853,6 +872,12 @@ class Navbar extends React.Component {
                             </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right nav-pills verse-diff-on">
+                            <li className="rec-btn">
+                                    <FormattedMessage id="tooltip-recorder" >
+                                    {(message) =>
+                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone-slash fa-2x"></i></a>}
+                                </FormattedMessage>
+                            </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>
                             <li>
 
@@ -873,7 +898,7 @@ class Navbar extends React.Component {
                             <li>
                                 <FormattedMessage id="tooltip-find-and-replace">
                                 {(message) =>
-                                <a onClick={() => this.openpopupSearch()} href="javascript:;" data-toggle="tooltip" data-placement="bottom" title={message} id="searchText" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}>
+                                <a onClick={() => this.openpopupSearch()} href="#" data-toggle="tooltip" data-placement="bottom" title={message} id="searchText" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}>
                                 <i className="fa fa-search fa-2x"></i>
                                 </a>}
                                 </FormattedMessage>
@@ -895,7 +920,7 @@ class Navbar extends React.Component {
                             <li>
                                 <FormattedMessage id="tooltip-settings" >
                                 {(message) =>
-                                <a onClick={() => this.openpopupSettings()} href="javascript:;" id="btnSettings" data-target="#bannerformmodal" data-toggle="tooltip" data-placement="bottom" title={message} disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-cog fa-2x"></i>
+                                <a onClick={() => this.openpopupSettings()} href="#" id="btnSettings" data-target="#bannerformmodal" data-toggle="tooltip" data-placement="bottom" title={message} disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-cog fa-2x"></i>
                                 </a>}
                                 </FormattedMessage>
                             </li>
@@ -904,10 +929,16 @@ class Navbar extends React.Component {
                     </div>
                 </nav>
                 {
+                    AutographaStore.layout === 0   &&
+                        <div className="parentdiv">
+                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                        </div>
+                }
+                {
                     AutographaStore.layout === 1   &&
                         <div className="parentdiv">
                             <div className="layoutx"> <Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id = {1} layout={1}/><ReferencePanel refContent ={refContent}  /></div>
-                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                            <div style={{padding: "10px"}} className="layoutx"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                         </div>
                 } 
                 {
@@ -916,7 +947,7 @@ class Navbar extends React.Component {
                         <div className="layout2x"><Reference onClick={this.handleRefChange.bind(this, 0)} refIds={AutographaStore.activeRefs[0]} id={21} layout = {1} /><ReferencePanel refContent ={refContent} refIds={AutographaStore.activeRefs[0]} /></div>
 
                         <div className="layout2x"><Reference onClick={this.handleRefChange.bind(this, 1)} refIds={AutographaStore.activeRefs[1]} id={22} layout = {2} /><ReferencePanel refContent ={refContentOne} refIds={AutographaStore.activeRefs[1]} tIns = {AutographaStore.tIns[1]} tDel = {AutographaStore.tDel[1]}/></div>
-                        <div style={{padding: "10px"}} className="layout2x"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                        <div style={{padding: "10px"}} className="layout2x"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
                 }
                 {
@@ -929,7 +960,7 @@ class Navbar extends React.Component {
                         <div className="layout3x"><Reference onClick={this.handleRefChange.bind(this, 1)} refIds={AutographaStore.activeRefs[1]} id={32} layout = {2} /><ReferencePanel refContent ={refContentOne} refIds={AutographaStore.activeRefs[1]} tIns = {AutographaStore.tIns[1]} tDel = {AutographaStore.tDel[1]}/></div>
 
                         <div className="layout3x"><Reference onClick={this.handleRefChange.bind(this, 2)} refIds={AutographaStore.activeRefs[2]} id={33} layout = {3} /><ReferencePanel refContent ={refContentTwo} refIds={AutographaStore.activeRefs[2]} tIns = {AutographaStore.tIns[2]} tDel = {AutographaStore.tDel[2]}/></div>
-                        <div style={{ padding: "10px"}} className="layout3x"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
+                        <div style={{ padding: "10px"}} className="layout3x"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
                 }  
                 {

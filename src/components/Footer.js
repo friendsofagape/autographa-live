@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import AutographaStore from "./AutographaStore";
 import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap/lib';
+import AudioApp from '../Audio/AudioApp';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
@@ -95,6 +96,7 @@ class Footer extends React.Component {
         const layout = AutographaStore.layout;
         const toggle = AutographaStore.toggle;
         return (
+        <React.Fragment>
         <nav className="navbar navbar-default navbar-fixed-bottom">
             <div className="container-fluid">
                  <div className="collapse navbar-collapse">
@@ -118,7 +120,7 @@ class Footer extends React.Component {
                             <span>
                             <FormattedMessage id="tooltip-plus-font-size" >
                             {(message) =>
-                                <a href="javascript:void(0);" className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
+                                <a href="#" className={`btn btn-default font-button plus ${toggle ? "disabled" : "" }`} data-toggle="tooltip" data-placement="top" title={message} onClick= {this.fontChange.bind(this, (+2))}>A+</a>
                             }
                             </FormattedMessage>
                             </span>
@@ -163,7 +165,18 @@ class Footer extends React.Component {
                         </ul>
                 </div>
             </div>
-        </nav> )
+        </nav>
+        <AudioApp 
+        isOpen={AutographaStore.AudioMount} 
+        isWarning={AutographaStore.isWarning} 
+        audioImport={AutographaStore.audioImport} 
+        isPlaying={AutographaStore.isPlaying} 
+        Blob={AutographaStore.blobURL}
+        chapter={AutographaStore.chapterId}
+        bookName={AutographaStore.bookName}
+        showModalBooks={AutographaStore.showModalBooks}
+        currentRefverse ={AutographaStore.currentRefverse} />
+        </React.Fragment> )
     }
 }
 

@@ -78,5 +78,20 @@ export class AutographaStore {
   @observable errorFile = []
   @observable warningMsg = []
   @observable bookindex = null
+  @observable AudioMount = false
+  @observable vId = 1
+  @observable recVerse = null
+  @observable isWarning = false
+  @observable isRecording = false
+  @observable isPlaying = false
+  @observable isPause = false
+  @observable currentSession = true
+  @observable currentRefverse = ""
+  @observable isAudioSave = true
+  @observable blobURL = null
+  @observable audioImport = false
+  @observable multiplier = 0
+  @observable Tab=null
+  @observable recordedChapters = []
 }
 export default new AutographaStore();

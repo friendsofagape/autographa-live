@@ -8926,3 +8926,14 @@ body::-webkit-scrollbar-thumb {
 background-color: darkgrey;
 outline: 1px solid slategrey;
 }
+
+.verse-num-onaudio {
+  font-size: 10px;
+  font-weight: bold;
+  margin-right: 7px;
+}
+#selected {
+  font-weight: bold !important;
+  background-color: rgba(45, 180, 79, 0.8) !important;
+  color: white !important;
+}
