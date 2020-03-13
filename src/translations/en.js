@@ -119,7 +119,7 @@ export default {
 	"label-incomplete-verses" : "Possible Incomplete Verses",
 	"label-multiple-spaces" : "Verses with Multiple Spaces",
 	"label-statistic-heading": "Statistics for the Book of",
-	"label-auto-backup": "Auto Backup",
+	"label-auto-backup": "Auto-backup",
 	"label-none": "None",
 	"label-daily": "Daily",
 	"label-weekly": "Weekly",

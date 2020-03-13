@@ -4,20 +4,21 @@ const fs = require("fs");
 const constants = require("../util/constants");
 const db = require(`${__dirname}/data-provider`).targetDb();
 
-export const autoBackUp = async () => {
+export const initializeBackUp = async () => {
     try {
         // Initial Backup call
-        callBackUp();
-        const delay = 60000 * 10; // 10 minutes
+        backUp();
+        const delay = 60000 * 2; // 2 minutes
         setInterval(async () => {
-            callBackUp();            
+            backUp();            
         }, delay);
     } catch(e) {
         console.log(e);
     }
 }
 
-async function callBackUp() {
+async function backUp() {
+    console.log("backUp");
     let targetLangDoc = await db.get('targetBible');
     const outputPath = targetLangDoc.targetPath;
     const directory = path.join(Array.isArray(outputPath) ? outputPath[0] : outputPath,"auto-backup");
@@ -36,7 +37,7 @@ async function callBackUp() {
             var d = new Date();
             let timeStamp = [ d && getTimeStamp(d) ].filter(Boolean);
             let currentTime = timeStamp[0].split('_');
-            let days = calculateHours(currentTime,folderName);
+            let days = calculateDays(currentTime,folderName);
             if (days >= 1 && (targetLangDoc.backupFrequency).toLowerCase() === "daily") {
                 buildFilePath(new Date(), dirPath);
                 folderHandling (folders, dirPath);
@@ -53,7 +54,7 @@ async function callBackUp() {
     });
 }
 
-async function allBooks(dir) {
+async function exportAllBooks(dir) {
     let doc = await db.get('targetBible');
     constants.bookCodeList.forEach(async(value, index) => {
         let book={};
@@ -131,7 +132,7 @@ async function buildFilePath(date, dirPath) {
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir, { recursive: true });
     }
-    allBooks(dir);
+    exportAllBooks(dir);
 }
 
 function folderHandling (folders, dirPath) {
@@ -166,12 +167,13 @@ function getTimeStamp(date) {
     return (months[parseInt(month)-1] + " " + day + "-" + year.toString() + "_" + hour + ":" + minute + ":" + second).toString();
 }
 
-function calculateHours(currDate, preDate) 
+function calculateDays(currDate, preDate) 
  {
     var currTime = new Date(currDate[0] + " " + currDate[1]);
     var preTime = new Date(preDate[0] + " " + preDate[1]);
     var difference = Math.abs(currTime.getTime() - preTime.getTime()) / 1000;
     // var hour = Math.floor(difference / 3600) % 24;
+    // var minutes = Math.floor(difference / 60) % 60;
     var days = Math.floor(difference / 86400);
     return days;
  }
