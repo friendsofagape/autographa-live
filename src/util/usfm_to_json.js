@@ -56,7 +56,8 @@ module.exports = {
                     "chapter": parseInt(splitLine[1], 10)
                 }
                 verse = [];
-                c = parseInt(splitLine[1], 10)
+                c = parseInt(splitLine[1], 10);
+                vnum = 0;
                 v = 0;
             } else if (splitLine[0] === '\\v') {
                 if (c === 0)
