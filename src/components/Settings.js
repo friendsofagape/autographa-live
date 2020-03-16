@@ -121,7 +121,7 @@ class SettingsModal extends React.Component {
     settingData.folderPath = doc.targetPath;
     settingData.backupFrequency = (doc.backupFrequency) === undefined ? "daily" : doc.backupFrequency;
     if (settingData.langCodeValue && settingData.langVersion && settingData.backupFrequency !== "none") {
-      auto_export.autoBackUp();
+      auto_export.initializeBackUp();
     }
   }, (err) => {
 		// console.log(err);
@@ -271,7 +271,7 @@ class SettingsModal extends React.Component {
     });
 
     if (langCode && langVersion && backupFrequency !== "none") {
-      auto_export.autoBackUp();
+      auto_export.initializeBackUp();
     }
 	}
 

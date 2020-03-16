@@ -8,7 +8,7 @@ export const initializeBackUp = async () => {
     try {
         // Initial Backup call
         backUp();
-        const delay = 60000 * 2; // 2 minutes
+        const delay = 60000 * 60; // 60 minutes/1 hour
         setInterval(async () => {
             backUp();            
         }, delay);
@@ -18,7 +18,6 @@ export const initializeBackUp = async () => {
 }
 
 async function backUp() {
-    console.log("backUp");
     let targetLangDoc = await db.get('targetBible');
     const outputPath = targetLangDoc.targetPath;
     const directory = path.join(Array.isArray(outputPath) ? outputPath[0] : outputPath,"auto-backup");
