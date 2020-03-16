@@ -1071,7 +1071,7 @@ class SettingsModal extends React.Component {
                             }
                           </FormattedMessage>
                         </div> 
-                        <div style={{"display": "flex"}} className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <div style={{"display": "flex", padding: "20px 0 0 0"}} className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <label
                             style={{"marginTop": "-24px", "fontSize": "14px"}}
                             className="mdl-textfield__label"
