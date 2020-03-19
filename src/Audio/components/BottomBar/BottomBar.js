@@ -10,27 +10,23 @@ import Slide from '@material-ui/core/Slide';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
-import Mic from '@material-ui/icons/Mic';
+// import Mic from '@material-ui/icons/Mic';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import StopIcon from '@material-ui/icons/Stop';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import SaveIcon from '@material-ui/icons/Save';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import BackupIcon from '@material-ui/icons/Backup';
 import { StoreContext } from '../../context/StoreContext';
-import { ReactMicPlus } from 'react-mic-plus';
 import RaisedButton from 'material-ui/RaisedButton';
 import Player from '../AudioPlayer';
+import { ReactMicPlus } from 'react-mic-plus';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
 // import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
-import IconButton from '@material-ui/core/IconButton';
-import LayersIcon from '@material-ui/icons/Layers';
-import LayersClearIcon from '@material-ui/icons/LayersClear';
 import FontSlider from '../FontSlider/FontSlider';
-import Recorder from '../Recorder';
+import RecorderNav from '../RecorderNav';
 import { Box, Tooltip, Zoom, useTheme } from '@material-ui/core';
+import AudioAnalyser from '../Visualization/AudioAnalyser';
 const { app } = require('electron').remote;
 const fs = require('fs');
 const constants = require('../../../util/constants');
@@ -80,25 +76,25 @@ const useStyles = makeStyles((theme) => ({
 		margin: theme.spacing(2),
 		marginLeft: -7,
 		backgroundColor: 'rgba(346, 279, 296, 0.87)',
-		top: 3
+		top: 3,
 	},
 	start: {
 		zIndex: 1,
 		margin: theme.spacing(2),
 		marginLeft: -7,
-		top: 3
+		top: 3,
 	},
 	fab2: {
 		zIndex: 1,
 		margin: theme.spacing(2),
 		marginLeft: -7,
-		top: 3
+		top: 3,
 	},
 	fab1: {
 		zIndex: 1,
 		margin: theme.spacing(2),
 		marginLeft: -7,
-		top: 3
+		top: 3,
 	},
 	player: {
 		color: 'black',
@@ -144,6 +140,9 @@ function BottomBar(props) {
 	const classes = useStyles();
 	const theme = useTheme();
 	const [spacekey, setspacekey] = useState(false);
+	const [audio, setaudio] = useState(null)
+	const [ savedTime, setsavedTime ] = useState(null)
+	const [ newblob, setnewblob ] = useState()
 	const { record, blob, onselect } = useContext(StoreContext);
 	const { selectNext } = useContext(StoreContext);
 	const {
@@ -157,11 +156,14 @@ function BottomBar(props) {
 	} = useContext(StoreContext);
 	const {
 		startRecording,
+		setTimer,
 		stopRecording,
 		saveRecord,
 		resetTimer,
 		recVerse,
 		recVerseTime,
+		setPreviousTime,
+		isLoading,
 	} = useContext(StoreContext);
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
@@ -177,8 +179,7 @@ function BottomBar(props) {
 		exit: theme.transitions.duration.leavingScreen,
 	};
 	function onStop(recordedBlob) {
-		saveRecord(recordedBlob);
-		console.log(recordedBlob);
+		saveRecord(recordedBlob)
 	}
 	function deleteRecordedVerse() {
 		if (AutographaStore.isWarning === true) {
@@ -198,6 +199,28 @@ function BottomBar(props) {
 							reduceTimer(value.totaltime);
 						}
 					});
+					if (AutographaStore.chunkGroup.length !== recVerse.length) {
+						// Get the existing data
+						let existing = localStorage.getItem(BookName);
+						// If no existing data, create an array
+						// Otherwise, convert the localStorage string to an array
+						existing = existing ? existing.split(',') : [];
+						// Add new data to localStorage Array
+						existing.splice(
+							existing.indexOf(
+								AutographaStore.chapterId.toString(),
+							),
+							1,
+						);
+						localStorage.setItem(BookName, existing.toString());
+					}
+					let existingValue = localStorage.getItem(BookName);
+					// If no existing data, create an array
+					// Otherwise, convert the localStorage string to an array
+					existingValue = existingValue
+						? existingValue.split(',')
+						: [];
+					AutographaStore.recordedChapters = existingValue;
 					resetTimer();
 					let recordedJSON = { ...recVerseTime };
 					if (fs.existsSync(newfilepath)) {
@@ -239,20 +262,23 @@ function BottomBar(props) {
 	}
 
 	useEffect(() => {
+		if(AutographaStore.isWarning === true){
+			if((props.isOpen.savedTime !== savedTime || (AutographaStore.vId !== onselect)) && (record === false)){
+				setsavedTime(props.isOpen.savedTime)
+				setPreviousTime(props.isOpen.savedTime)
+				setTimer(props.isOpen.savedTime);
+			}
+		}
 		if (AutographaStore.vId !== onselect) {
 			setOnselect(AutographaStore.vId);
-			resetTimer();
+			if(AutographaStore.isWarning !== true){
+				resetTimer();
+			}
 		}
-	}, [AutographaStore.vId]);
+	});
 
 	useEffect(() => {
-		//check for joint verse
-
-		// if(AutographaStore.jointVerse[onselect])
-		// console.log(AutographaStore.jointVerse[onselect])
-		AutographaStore.isWarning === true
-			? (AutographaStore.currentSession = false)
-			: (AutographaStore.currentSession = true);
+		AutographaStore.isWarning === true ? (AutographaStore.currentSession = false) : (AutographaStore.currentSession = true);
 		if (record === true) {
 			AutographaStore.currentSession = false;
 		}
@@ -264,22 +290,38 @@ function BottomBar(props) {
 		}
 		if (spacekey === true || event.type === 'mousedown') {
 			startRecording();
+			// getMicrophone()
 			setspacekey(false);
 		}
 	}
 
 	function handleButtonRelease(event) {
 		if (record === true) {
-			stopRecording();
 			setspacekey(false);
+			stopRecording();
+			// stopMicrophone()
 		}
 	}
+
+	//toggle visualizer 
+	// async function getMicrophone() {
+	// 	const audio = await navigator.mediaDevices.getUserMedia({
+	// 	  audio: true,
+	// 	  video: false
+	// 	});
+	// 	setaudio(audio)
+	//   }
+	//   function stopMicrophone() {
+	// 	  if(audio !== null)
+	// 	audio.getTracks().forEach(track => track.stop());
+	// 	setaudio(null)
+	//   }
 
 	return (
 		<div>
 			{props.isOpen.isOpen && (
 				<React.Fragment>
-					<Recorder
+					<RecorderNav
 						isOpen={AutographaStore.AudioMount}
 						audioImport={AutographaStore.audioImport}
 					/>
@@ -293,7 +335,7 @@ function BottomBar(props) {
 							position='fixed'
 							className={classes.appBar}>
 							<Toolbar>
-								<ReactMicPlus
+							<ReactMicPlus
 									className={classes.oscilloscope}
 									visualSetting='oscilloscope'
 									record={record}
@@ -302,29 +344,44 @@ function BottomBar(props) {
 									backgroundColor='#3F5274'
 									nonstop={true}
 								/>
-								{/* <div className={classes.oscilloscopescrim}>
-									{!record && (
-										<div className={classes.scrim} />
-									)}
-								</div> */}
 								<FontSlider />
 								<RaisedButton
-									edge='start'
+									edge='1x'
+									disabled={isLoading===true}
 									className={classes.menuButton}
 									color='inherit'
-									backgroundColor= {AutographaStore.layout !== 0 ? 'rgba(0,0,0,.5)' : "" }
-									onClick={() => AutographaStore.layout !== 0 ? AutographaStore.layout = 0 : "" }
+									backgroundColor={
+										AutographaStore.layout === 0
+											? 'rgba(0,0,0,.5)'
+											: ''
+									}
+									onClick={() =>
+										AutographaStore.layout !== 0
+											? (AutographaStore.layout = 0)
+											: ''
+									}
 									aria-label='1x'>
-									1x&nbsp; <i className="fa fa-columns fa-lg" />
+									1x&nbsp;{' '}
+									<i className='fa fa-columns fa-lg' />
 								</RaisedButton>
 								<RaisedButton
-									edge='start'
+									edge='2x'
 									className={classes.menuButton}
+									disabled={isLoading===true}
 									color='inherit'
-									backgroundColor= {AutographaStore.layout === 0 ? 'rgba(0,0,0,.5)' : "" }
-									onClick={() => AutographaStore.layout === 0 ? AutographaStore.layout = 1 : "" }
+									backgroundColor={
+										AutographaStore.layout !== 0
+											? 'rgba(0,0,0,.5)'
+											: ''
+									}
+									onClick={() =>
+										AutographaStore.layout === 0
+											? (AutographaStore.layout = 1)
+											: ''
+									}
 									aria-label='2x'>
-									2x&nbsp; <i className="fa fa-columns fa-lg" />
+									2x&nbsp;{' '}
+									<i className='fa fa-columns fa-lg' />
 								</RaisedButton>
 								<span
 									className={classes.bottomIcons}
@@ -333,53 +390,49 @@ function BottomBar(props) {
 										<Tooltip
 											title='Goto Previous Verse'
 											TransitionComponent={Zoom}>
+											<span>
 											<Fab
 												aria-label='previous'
+												disabled={isLoading===true}
 												className={classes.fab}
 												onClick={selectPrev}>
-												<SkipPreviousIcon style={{ fontSize: '1.8rem' }} />
+												<SkipPreviousIcon
+													style={{ fontSize: '1.8rem',}}
+												/>
 											</Fab>
+											</span>
 										</Tooltip>
 									</span>
 									<span>
 										<Fab
 											aria-label='start'
 											style={{ left: '42%' }}
+											disabled={isLoading===true}
 											className={classes.shadow}>
 											""
 										</Fab>
-										{/* {record === false && ( */}
 										<Tooltip
-											title='Start Recording'
+											title='Start/Stop Recording'
 											TransitionComponent={Zoom}>
+											<span>
 											<Fab
 												color='secondary'
 												aria-label='start'
+												disabled={isLoading===true}
 												className={classes.start}
 												onKeyDown={handleButtonPress}
 												onKeyUp={handleButtonRelease}
 												onMouseDown={handleButtonPress}
 												onMouseUp={handleButtonRelease}>
-												<Mic style={{ fontSize: '1.8rem' }} />
+												<FiberManualRecordIcon
+													style={{
+														fontSize: '1.8rem',
+													}}
+												/>
 											</Fab>
+											</span>
 										</Tooltip>
-										{/* )} */}
 									</span>
-									{/* <span>
-										{record === true && (
-											<Tooltip
-												title='Stop Recording'
-												TransitionComponent={Zoom}>
-												<Fab
-													color='secondary'
-													aria-label='stop'
-													className={classes.fab2}
-													onClick={handleButtonRelease}>
-													<StopIcon />
-												</Fab>
-											</Tooltip>
-										)}
-									</span> */}
 								</span>
 								<span
 									style={{
@@ -391,11 +444,12 @@ function BottomBar(props) {
 										false && (
 										<span>
 											<Zoom
-												in={AutographaStore.currentSession === false}
+												in={ AutographaStore.currentSession === false }
 												timeout={transitionDuration}
 												style={{
 													transitionDelay: `${
-														AutographaStore.currentSession === false
+														AutographaStore.currentSession ===
+														false
 															? transitionDuration.exit
 															: 0
 													}ms`,
@@ -404,12 +458,20 @@ function BottomBar(props) {
 												<Tooltip
 													title='Goto Next Verse'
 													TransitionComponent={Zoom}>
+													<span>
 													<Fab
 														aria-label='next'
+														disabled={isLoading===true}
 														className={classes.fab}
 														onClick={selectNext}>
-														<SkipNextIcon style={{ fontSize: '1.8rem' }}/>
+														<SkipNextIcon
+															style={{
+																fontSize:
+																	'1.8rem',
+															}}
+														/>
 													</Fab>
+													</span>
 												</Tooltip>
 											</Zoom>
 										</span>
@@ -430,9 +492,11 @@ function BottomBar(props) {
 												<Tooltip
 													title='Delete Current Verse'
 													TransitionComponent={Zoom}>
+													<span>
 													<Fab
 														color='secondary'
 														size='large'
+														disabled={isLoading===true}
 														aria-label='delete'
 														className={
 															classes.start
@@ -440,48 +504,54 @@ function BottomBar(props) {
 														onClick={
 															deleteRecordedVerse
 														}>
-														<DeleteForeverIcon style={{ fontSize: '1.8rem' }} />
+														<DeleteForeverIcon
+															style={{
+																fontSize:
+																	'1.8rem',
+															}}
+														/>
 													</Fab>
+													</span>
 												</Tooltip>
 											</Zoom>
 										)}
 									</span>
 								</span>
-								<span style={{ left:'47%' }} className={classes.player}>
+								{/* <span style={{ left: '63%', position: "absolute" }} >
+								{audio ? <AudioAnalyser audio={audio} /> : ''}
+								</span> */}
+								<span
+									style={{ left: '47%' }}
+									className={classes.player}>
 									<Player isPlaying={props.isOpen.blob} />
 								</span>
 								<span
 									className={classes.totaltime}
-									style={{ left: '80%' }}>
+									style={{ left: '81%' }}>
 									<Box fontSize={13} fontStyle='italic'>
-										Total Time recorded:{' '}
-										{formattedSeconds(totalTime)}s
+										Total time recorded:{' '}
+										{formattedSeconds(totalTime)}
 									</Box>
 								</span>
 								<span
 									className={classes.save}
-									style={{ left: '91.5%' }}>
+									style={{ left: '93%' }}>
 									<Tooltip
 										backgroundcolor='black'
-										title={
-											<span
-												style={{
-													fontSize: '11px',
-												}}>
-												Export Currently Recorded
-												Chapter
-											</span>
-										}
+										title='Save'
 										TransitionComponent={Zoom}>
 										<Fab
 											variant='extended'
-											size='medium'
-											aria-label='Export'
-											onClick={exportAudio}>
-											<BackupIcon
-												style={{ marginRight: '5px' }}
-											/>
-											Export
+											size='large'
+											aria-hidden='true'
+											style={{
+												backgroundColor: '#0B82FC',
+												color: '#FFF',
+												width: '90px',
+												borderRadius: '10px',
+											}}
+											aria-label='Save'>
+											Save
 										</Fab>
 									</Tooltip>
 								</span>

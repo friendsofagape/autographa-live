@@ -83,6 +83,7 @@ export class AutographaStore {
   @observable recVerse = null
   @observable isWarning = false
   @observable isRecording = false
+  @observable savedTime = null
   @observable isPlaying = false
   @observable isPause = false
   @observable currentSession = true
@@ -93,5 +94,6 @@ export class AutographaStore {
   @observable multiplier = 0
   @observable Tab=null
   @observable recordedChapters = []
+  @observable AudioJointVerse = []
 }
 export default new AutographaStore();

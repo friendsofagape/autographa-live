@@ -175,7 +175,8 @@ class Footer extends React.Component {
         chapter={AutographaStore.chapterId}
         bookName={AutographaStore.bookName}
         showModalBooks={AutographaStore.showModalBooks}
-        currentRefverse ={AutographaStore.currentRefverse} />
+        currentRefverse ={AutographaStore.currentRefverse}
+        savedTime={AutographaStore.savedTime} />
         </React.Fragment> )
     }
 }
