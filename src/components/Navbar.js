@@ -528,7 +528,7 @@ class Navbar extends React.Component {
         }
         return { ins: insertions, del: deletions }
     }
-    setDiff = async(e, toggled) => {
+    setDiff = async(toggled) => {
             let that = this;
             let isSameLanguage = await this.isSameLanguage();
             if(toggled){
@@ -881,12 +881,26 @@ class Navbar extends React.Component {
                             </li>
                             <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}></li>
                             <li>
-
                                 <FormattedMessage id="tooltip-compare-mode">
                                     {(message) =>
-                                        <IconButton >
+                                    <span>
+                                        <IconButton
+                                            data-toggle="tooltip" data-placement="bottom" title={message}
+                                            value={toggle}
+                                            hidden={toggle === true}
+                                            onClick = {() => this.setDiff(true)}
+                                            id="diff">
                                         <img alt="Brand" src = {require("../assets/images/DiffFiles.svg")}/>
                                         </IconButton>
+                                        <IconButton
+                                            hidden={toggle === false}
+                                            value={toggle}
+                                            style={{ backgroundColor: '#0069d7', borderRadius: '0%' }}
+                                            onClick = {() => this.setDiff(false)}
+                                            id="diff">
+                                        <img alt="Brand" src = {require("../assets/images/DiffFiles.svg")}/>
+                                        </IconButton>
+                                    </span>
                                     }
                                 </FormattedMessage>                               
                             </li>
