@@ -262,22 +262,20 @@ export default function RecorderNav(props) {
 									}}>
 									<Timer open={props.isOpen.isOpen} />
 								</span>
+								<span>
 								<Tooltip
+									arrow
 									title='Turn-Off Recording Mode'
 									TransitionComponent={Zoom}>
-									<span>
 									<Fab
-										aria-controls='menu-appbar'
-										aria-haspopup='true'
 										aria-label="add"
 										size='medium'
-										disabled={isLoading===true}
 										className={classes.mic}
 										onClick={mountAudio}>
 										<Mic style={{ fontSize: '1.8rem' }} />
 									</Fab>
-									</span>
 								</Tooltip>
+								</span>
 								<span
 									className={classes.save}
 									style={{ left: '87%' }}>
