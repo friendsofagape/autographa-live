@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import AudioApp from './AudioApp';
-require("./assets/stylesheets/style.css")
+require("../../src/assets/stylesheets/style.css")
 
 ReactDOM.render(<AudioApp />, document.getElementById('root'));
 

@@ -20,7 +20,6 @@ import EditIcon from '@material-ui/icons/Edit';
 import { Tooltip, IconButton, Zoom } from '@material-ui/core';
 import BookNameEditor from './BookNameEditor';
 import * as mobx from "mobx";
-import Navigator from '../Audio/components/Navigator';
 const brandLogo = require("../assets/images/logo.png")
 const { Modal,  Tabs, Tab, NavDropdown, MenuItem } = require('react-bootstrap/lib');
 const Constant = require("../util/constants");
@@ -238,6 +237,9 @@ class Navbar extends React.Component {
           verses.forEach( (verse, index) => {
             translationContent.push(verse.verse);
             jointVerse.push(verse.joint_verse);
+            if(verse.joint_verse){
+                AutographaStore.AudioJointVerse.push(verse.verse_number)
+            }
           });
           AutographaStore.translationContent = translationContent;
           AutographaStore.jointVerse = jointVerse;
@@ -526,7 +528,7 @@ class Navbar extends React.Component {
         }
         return { ins: insertions, del: deletions }
     }
-    setDiff = async(e, toggled) => {
+    setDiff = async(toggled) => {
             let that = this;
             let isSameLanguage = await this.isSameLanguage();
             if(toggled){
@@ -709,8 +711,7 @@ class Navbar extends React.Component {
 
     render() {
         // const layout = AutographaStore.layout;
-        let recordedChapters = (mobx.toJS(AutographaStore.recordedChapters))
-        console.log((recordedChapters))
+        let recordedChapters = mobx.toJS(AutographaStore.recordedChapters)
         var OTbooksstart = 0;
         var OTbooksend = 38;
         var NTbooksstart= 39;
@@ -732,7 +733,7 @@ class Navbar extends React.Component {
         var chapterList = [];
         const toggle = AutographaStore.toggle;
         for(var i=0; i<AutographaStore.bookChapter["chapterLength"]; i++){
-            chapterList.push( <li key={i} value={i+1} ><a href="#" id={(recordedChapters.indexOf((i+1).toString()) !== -1)? "selected": ""} className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
+            chapterList.push( <li key={i} value={i+1} ><a href="#" id={(recordedChapters.indexOf((i+1).toString()) !== -1)? "completed": ""} className={(i+1 === AutographaStore.chapterActive) ? 'link-active': ""} onClick = { this.getValue.bind(this,  i+1, AutographaStore.bookChapter["bookId"]) } >{(i+1)}</a></li> );
         }
         if (localStorage.getItem('editBookNamesMode') === false) {
             bookData = AutographaStore.bookData
@@ -842,7 +843,7 @@ class Navbar extends React.Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}><img alt="Brand" src = {require("../assets/images/logo.png")}/></a>
+                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}></a>
                     </div>
                     <div className="navbar-collapse collapse" id="navbar">
                         <ul className="nav navbar-nav" style={{padding: "3px 0 0 0px"}}>
@@ -875,26 +876,35 @@ class Navbar extends React.Component {
                             <li className="rec-btn">
                                     <FormattedMessage id="tooltip-recorder" >
                                     {(message) =>
-                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone-slash fa-2x"></i></a>}
+                                    <a onClick={() => this.mountAudio()} href="#" data-target="#recordmodal" data-toggle="tooltip" data-placement="bottom" title={message} id="btnRec" disabled={`${toggle ? "disabled" : "" }`} style={{pointerEvents: `${toggle ? "none" : "" }`}}><i className="fa fa-microphone fa-2x"></i></a>}
                                 </FormattedMessage>
                             </li>
-                            <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-off" /></span></li>
+                            <li style={{padding: "17px 5px 0 0", color: "#fff", fontWeight: "bold"}}></li>
                             <li>
-
                                 <FormattedMessage id="tooltip-compare-mode">
                                     {(message) =>
-                                        <Toggle
-                                          disabled= {AutographaStore.disablediff}
-                                          defaultToggled={toggle}
-                                          style={{marginTop:"17px"}}
-                                          onToggle = {this.setDiff}
-                                          toggled = {toggle}
-                                          id="diff"
-                                        />
+                                    <span>
+                                        <IconButton
+                                            data-toggle="tooltip" data-placement="bottom" title={message}
+                                            value={toggle}
+                                            hidden={toggle === true}
+                                            onClick = {() => this.setDiff(true)}
+                                            id="diff">
+                                        <img alt="Brand" src = {require("../assets/images/DiffFiles.svg")}/>
+                                        </IconButton>
+                                        <IconButton
+                                            hidden={toggle === false}
+                                            value={toggle}
+                                            style={{ backgroundColor: '#0069d7', borderRadius: '0%' }}
+                                            onClick = {() => this.setDiff(false)}
+                                            id="diff">
+                                        <img alt="Brand" src = {require("../assets/images/DiffFiles.svg")}/>
+                                        </IconButton>
+                                    </span>
                                     }
                                 </FormattedMessage>                               
                             </li>
-                            <li style={{padding:"17px 0 0 0", color: "#fff", fontWeight: "bold"}}><span><FormattedMessage id="btn-switch-on" /></span></li>
+                            <li style={{padding:"17px 0 0 0", color: "#fff", fontWeight: "bold"}}></li>
                             <li>
                                 <FormattedMessage id="tooltip-find-and-replace">
                                 {(message) =>

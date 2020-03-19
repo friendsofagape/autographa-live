@@ -3,6 +3,10 @@ import { default as localforage } from 'localforage';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
+import createPauseData from '../core/createPauseData';
+import mergePause from '../core/mergePause';
+import Loader from '../components/Loader/Loader';
+import * as mobx from "mobx";
 const refDb = require(`${__dirname}/../../util/data-provider`).referenceDb();
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
@@ -23,6 +27,8 @@ class StoreContextProvider extends Component {
 		timer: false,
 		totalTime: 0,
 		recVerseTime: [],
+		isLoading: false,
+		previousTime: '',
 	};
 
 	toggleOpen = () => {
@@ -32,7 +38,11 @@ class StoreContextProvider extends Component {
 	setTimer = (time) => {
 		this.setState({ secondsElapsed: time });
 	};
-	
+
+	setPreviousTime = (prevTime) => {
+		this.setState({ previousTime: prevTime });
+	}
+
 	resetTimer = () => {
 		this.setState({ secondsElapsed: 0 });
 	};
@@ -115,41 +125,28 @@ class StoreContextProvider extends Component {
 	};
 
 	startRecording = () => {
-		if (AutographaStore.isWarning === false) {
-			this.setState({ timer: true });
-			this.setState({ record: true });
-			AutographaStore.isRecording = true;
-			AutographaStore.isAudioSave = false;
-		}
+		let joint = mobx.toJS(AutographaStore.AudioJointVerse)
+		let isJoint = (joint.indexOf(this.state.onselect) !== -1)
+		if(isJoint === false )
+		this.setState({ timer: true });
+		this.setState({ record: true });
+		AutographaStore.isRecording = true;
+		AutographaStore.isAudioSave = false;
 	};
 
 	stopRecording = () => {
 		AutographaStore.currentSession = false;
 		AutographaStore.isRecording = false;
 		this.setState({ record: false });
-		if (
-			AutographaStore.isWarning === false &&
-			this.state.secondsElapsed > 0
-		) {
-			this.state.recVerse.push(this.state.onselect);
-			this.state.recVerseTime.push({
-				verse: this.state.onselect,
-				totaltime: this.state.secondsElapsed,
-			});
-			AutographaStore.isWarning = true;
-			this.setState({ timer: false });
-			this.setState({
-				totalTime: this.state.totalTime + this.state.secondsElapsed,
-			});
-		} else {
-			this.setState({ timer: false });
-			this.resetTimer();
-		}
 	};
 
 	saveRecord = async (value, event) => {
-		if (this.state.secondsElapsed > 0) {
+		let joint = mobx.toJS(AutographaStore.AudioJointVerse)
+		let isJoint = (joint.indexOf(this.state.onselect) !== -1)
+		if (this.state.secondsElapsed > 0 && isJoint === false) {
 			let save,
+				mergetemp,
+				previousSeconds,
 				book = {};
 			value['verse'] = this.state.onselect;
 			value['totaltime'] = this.state.secondsElapsed;
@@ -157,18 +154,94 @@ class StoreContextProvider extends Component {
 			book.bookNumber = AutographaStore.bookId.toString();
 			book.bookName =
 				constants.booksList[parseInt(book.bookNumber, 10) - 1];
-			this.setState({ recordedFiles: value });
-			this.state.storeRecord.push(value);
-			save = await saveRec.recSave(
-				book,
-				this.state.recordedFiles,
-				chapter,
-				this.state.onselect,
-				this.state.recVerse,
-				this.state.recVerseTime,
-			);
-			AutographaStore.recVerse = this.state.recVerse;
+			if (this.state.recVerse.indexOf(AutographaStore.vId) !== -1) {
+				this.setState({ timer: false });
+				let FindIndexofverse = this.state.recVerseTime.findIndex((verse) => verse.verse === this.state.onselect);
+				this.state.recVerseTime.map((val,index) => {
+					if(FindIndexofverse === index){
+						previousSeconds = val.totaltime
+					}
+				})
+				console.log(this.state.secondsElapsed)
+				previousSeconds = this.state.secondsElapsed - previousSeconds
+				if(previousSeconds > 0) {
+					this.state.recVerseTime.splice(FindIndexofverse, 1, {
+						verse: this.state.onselect,
+						totaltime: this.state.secondsElapsed,
+					});
+					save = await createPauseData(
+						value,
+						book,
+						chapter,
+						this.state.onselect,
+						this.state.recVerseTime,
+					).then((save) => {
+						if (save) {
+							previousSeconds = undefined
+							this.setState({ isLoading: true });
+							this.mergePause(save);
+						}
+					});
+				}
+				else {
+					this.setState({ timer: false });
+					this.setTimer(this.state.previousTime);
+				}
+			} else {
+				this.state.recVerse.push(this.state.onselect);
+				this.state.recVerseTime.push({
+					verse: this.state.onselect,
+					totaltime: this.state.secondsElapsed,
+				});
+				AutographaStore.isWarning = true;
+				this.setState({
+					totalTime: this.state.totalTime + this.state.secondsElapsed,
+				});
+				this.setState({ recordedFiles: value });
+				this.setState({ timer: false });
+				this.state.storeRecord.push(value);
+				save = await saveRec.recSave(
+					book,
+					this.state.recordedFiles,
+					chapter,
+					this.state.onselect,
+					this.state.recVerse,
+					this.state.recVerseTime,
+				);
+				AutographaStore.recVerse = this.state.recVerse;
+			}
 		}
+		else {
+			this.setState({ timer: false });
+			this.resetTimer();
+		}
+	};
+
+	mergePause = async (save) => {
+		let mergetemp,
+			book = {};
+		let chapter = 'Chapter' + AutographaStore.chapterId;
+		book.bookNumber = AutographaStore.bookId.toString();
+		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
+		if (save) {
+			setTimeout(() => {
+				mergetemp = mergePause(
+					book,
+					chapter,
+					this.state.onselect,
+					this.state.secondsElapsed,
+				).then((mergetemp) => {
+					if (mergetemp) {
+						console.log("Merge and close",mergetemp)
+						this.SetLoader();
+					}
+				});
+			}, 2000);
+		}
+	};
+
+	SetLoader = () => {
+		this.setState({ isLoading: false });
 	};
 
 	exportAudio = async () => {
@@ -207,24 +280,40 @@ class StoreContextProvider extends Component {
 		this.state.recVerseTime.push(json);
 	};
 	findBook = () => {
-		AutographaStore.showModalBooks=true
-		AutographaStore.aId=1
-		AutographaStore.activeTab=1
-	}
+		AutographaStore.showModalBooks = true;
+		AutographaStore.aId = 1;
+		AutographaStore.activeTab = 1;
+	};
 	findChapter = () => {
 		AutographaStore.aId = 2;
-        AutographaStore.showModalBooks = true;
-        AutographaStore.activeTab = 2;
-        AutographaStore.bookActive = AutographaStore.bookId;
-        AutographaStore.bookName = AutographaStore.editBookNamesMode && (AutographaStore.translatedBookNames !== null) ? AutographaStore.translatedBookNames[parseInt(AutographaStore.bookId, 10) - 1] : constants.booksList[parseInt(AutographaStore.bookId, 10) - 1];
+		AutographaStore.showModalBooks = true;
+		AutographaStore.activeTab = 2;
+		AutographaStore.bookActive = AutographaStore.bookId;
+		AutographaStore.bookName =
+			AutographaStore.editBookNamesMode &&
+			AutographaStore.translatedBookNames !== null
+				? AutographaStore.translatedBookNames[
+						parseInt(AutographaStore.bookId, 10) - 1
+				  ]
+				: constants.booksList[parseInt(AutographaStore.bookId, 10) - 1];
 		AutographaStore.chapterActive = AutographaStore.chapterId;
-		refDb.get(AutographaStore.currentRef +"_"+ constants.bookCodeList[parseInt(AutographaStore.bookId, 10)-1]).then(function(doc) {
-            AutographaStore.bookChapter["chapterLength"] = doc.chapters.length;
-            AutographaStore.bookChapter["bookId"] = AutographaStore.bookId;
-        }).catch(function(err){
-            console.log(err);
-        })
-	}
+		refDb
+			.get(
+				AutographaStore.currentRef +
+					'_' +
+					constants.bookCodeList[
+						parseInt(AutographaStore.bookId, 10) - 1
+					],
+			)
+			.then(function(doc) {
+				AutographaStore.bookChapter['chapterLength'] =
+					doc.chapters.length;
+				AutographaStore.bookChapter['bookId'] = AutographaStore.bookId;
+			})
+			.catch(function(err) {
+				console.log(err);
+			});
+	};
 
 	render() {
 		return (
@@ -248,7 +337,9 @@ class StoreContextProvider extends Component {
 					fetchTimer: this.fetchTimer,
 					updateJSON: this.updateJSON,
 					findBook: this.findBook,
-					findChapter: this.findChapter
+					findChapter: this.findChapter,
+					SetLoader: this.SetLoader,
+					setPreviousTime: this.setPreviousTime
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

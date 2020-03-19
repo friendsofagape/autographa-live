@@ -13,6 +13,7 @@ import ConcatAudio from '../Audio/core/ConcatAudio';
 let audio = new ConcatAudio();
 const { app } = require('electron').remote;
 const path = require('path');
+const fs = require('fs');
 const constants = require('../util/constants');
 const i18n = new(require('../translations/i18n'))();
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
@@ -75,6 +76,7 @@ class TranslationPanel extends React.Component {
                         if (recordedVerse.indexOf(AutographaStore.vId) !== -1) {
                             AutographaStore.isWarning = true;
 							AutographaStore.currentSession = false;
+							this.lastSavedtime()
                         }
                         if (recordedVerse.indexOf(AutographaStore.vId) === -1){
                             AutographaStore.isWarning = false;
@@ -101,6 +103,41 @@ class TranslationPanel extends React.Component {
 				refContent[l].querySelectorAll('div')[num-1].style = "background-color: rgba(11, 250, 15, 0.1);padding-left:10px;padding-right:10px;border-radius: 10px;whitespace:pre-wrap;";
 			}
         }
+	}
+
+	lastSavedtime = () => {
+		let bookId = AutographaStore.bookId.toString();
+		let BookName = constants.booksList[parseInt(bookId, 10) - 1];
+		var newfilepath = path.join(
+					app.getPath('userData'),
+					'recordings',
+					BookName,
+					`Chapter${AutographaStore.chapterId}`,
+					`output.json`,
+				);
+				    if (fs.existsSync(newfilepath)) {
+				    	fs.readFile(
+				    		newfilepath,
+				    		// callback function that is called when reading file is done
+				    		function(err, data) {
+				    			// json data
+				    			var jsonData = data;
+				    			// parse json
+				    			var jsonParsed = JSON.parse(jsonData);
+				    			// access elements
+				    			for (var key in jsonParsed) {
+				    				if (jsonParsed.hasOwnProperty(key)) {
+				    					var val = jsonParsed[key];
+				    					if(val.verse === AutographaStore.vId){
+                                            AutographaStore.savedTime = val.totaltime
+                                            console.log(AutographaStore.savedTime)
+				    					}
+                                    
+				    				}
+				    			}
+				    		},
+				    	);
+				    }
 	}
 
 	handleKeyUp =(e)=> {
@@ -307,7 +344,7 @@ class TranslationPanel extends React.Component {
             <React.Fragment>
             <span className={ AudioMount? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
 			<span contentEditable={!AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
-			{AutographaStore.translationContent[i]}
+			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
 			</span>
             </React.Fragment>
             :
