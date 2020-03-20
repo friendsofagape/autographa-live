@@ -12,6 +12,8 @@ const mergeAudios = async(book, chapter, versenum,) => {
 		var merged, output;
         let doc = await db.get('targetBible');
         let filepath = doc.targetPath
+        let outputmetaData = [];
+        console.log(AutographaStore.ChapterComplete)
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
                 let audiomp3 =[];
@@ -35,7 +37,7 @@ const mergeAudios = async(book, chapter, versenum,) => {
 					})
 					.then(() => {
                         console.log('out', output);
-                        let filepath = doc.targetPath
+                        
                         if (fs.existsSync(path.join(filepath[0],'recordings',book.bookName, `${chapter}.mp3`))){
                             writeRecfile(output.blob, path.join(filepath[0],'recordings',book.bookName, `${chapter}.mp3`))
                         }
@@ -58,10 +60,59 @@ const mergeAudios = async(book, chapter, versenum,) => {
                         // );
                         // console.log(output.element)
 						// document.body.append(output.element);
-					}).then(() => {
+                    })
+                    .then(() => {
+                        if(AutographaStore.ChapterComplete === true) {
+                            var newfilepath = path.join(
+                                app.getPath('userData'),
+                                'recordings',
+                                book.bookName,
+                                chapter,
+                                `output.json`,
+                            );
+                            let outputTxtfile = path.join(filepath[0],'recordings',book.bookName, `${chapter}.txt`)
+                            if (fs.existsSync(newfilepath)) {
+                                fs.readFile(
+                                    newfilepath,
+                                    // callback function that is called when reading file is done
+                                    function(err, data) {
+                                        // json data
+                                        var jsonData = data;
+                                        // parse json
+                                        var jsonParsed = JSON.parse(jsonData);
+                                        // access elements
+                                        var prevendtime
+                                        for (var key in jsonParsed) {
+                                            if (jsonParsed.hasOwnProperty(key)) {
+                                                var val = jsonParsed[key];
+                                                let starttime 
+                                                let endtime; 
+                                                if(val.verse === 1){
+                                                    starttime = 0
+                                                }else{
+                                                    starttime = prevendtime
+                                                }
+                                                endtime =  starttime + val.totaltime
+                                                prevendtime = endtime + 1
+                                                let eachSegment = [ starttime, endtime , val.verse ]
+                                                outputmetaData.push(eachSegment)
+                                            }
+                                        }
+                                                require("fs").writeFile(
+                                                    outputTxtfile,
+                                                    outputmetaData.map(function(v){ return v.join('\t ') }).join('\n'),
+                                                    function (err) { console.log(err ? 'Error :'+err : `Created ${chapter}.txt`) }
+                                                );
+                                    },
+                                );
+                            }
+                        }
+                    })
+                    .then(() => {
+                        const currentTrans = AutographaStore.currentTrans;
                         let filePath = path.join(filepath[0],'recordings',book.bookName);
                         AutographaStore.isAudioSave = true
-                        swal("Record Export Success!", `on Directory: ${filePath}`, "success");
+                        swal(currentTrans["dynamic-msg-export-recording"], currentTrans["label-folder-location"]`: ${filePath}`, "success");
                     })
 					.catch((error) => {
 						// => Error Message

@@ -13,7 +13,7 @@ import AutographaStore from '../../../components/AutographaStore';
 import { StoreContext } from '../../context/StoreContext';
 import swal from 'sweetalert';
 import Timer from '../Timer';
-import Loader from '../Loader/Loader';
+import { FormattedMessage } from 'react-intl';
 const db = require(`${__dirname}/../../../util/data-provider`).targetDb();
 const constants = require('../../../util/constants');
 const { app } = require('electron').remote;
@@ -78,6 +78,21 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const useStylesBootstrap = makeStyles(theme => ({
+	arrow: {
+	  color: theme.palette.common.black,
+	},
+	tooltip: {
+	  backgroundColor: theme.palette.common.black,
+	},
+  }));
+
+  function BootstrapTooltip(props) {
+	const bootsrapclasses = useStylesBootstrap();
+  
+	return <Tooltip arrow classes={bootsrapclasses} {...props} />;
+  }
+
 export default function RecorderNav(props) {
 	const classes = useStyles();
 	const [chapter, setChapter] = useState(AutographaStore.chapterId);
@@ -122,7 +137,11 @@ export default function RecorderNav(props) {
 					localStorage.setItem(BookName, existing.toString());
 				}
 				setdone(true);
-			} else setdone(false);
+				AutographaStore.ChapterComplete = true
+			} else {
+				setdone(false);
+				AutographaStore.ChapterComplete = false
+			}
 			let existingValue = localStorage.getItem(BookName);
 			// If no existing data, create an array
 			// Otherwise, convert the localStorage string to an array
@@ -132,15 +151,15 @@ export default function RecorderNav(props) {
 	});
 
 	const mountAudio = () => {
+		const currentTrans = AutographaStore.currentTrans;
 		setChapter(AutographaStore.chapterId);
-		if (AutographaStore.isAudioSave !== true)
-			recVerse.length === 0
-				? (AutographaStore.isAudioSave = true)
-				: (AutographaStore.isAudioSave = false);
-		if (AutographaStore.isAudioSave === true) {
+		// if (AutographaStore.isAudioSave !== true)
+		// 	recVerse.length === 0
+		// 		? (AutographaStore.isAudioSave = true)
+		// 		: (AutographaStore.isAudioSave = false);
+		// if (AutographaStore.isAudioSave === true) {
 			swal({
-				title: 'Are you sure?',
-				text: 'You want to trigger off Audio Recording!',
+				title: currentTrans["dynamic-msg-exit-recorder"],
 				icon: 'warning',
 				buttons: true,
 				dangerMode: true,
@@ -150,20 +169,18 @@ export default function RecorderNav(props) {
 					SetisOpen(false);
 					localStorage.setItem('AudioMount', false);
 					window.location.reload();
-				} else {
-					swal('Continue Recording Process');
 				}
 			});
-		} else {
-			swal({
-				title: 'Cannot switch off Audio',
-				text:
-					'You have some newly recorded verses, Please export them to proceed!',
-				icon: 'error',
-				buttons: true,
-				dangerMode: true,
-			});
-		}
+		// } else {
+		// 	swal({
+		// 		title: 'Cannot switch off Audio',
+		// 		text:
+		// 			'You have some newly recorded verses, Please export them to proceed!',
+		// 		icon: 'error',
+		// 		buttons: true,
+		// 		dangerMode: true,
+		// 	});
+		// }
 	};
 
 	const importAudio = () => {
@@ -196,8 +213,10 @@ export default function RecorderNav(props) {
 							setRecverse(val.verse);
 							fetchTimer(val.totaltime);
 							updateJSON(val);
+							
 						}
 					}
+					
 				},
 			);
 		}
@@ -210,7 +229,6 @@ export default function RecorderNav(props) {
 	};
 	return (
 		<div>
-			{(isLoading === true) ? (<Loader />) : "" }
 			{props.isOpen.isOpen && (
 				<React.Fragment>
 					<Slide
@@ -230,7 +248,11 @@ export default function RecorderNav(props) {
 								<Typography
 									variant='h5'
 									className={classes.title}>
-									Recorder
+									<FormattedMessage id="label-Recorder">
+                                		{(message) =>
+											message
+										}
+								</FormattedMessage>
 								</Typography>
 								<span
 									style={{
@@ -263,10 +285,15 @@ export default function RecorderNav(props) {
 									<Timer open={props.isOpen.isOpen} />
 								</span>
 								<span>
-								<Tooltip
-									arrow
-									title='Turn-Off Recording Mode'
-									TransitionComponent={Zoom}>
+								<BootstrapTooltip
+									title={<span style={{ fontSize: '10px' }}>
+									<FormattedMessage id="tooltip-exitrecorder">
+                                		{(message) =>
+											message
+										}
+									</FormattedMessage>
+										</span>}
+									TransitionComponent={Zoom} arrow>
 									<Fab
 										aria-label="add"
 										size='medium'
@@ -274,20 +301,21 @@ export default function RecorderNav(props) {
 										onClick={mountAudio}>
 										<Mic style={{ fontSize: '1.8rem' }} />
 									</Fab>
-								</Tooltip>
+								</BootstrapTooltip>
 								</span>
 								<span
 									className={classes.save}
 									style={{ left: '87%' }}>
-									<Tooltip
-										backgroundcolor='black'
-										title={
-											<span
-												style={{ fontSize: '11px' }}>
-												Export Currently Recorded
-												Chapter
-											</span>
-										}
+									<BootstrapTooltip
+										placement="bottom"
+										style={{ backgroundColor:'black'}}
+										title={<span style={{ fontSize: '10px' }}>
+												<FormattedMessage id="tooltip-exportrecording">
+                                				{(message) =>
+													message
+												}
+												</FormattedMessage>
+												</span>}
 										TransitionComponent={Zoom}>
 										<span>
 										<Fab
@@ -298,7 +326,7 @@ export default function RecorderNav(props) {
 											<BackupIcon style={{ fontSize: '1.8rem' }}/>
 										</Fab>
 										</span>
-									</Tooltip>
+									</BootstrapTooltip>
 								</span>
 								<span
 									style={{
@@ -306,8 +334,14 @@ export default function RecorderNav(props) {
 										left: '96%',
 										position: 'absolute',
 									}}>
-									<Tooltip
-										title='Mic Settings'
+									<BootstrapTooltip
+										title={<span style={{ fontSize: '10px' }}>
+												<FormattedMessage id="tooltip-micsettings">
+                                				{(message) =>
+													message
+												}
+												</FormattedMessage>
+										</span>}
 										TransitionComponent={Zoom}>
 										<IconButton
 											aria-controls='menu-appbar'
@@ -317,7 +351,7 @@ export default function RecorderNav(props) {
 											onClick={openmic}>
 											<SettingsIcon />
 										</IconButton>
-									</Tooltip>
+									</BootstrapTooltip>
 								</span>
 							</Toolbar>
 						</AppBar>

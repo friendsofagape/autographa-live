@@ -114,7 +114,7 @@ class Navbar extends React.Component {
             swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-not-compatible-with-translation-help"], "error");
         }).catch(function(err) {
             // handle any errors
-            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation-audio"], "error");
+            swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation"], "error");
         });
     }
 
