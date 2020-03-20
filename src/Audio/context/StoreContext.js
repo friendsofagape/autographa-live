@@ -1,12 +1,9 @@
 import React, { createContext, Component } from 'react';
-import { default as localforage } from 'localforage';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
 import createPauseData from '../core/createPauseData';
-import mergePause from '../core/mergePause';
-import Loader from '../components/Loader/Loader';
-import * as mobx from "mobx";
+import * as mobx from 'mobx';
 const refDb = require(`${__dirname}/../../util/data-provider`).referenceDb();
 const constants = require('../../util/constants');
 let saveRec = require('../core/savetodir');
@@ -41,7 +38,7 @@ class StoreContextProvider extends Component {
 
 	setPreviousTime = (prevTime) => {
 		this.setState({ previousTime: prevTime });
-	}
+	};
 
 	resetTimer = () => {
 		this.setState({ secondsElapsed: 0 });
@@ -125,10 +122,9 @@ class StoreContextProvider extends Component {
 	};
 
 	startRecording = () => {
-		let joint = mobx.toJS(AutographaStore.AudioJointVerse)
-		let isJoint = (joint.indexOf(this.state.onselect) !== -1)
-		if(isJoint === false )
-		this.setState({ timer: true });
+		let joint = mobx.toJS(AutographaStore.AudioJointVerse);
+		let isJoint = joint.indexOf(this.state.onselect) !== -1;
+		if (isJoint === false) this.setState({ timer: true });
 		this.setState({ record: true });
 		AutographaStore.isRecording = true;
 		AutographaStore.isAudioSave = false;
@@ -141,8 +137,8 @@ class StoreContextProvider extends Component {
 	};
 
 	saveRecord = async (value, event) => {
-		let joint = mobx.toJS(AutographaStore.AudioJointVerse)
-		let isJoint = (joint.indexOf(this.state.onselect) !== -1)
+		let joint = mobx.toJS(AutographaStore.AudioJointVerse);
+		let isJoint = joint.indexOf(this.state.onselect) !== -1;
 		if (this.state.secondsElapsed > 0 && isJoint === false) {
 			let save,
 				mergetemp,
@@ -156,15 +152,16 @@ class StoreContextProvider extends Component {
 				constants.booksList[parseInt(book.bookNumber, 10) - 1];
 			if (this.state.recVerse.indexOf(AutographaStore.vId) !== -1) {
 				this.setState({ timer: false });
-				let FindIndexofverse = this.state.recVerseTime.findIndex((verse) => verse.verse === this.state.onselect);
-				this.state.recVerseTime.map((val,index) => {
-					if(FindIndexofverse === index){
-						previousSeconds = val.totaltime
+				let FindIndexofverse = this.state.recVerseTime.findIndex(
+					(verse) => verse.verse === this.state.onselect,
+				);
+				this.state.recVerseTime.map((val, index) => {
+					if (FindIndexofverse === index) {
+						previousSeconds = val.totaltime;
 					}
-				})
-				console.log(this.state.secondsElapsed)
-				previousSeconds = this.state.secondsElapsed - previousSeconds
-				if(previousSeconds > 0) {
+				});
+				previousSeconds = this.state.secondsElapsed - previousSeconds;
+				if (previousSeconds > 0) {
 					this.state.recVerseTime.splice(FindIndexofverse, 1, {
 						verse: this.state.onselect,
 						totaltime: this.state.secondsElapsed,
@@ -177,13 +174,11 @@ class StoreContextProvider extends Component {
 						this.state.recVerseTime,
 					).then((save) => {
 						if (save) {
-							previousSeconds = undefined
+							previousSeconds = undefined;
 							this.setState({ isLoading: true });
-							this.mergePause(save);
 						}
 					});
-				}
-				else {
+				} else {
 					this.setState({ timer: false });
 					this.setTimer(this.state.previousTime);
 				}
@@ -210,35 +205,34 @@ class StoreContextProvider extends Component {
 				);
 				AutographaStore.recVerse = this.state.recVerse;
 			}
-		}
-		else {
+		} else {
 			this.setState({ timer: false });
 			this.resetTimer();
 		}
 	};
 
-	mergePause = async (save) => {
-		let mergetemp,
-			book = {};
-		let chapter = 'Chapter' + AutographaStore.chapterId;
-		book.bookNumber = AutographaStore.bookId.toString();
-		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
-		if (save) {
-			setTimeout(() => {
-				mergetemp = mergePause(
-					book,
-					chapter,
-					this.state.onselect,
-					this.state.secondsElapsed,
-				).then((mergetemp) => {
-					if (mergetemp) {
-						console.log("Merge and close",mergetemp)
-						this.SetLoader();
-					}
-				});
-			}, 2000);
-		}
-	};
+	// mergePause = async (save) => {
+	// 	let mergetemp,
+	// 		book = {};
+	// 	let chapter = 'Chapter' + AutographaStore.chapterId;
+	// 	book.bookNumber = AutographaStore.bookId.toString();
+	// 	book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
+	// 	if (save) {
+	// 		setTimeout(() => {
+	// 			mergetemp = MergePause(
+	// 				book,
+	// 				chapter,
+	// 				this.state.onselect,
+	// 				this.state.secondsElapsed,
+	// 			);
+	// 			console.log('Merge and close', AutographaStore.MergeStatus);
+	// 			if (AutographaStore.MergeStatus === true) {
+	// 				console.log('Merge and close', mergetemp);
+	// 				this.SetLoader();
+	// 			}
+	// 		}, 2000);
+	// 	}
+	// };
 
 	SetLoader = () => {
 		this.setState({ isLoading: false });
@@ -339,7 +333,7 @@ class StoreContextProvider extends Component {
 					findBook: this.findBook,
 					findChapter: this.findChapter,
 					SetLoader: this.SetLoader,
-					setPreviousTime: this.setPreviousTime
+					setPreviousTime: this.setPreviousTime,
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

@@ -210,7 +210,6 @@ export default function RecorderNav(props) {
 	};
 	return (
 		<div>
-			{(isLoading === true) ? (<Loader />) : "" }
 			{props.isOpen.isOpen && (
 				<React.Fragment>
 					<Slide
@@ -264,7 +263,7 @@ export default function RecorderNav(props) {
 								</span>
 								<span>
 								<Tooltip
-									arrow
+									arrow='true'
 									title='Turn-Off Recording Mode'
 									TransitionComponent={Zoom}>
 									<Fab

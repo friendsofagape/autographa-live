@@ -5,7 +5,7 @@ import BottomBar from './components/BottomBar';
 import Player from './components/AudioPlayer';
 // import TexttoSpeech from './components/TexttoSpeech/TexttoSpeech';
 import Timer from './components/Timer';
-import mergePause from './core/mergePause';
+import MergePause from './core/mergePause';
 
 const AudioApp = (props) => {
 	return (
@@ -15,6 +15,7 @@ const AudioApp = (props) => {
 				<RecorderNav isOpen={props} />
 				<Player />
 				<Timer />
+				<MergePause />
 			</StoreContextProvider>
 		</div>
 	);
