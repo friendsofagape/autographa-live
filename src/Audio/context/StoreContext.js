@@ -166,6 +166,9 @@ class StoreContextProvider extends Component {
 						verse: this.state.onselect,
 						totaltime: this.state.secondsElapsed,
 					});
+					this.setState({
+						totalTime: this.state.totalTime + previousSeconds,
+					});
 					save = await createPauseData(
 						value,
 						book,

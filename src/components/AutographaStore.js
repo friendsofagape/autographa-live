@@ -95,5 +95,6 @@ export class AutographaStore {
   @observable Tab=null
   @observable recordedChapters = []
   @observable AudioJointVerse = []
+  @observable ChapterComplete = false
 }
 export default new AutographaStore();

@@ -122,7 +122,11 @@ export default function RecorderNav(props) {
 					localStorage.setItem(BookName, existing.toString());
 				}
 				setdone(true);
-			} else setdone(false);
+				AutographaStore.ChapterComplete = true
+			} else {
+				setdone(false);
+				AutographaStore.ChapterComplete = false
+			}
 			let existingValue = localStorage.getItem(BookName);
 			// If no existing data, create an array
 			// Otherwise, convert the localStorage string to an array
@@ -180,6 +184,13 @@ export default function RecorderNav(props) {
 			`Chapter${AutographaStore.chapterId}`,
 			`output.json`,
 		);
+		var outPath = path.join(
+			app.getPath('userData'),
+			'recordings',
+			BookName,
+			`Chapter${AutographaStore.chapterId}`,
+			`${BookName}.txt`,
+		);
 		if (fs.existsSync(newfilepath)) {
 			fs.readFile(
 				newfilepath,
@@ -196,8 +207,10 @@ export default function RecorderNav(props) {
 							setRecverse(val.verse);
 							fetchTimer(val.totaltime);
 							updateJSON(val);
+							
 						}
 					}
+					
 				},
 			);
 		}
