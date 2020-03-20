@@ -6,21 +6,26 @@ import * as usfm_import from "../util/usfm_import";
 import Gitea from "../helpers/giteaAdapter"
 import { Panel,  FormGroup, Checkbox } from 'react-bootstrap/lib';
 import xml2js from 'xml2js';
+import Paratext from '../helpers/paratextAdapter';
+import { autoUpdater } from 'electron';
 const db = require(`${__dirname}/../util/data-provider`).targetDb();
+const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 const booksCodes = require(`${__dirname}/../util/constants.js`).bookCodeList;
 const booksNames = require(`${__dirname}/../util/constants.js`).booksList;
 const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
 
-
 class ProjectListRow extends React.Component {
 	
 	constructor(props){
 		super(props);
 		this.state = {
+			userName: '',
+			branchList: [],
 			bookList: [],
 			selectedBook: [],
+			selectedBranch: '',
 			importText: AutographaStore.currentTrans["btn-import"],
 			isImporting: false,
 			open: false
@@ -44,12 +49,29 @@ class ProjectListRow extends React.Component {
         // });
 	}
 	selectBook = (projId, bookId, obj) => {
-		if(obj.target.checked) {
-			this.state.selectedBook.push(bookId)
-			AutographaStore.paratextBook[projId] = this.state.selectedBook
-		}else{
-			this.setState({selectedBook: this.state.selectedBook.filter(id => id !== bookId)})
-			AutographaStore.paratextBook[projId] = this.state.selectedBook
+		console.log(projId, bookId, obj.target.checked)
+		if (this.props.syncAdapter instanceof Gitea) {
+			if(obj.target.checked) {
+				this.state.selectedBook.push(bookId)
+				AutographaStore.door43Book[projId] = this.state.selectedBook
+			}else{
+				let filteredArray = this.state.selectedBook.map(id => {
+					if (id !== bookId) {
+						return id
+					}
+				}).filter(id => id);
+    			this.setState({selectedBook: filteredArray});
+				AutographaStore.door43Book[projId] = filteredArray
+			}
+		}
+		else{
+			if(obj.target.checked) {
+				this.state.selectedBook.push(bookId)
+				AutographaStore.paratextBook[projId] = this.state.selectedBook
+			}else{
+				this.setState({selectedBook: this.state.selectedBook.filter(id => id !== bookId)})
+				AutographaStore.paratextBook[projId] = this.state.selectedBook
+			}
 		}
 	}
 	resetLoader = () => {
@@ -57,17 +79,101 @@ class ProjectListRow extends React.Component {
 	    this.setState({importText: AutographaStore.currentTrans["btn-import"], isImporting: false})
     };
 
+	getGiteaBranches = async (projectId, repoName) => {
+		console.log(projectId, repoName);
+		if(!this.state.open){
+			this.props.showLoader(true);
+			try{
+				let branchesList = await this.props.syncAdapter.getBranchsList(projectId, repoName);
+				console.log("branchesList----->",branchesList);
+				branchesList = branchesList.map(branch => {
+					// console.log(branch,"**********",branch.branchzid);
+					// if (booksCodes.includes(book.id)){
+					// console.log(branch,"-----",branch.branchz,"-----");
+					return branch
+					// }
+				}).filter(branch => branch);
+				//fetching book data done  and hiding the loader
+				this.props.showLoader(false);
+				this.setState({branchList: branchesList, open: true })
+			}catch(err){
+
+			}
+			finally {
+				this.props.showLoader(false);
+			}
+		}else{
+			this.setState({ open: false })
+		}
+		console.log(this.state.branchList[0].branchz);
+		// if((this.state.branchList).length < 2){
+			// console.log(projectId, repoName, this.state.branchList[0].branchzid[0])
+			this.setState({ open: false })
+			this.getGiteaBooks(projectId, repoName, (this.state.branchList[0].branchz[0]))
+		// }
+		// else{
+		// 	this.setState({ open: false })
+		// 	this.getGiteaBooks(projectId, repoName, this.state.branchList[0].branchzid)
+		// }
+	};
+
+	getGiteaBooks = async (userName, projectName, branchName) => {
+		this.setState({ userName: userName });
+		console.log("getGiteaBooks",userName,branchName, projectName,this.state.open);
+		// if(!this.state.open){
+			console.log("Yooooooo")
+			this.props.showLoader(true);
+			try{
+				let booksList = await this.props.syncAdapter.getBooksList( userName, projectName, branchName);
+				// console.log("bookList =---->",booksList);
+				this.setState({selectedBranch: branchName});
+				console.log("selectedBranch----------->",this.state.selectedBranch);
+
+				let folder = "",prevFolder = "";
+				let books = [];
+				for (let i = 0; i < (booksList.length); i++) {
+					if (booksList[i].match(/\.(usfm|sfm)/i)){
+						// console.log(booksList[i]);
+						if (booksList[i].match(/(\/)/g)){
+							folder = (booksList[i].replace(/\/(?:.(?!\/))+$/g,""));
+							if (folder !== prevFolder){
+								prevFolder = folder;
+								books.push(folder);
+							}
+							// books.push(booksList[i].replace(/(.*)(\/)/g,""));
+						}
+						// else{
+						books.push(booksList[i]);							
+						// }
+					}
+				}
+				// console.log("booksList--->",books);
+				//fetching book data done  and hiding the loader
+				this.props.showLoader(false);
+				this.setState({bookList: books, open: true })
+
+			}catch(err){
+
+			}
+			finally {
+				this.props.showLoader(false);
+			}
+		// }else{
+		// 	this.setState({ open: false })
+		// }	
+    };
+
 	importBook = (projectId) => {
 		//comment for Gitea now
-
-		// if (this.props.syncAdapter instanceof Gitea) {
-		// 	return this.importBookGitea(projectId);
-		// } else {
-		// 	return this.importBookParatext(projectId);
-		// }
+		console.log(this.props.syncAdapter,projectId);
+		if (this.props.syncAdapter instanceof Gitea) {
+			return this.importBookGitea(projectId);
+		} else {
+			return this.importBookParatext(projectId);
+		}
 
 		//need to remove and uncomment above code when gitea will work fine
-		return this.importBookParatext(projectId);
+		// return this.importBookParatext(projectId);
 
 	};
 
@@ -217,10 +323,13 @@ class ProjectListRow extends React.Component {
   	};
 
     importBookGitea = async (projectId) => {
+		
+		console.log("Inside Gitea Import", AutographaStore.door43Book);
+		console.log(this.state.selectedBook)
         const langCode = 'NA';
-        const langVersion = 'NA';
+		const langVersion = 'NA';
+		let localPath = [];
         const currentTrans = AutographaStore.currentTrans;
-
         if (!await swal({
             title: currentTrans["label-warning"],
             text: currentTrans["label-override-text"],
@@ -232,35 +341,128 @@ class ProjectListRow extends React.Component {
         })) {
             return;
         }
+		console.log("After Return")
+		this.props.showLoader(true);
+		console.log(this.state.selectedBranch);
+		let branch = this.state.selectedBranch;
+		let projectName = this.props.project.proj[0];
 
-        this.props.showLoader(true);
-
+		// This function is for backing up the current data in Translation pane
+		// this.backupTranslation(projectId, branch, projectName);
+		console.log('gitea_projects',this.endpoint,this.state.userName,this.props.syncAdapter.endpoint);
+		const folderPath = path.join(app.getPath('userData'), 'gitea_projects',this.props.syncAdapter.endpoint,this.state.userName,projectName,branch);
+		console.log(folderPath);
+		// const dir = path.join(folderPath, projectName);
+		let filePath = "";
         try {
-            const localPath = await this.props.syncAdapter.clone(projectId);
-
-            const results = await usfm_import.importTranslation(localPath, langCode, langVersion);
-            const importedBooks = results.map(r => r.id);
-
-            this.resetLoader();
-            await swal(currentTrans["btn-import"], this.makeSyncReport(importedBooks), "success");
+			let doc = await db.get('targetBible');
+			let bookData = "";
+			console.log(doc)
+			console.log("In try");
+			try{
+				console.log(AutographaStore.door43Book[projectId]);
+				Promise.all(AutographaStore.door43Book[projectId].map(async(bookId) => {
+					console.log("Try 350");
+					bookData = await this.props.syncAdapter.getDoorBookData(projectId, bookId, branch, projectName);
+					// console.log("bookData--->",bookData);
+					if (!fs.existsSync(folderPath)){
+						fs.mkdirSync(folderPath, { recursive: true }, (err) => {
+							if (err) throw err;
+						});
+					}
+					// if (!fs.existsSync(dir)){
+					// 	fs.mkdirSync(dir);
+					// }
+					if(bookData !== undefined || bookData !== null){
+						// if (!fs.existsSync(path.join(dir, branch))){
+						// 	fs.mkdirSync(path.join(dir, branch));
+						// }
+						console.log(projectId, bookId,bookId[0], branch, projectName, bookData);
+						// To check whether the file is inside a directory in gitea
+						if (bookId.match(/(\/)/g)){
+							let folderSplit = bookId.split("\/");
+							console.log(folderSplit);
+							let folder = "";
+							for (let i = 0; i <= (folderSplit.length)-2; i++) {
+								folder = path.join(folder,folderSplit[i]);
+								console.log(folder);
+							}
+							let fileName = folderSplit[(folderSplit.length)-1];
+							// let folder = (bookId.replace(/\/(?:.(?!\/))+$/g,""));
+							// let fileName = (bookId.replace(/(.*)(\/)/g,""));
+							console.log(folder,fileName);
+							if (!fs.existsSync(path.join(folderPath, folder))){
+								fs.mkdirSync(path.join(folderPath, folder), { recursive: true }, (err) => {
+									if (err) throw err;
+								});
+							}
+							fs.writeFileSync(path.join(folderPath, folder, fileName), bookData, 'utf8');
+							filePath = path.join(folderPath, folder, fileName);
+							console.log("ilepth==",filePath);
+							localPath.push(filePath);
+							filePath = "";
+							
+							// if(fs.existsSync(folderPath)){
+							// 	if(!fs.existsSync(path.join(app.getPath('userData'), 'gitea_projects', projectName, branch, folder))){
+							// 		fs.mkdirSync(path.join(app.getPath('userData'), 'gitea_projects', projectName, branch, folder));
+							// 	}
+							// 	fs.writeFileSync(path.join(app.getPath('userData'), 'gitea_projects', projectName, branch, folder, fileName), bookData, 'utf8');
+							// 	filePath = path.join(app.getPath('userData'), 'gitea_projects', projectName, branch, folder, fileName);
+							// 	console.log("ilepth==",filePath);
+							// 	localPath.push(filePath);
+							// }
+						}
+						else {
+							if (!fs.existsSync(folderPath)){
+								fs.mkdirSync(folderPath, { recursive: true }, (err) => {
+									if (err) throw err;
+								});
+							}
+							fs.writeFileSync(path.join(folderPath, `${bookId}`), bookData, 'utf8');
+							filePath = path.join(folderPath, `${bookId}`);
+							console.log("ilepth=elseif=",filePath);
+							localPath.push(filePath);
+							filePath = "";
+						}
+					}
+					console.log("Before get report",localPath);
+					// await this.getReport(doc, filePath);
+				})).then(async() => {
+					console.log(localPath, doc.targetLang, doc.targetVersion)
+					// const results = await usfm_import.importTranslationFiles(localPath, doc.targetLang, doc.targetVersion);
+					// console.log("results",results);
+					// const importedBooks = results.map(r => r.id);
+					usfm_import.importTranslationFiles(localPath, doc.targetLang, doc.targetVersion)
+					.then(async(res)=> {
+						// console.log(res)
+						this.resetLoader();
+						await swal(currentTrans["btn-import"], this.makeSyncReport(res), "success");
+					}).finally(()=>{
+						window.location.reload();
+					});
+				});			
+			} catch(err) {
+				this.resetLoader();
+				await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+			}
         } catch(err) {
-            this.resetLoader();
-            await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
+			this.resetLoader();
+            await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-enter-translation"])
         }
 
-        window.location.reload();
+        // window.location.reload();
     };
 
     uploadBook = async(projectId, projectName) => {
 		//comment for Gitea now
-        // if (this.props.syncAdapter instanceof Gitea) {
-        //     return await this.uploadBookGitea(projectId, projectName);
-        // } else {
-        //     return await this.uploadBookParatext(projectId, projectName);
-		// }
+        if (this.props.syncAdapter instanceof Gitea) {
+            return await this.uploadBookGitea(projectId, projectName);
+        } else {
+            return await this.uploadBookParatext(projectId, projectName);
+		}
 
 		//need to uncomment above code and remove this when gitea will work fine
-		return await this.uploadBookParatext(projectId, projectName);
+		// return await this.uploadBookParatext(projectId, projectName);
     };
 
     uploadBookGitea = async(projectId, projectName) => {
@@ -278,19 +480,72 @@ class ProjectListRow extends React.Component {
             return;
         }
 
-        this.props.showLoader(true);
-
+		this.props.showLoader(true);
+		let branch = this.state.selectedBranch;
+		let repo = this.props.project.proj[0];
+		// updateDoorBookData(projectId, repo, contents, bookId);
         try {
-            const localPath = await this.props.syncAdapter.clone(projectId);
-            const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
-            const writtenBookIds = writtenBooks.map(b => b.bookNumber);
-            this.resetLoader();
-            await swal(currentTrans["dynamic-msg-book-exported"], this.makeSyncReport(writtenBookIds), "success");
+			Promise.all(AutographaStore.door43Book[projectId].map(async(bookId) => {
+				let bookData = await this.props.syncAdapter.getDoorBookData(projectId, bookId, branch, projectName);
+				// console.log(bookData);
+				let book = {};
+            	let bookArray = {'GEN':"1",'EXO':"2",'LEV':"3",'NUM':"4",'DEU':"5",'JOS':"6",'JDG':"7",'RUT':"8",'1SA':"9",'2SA':"10",'1KI':"11",'2KI':"12",'1CH':"13",'2CH':"14",'EZR':"15",'NEH':"16",'EST':"17",'JOB':"18",'PSA':"19",'PRO':"20",'ECC':"21",'SNG':"22",'ISA':"23",'JER':"24",'LAM':"25",'EZK':"26",'DAN':"27",'HOS':"28",'JOL':"29",'AMO':"30",'OBA':"31",'JON':"32",'MIC':"33",'NAM':"34",'HAB':"35",'ZEP':"36",'HAG':"37",'ZEC':"38",'MAL':"39",'MAT':"40",'MRK':"41",'LUK':"42",'JHN':"43",'ACT':"44",'ROM':"45",'1CO':"46",'2CO':"47",'GAL':"48",'EPH':"49",'PHP':"50",'COL':"51",'1TH':"52",'2TH':"53",'1TI':"54",'2TI':"55",'TIT':"56",'PHM':"57",'HEB':"58",'JAS':"59",'1PE':"60",'2PE':"61",'1JN':"62",'2JN':"63",'3JN':"64",'JUD':"65",'REV':"66"}
+				let usfmBibleBook = false,
+					foundBook = false;
+				let validLineCount = 0;
+				var content = bookData.split("\n");
+				console.log("content",content);
+				content.map(async(line) => {
+					// Logic to tell if the input file is a USFM book of the Bible.
+					if (!usfmBibleBook || !foundBook) {
+						if (validLineCount > 5) {
+							this.resetLoader();
+            				await swal(currentTrans["dynamic-msg-error"], currentTrans["usfm-bookid-missing"], "error");
+							return null
+						}
+						validLineCount++;
+						var splitLine = line.split(/ +/);
+						console.log(splitLine);
+						if (!line) {
+							validLineCount--;
+							//Do nothing for empty lines.
+						} else if (splitLine[0] === '\\id') {
+							if (booksCodes.includes(splitLine[1].toUpperCase()))
+								usfmBibleBook = true;
+								book.bookCode = splitLine[1].toUpperCase();
+						} else if (splitLine[0] === '\\mt') {
+							book.bookName = splitLine[1];
+							foundBook = true;
+						} else if (splitLine[0] === '\\c') {
+							// Didn't get book name (\mt) and enter into this condition
+							// then this file doesn't have book name.
+							foundBook = true;
+						}
+					}
+				});
+				
+				if (book.bookCode) {
+					// let bookIndex = booksCodes.findIndex((book) => book === bookCode);
+					book.bookNumber = bookArray[book.bookCode];
+					book.bookName = (book.bookName) === undefined ? book.bookCode : book.bookName;
+					const usfmDoc = await usfm_export.toUsfmDoc(book, false);
+					console.log(usfmDoc);
+					// db.get((bookIndex + 1).toString()).then( async (doc) => {
+					// 	console.log(doc)
+					// });
+					// updateDoorBookData(projectId, repo, contents, bookId, branch);
+				}
+			}));
+            // const localPath = await this.props.syncAdapter.clone(projectId);
+            // const writtenBooks = await usfm_export.allBooksToUsfm(localPath);
+            // const writtenBookIds = writtenBooks.map(b => b.bookNumber);
+            // this.resetLoader();
+            // await swal(currentTrans["dynamic-msg-book-exported"], this.makeSyncReport(writtenBookIds), "success");
         } catch(err) {
             this.resetLoader();
             await swal(currentTrans["dynamic-msg-error"], currentTrans["dynamic-msg-went-wrong"], "error");
         }
-    };
+	};
 
     uploadBookParatext = async(projectId, projectName) => {
         const dir = path.join(app.getPath('userData'), 'paratext_projects');
@@ -525,21 +780,43 @@ class ProjectListRow extends React.Component {
     };
 
   	render (){
-  		const {project, index} = this.props;
+		  const {project, index} = this.props;
 	  		return (
 	  			<Panel eventKey={index+1}>
 				    <Panel.Heading >
-                      <Panel.Title toggle onClick = {() => {this.getBooks(project.projid[0],  project.proj[0])}}>{ project.proj[0] }</Panel.Title>
+					{(this.props.syncAdapter instanceof Gitea) ? 
+						<div style={{display:"flex"}}>
+							<Panel.Title toggle onClick = {() => {this.getGiteaBranches(project.projid[0],  project.proj[0])}}>{ project.proj[0] }</Panel.Title> 
+							{
+							(this.state.branchList).length > 1 ? 
+								<select style={{marginLeft: "66px"}} value = {this.state.selectedBranch} onChange = {(e) => { this.getGiteaBooks(project.projid[0], project.proj[0], e.target.value); console.log(JSON.stringify(e.target.value)); }} >{
+									(this.state.branchList).map((branch,key) => (
+										<option key={key} value={branch.branchz}>{branch.branchz}</option>
+										// <p key={key} toggle onClick = {() => {this.getGiteaBooks(project.projid[0], project.proj[0], branch.branchzid)}}>{branch.branchz}</p>
+									))}
+								</select>
+							:
+							null							
+						}
+						</div>:
+					 <Panel.Title toggle onClick = {() => {this.getBooks(project.projid[0],  project.proj[0])}}>{ project.proj[0] }</Panel.Title>
+					 }
+                      
                       {/*<Panel.Title toggle>{ project.proj[0] }</Panel.Title>*/}
 				    </Panel.Heading>
 				    <Panel.Body collapsible>
 				    	<FormGroup id="project-list">
-						    {
-						    	this.state.bookList.map((res, i) => {
-						    		return(<Checkbox id={res} inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res}</Checkbox>)
-								})
-								
-							}
+						{
+							this.state.bookList.map((res, i) => {
+								// Paratext bookList doesn't have file extension
+								if (res.match(/\.(usfm|sfm)/i) || (this.props.syncAdapter instanceof Paratext)){
+									return(<Checkbox id={res} inline key={i} value={res} onChange={(e) => {this.selectBook(project.projid[0], res, e)}}>{res.replace(/(.*)(\/)/g,"")}</Checkbox>)
+								}
+								else{
+									return(<div key={i}><b>{res}</b></div>)
+								}
+							})
+						}
 				    	</FormGroup>
 						{
 							/*(this.props.syncAdapter instanceof Gitea || Object.keys(this.state.bookList).length > 0)*/  
