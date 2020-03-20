@@ -109,9 +109,10 @@ const mergeAudios = async(book, chapter, versenum,) => {
                         }
                     })
                     .then(() => {
+                        const currentTrans = AutographaStore.currentTrans;
                         let filePath = path.join(filepath[0],'recordings',book.bookName);
                         AutographaStore.isAudioSave = true
-                        swal("Record Export Success!", `on Directory: ${filePath}`, "success");
+                        swal(currentTrans["dynamic-msg-export-recording"], currentTrans["label-folder-location"]`: ${filePath}`, "success");
                     })
 					.catch((error) => {
 						// => Error Message

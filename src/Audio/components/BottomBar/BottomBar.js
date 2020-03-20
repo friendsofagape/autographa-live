@@ -27,6 +27,7 @@ import FontSlider from '../FontSlider/FontSlider';
 import RecorderNav from '../RecorderNav';
 import { Box, Tooltip, Zoom, useTheme } from '@material-ui/core';
 import AudioAnalyser from '../Visualization/AudioAnalyser';
+import { FormattedMessage } from 'react-intl';
 const { app } = require('electron').remote;
 const fs = require('fs');
 const constants = require('../../../util/constants');
@@ -182,11 +183,11 @@ function BottomBar(props) {
 		saveRecord(recordedBlob)
 	}
 	function deleteRecordedVerse() {
+		const currentTrans = AutographaStore.currentTrans;
 		if (AutographaStore.isWarning === true) {
 			swal({
-				title:
-					'Are you sure you want to Delete the Recording of this verse?',
-				text: 'Once deleted, you will not be able to recover!',
+				title: currentTrans["dynamic-msg-delete-recording"],
+				text: currentTrans["dynamic-msg-delete-undonemsg"],
 				icon: 'warning',
 				buttons: true,
 				dangerMode: true,
@@ -245,17 +246,11 @@ function BottomBar(props) {
 					AutographaStore.isWarning = false;
 					AutographaStore.reRecord = false;
 					AutographaStore.currentSession = true;
-					swal(
-						`Verse${AutographaStore.vId} recording has been deleted!`,
-						{
-							icon: 'success',
-						},
-					);
+					swal(currentTrans["dynamic-msg-successfully-deleted"], { icon: 'success'});
 					resetVal(AutographaStore.vId);
 				} else {
 					AutographaStore.isWarning = true;
 					AutographaStore.reRecord = false;
-					swal(`Verse${AutographaStore.vId} recording is safe`);
 				}
 			});
 		}
@@ -387,8 +382,10 @@ function BottomBar(props) {
 									className={classes.bottomIcons}
 									style={{ right: '50%' }}>
 									<span>
+									<FormattedMessage id="tooltip-previousverse">
+                                		{(message) =>
 										<Tooltip
-											title='Goto Previous Verse'
+											title= {message}
 											TransitionComponent={Zoom}>
 											<span>
 											<Fab
@@ -402,6 +399,8 @@ function BottomBar(props) {
 											</Fab>
 											</span>
 										</Tooltip>
+									}
+									</FormattedMessage>
 									</span>
 									<span>
 										<Fab
@@ -411,8 +410,10 @@ function BottomBar(props) {
 											className={classes.shadow}>
 											""
 										</Fab>
+										<FormattedMessage id="tooltip-start/stop">
+                                		{(message) =>
 										<Tooltip
-											title='Start/Stop Recording'
+											title={message}
 											TransitionComponent={Zoom}>
 											<span>
 											<Fab
@@ -432,6 +433,8 @@ function BottomBar(props) {
 											</Fab>
 											</span>
 										</Tooltip>
+										}
+										</FormattedMessage>
 									</span>
 								</span>
 								<span
@@ -455,8 +458,10 @@ function BottomBar(props) {
 													}ms`,
 												}}
 												unmountOnExit>
+												<FormattedMessage id="tooltip-nextverse">
+                                				{(message) =>
 												<Tooltip
-													title='Goto Next Verse'
+													title={message}
 													TransitionComponent={Zoom}>
 													<span>
 													<Fab
@@ -472,7 +477,8 @@ function BottomBar(props) {
 														/>
 													</Fab>
 													</span>
-												</Tooltip>
+												</Tooltip>}
+												</FormattedMessage>
 											</Zoom>
 										</span>
 									)}
@@ -489,8 +495,10 @@ function BottomBar(props) {
 													}ms`,
 												}}
 												unmountOnExit>
+												<FormattedMessage id="tooltip-deleterecording">
+                                				{(message) =>
 												<Tooltip
-													title='Delete Current Verse'
+													title={message}
 													TransitionComponent={Zoom}>
 													<span>
 													<Fab
@@ -512,7 +520,8 @@ function BottomBar(props) {
 														/>
 													</Fab>
 													</span>
-												</Tooltip>
+												</Tooltip>}
+												</FormattedMessage>
 											</Zoom>
 										)}
 									</span>
