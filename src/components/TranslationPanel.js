@@ -348,7 +348,7 @@ class TranslationPanel extends React.Component {
 			</span>
             </React.Fragment>
             :
-            (<ContextMenuTrigger id={(i+1) === 1 ? undefined : (AutographaStore.jointVerse[i] === undefined ? "true" : "false")} verseId = {parseInt(i,10)+1}  collect = {props => props}>
+            (<ContextMenuTrigger id={(AutographaStore.jointVerse[i] === undefined ? "true" : "false")} disable={(i+1) === 1 ? true : false } verseId = {parseInt(i,10)+1}  collect = {props => props}>
             <span className={ AudioMount ? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
 			<span contentEditable={AutographaStore.jointVerse[i] === undefined ? true : false} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
