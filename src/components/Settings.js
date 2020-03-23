@@ -110,7 +110,14 @@ class SettingsModal extends React.Component {
 			console.log(err);
 		})
 		this.loadSetting();
-	}
+    }
+    
+    componentDidUpdate(){
+        const {langCode, langVersion, backupFrequency} = this.state.settingData;
+        if (langCode && langVersion && backupFrequency !== "none") {
+            auto_export.initializeBackUp();
+        }
+    }
 
 	loadSetting = () => {
 		const settingData = this.state.settingData;
@@ -247,15 +254,15 @@ class SettingsModal extends React.Component {
 
 	saveSetting = () => {
 		if (this.target_setting() === false) return;
-    const currentTrans = AutographaStore.currentTrans;
+        const currentTrans = AutographaStore.currentTrans;
 		const {langCode, langVersion, folderPath, backupFrequency} = this.state.settingData;
 		const settingData = { 
 		_id: 'targetBible',
 		targetLang: langCode.toLowerCase(),
 		targetVersion: langVersion,
 		targetPath: folderPath,
-    langScript: AutographaStore.scriptDirection.toUpperCase(),
-    backupFrequency: backupFrequency
+        langScript: AutographaStore.scriptDirection.toUpperCase(),
+        backupFrequency: backupFrequency
 		}
 		db.get('targetBible').then((doc) => {
 		settingData._rev = doc._rev;
@@ -269,10 +276,6 @@ class SettingsModal extends React.Component {
 			swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-went-wrong"], "success");
 		});
     });
-
-    if (langCode && langVersion && backupFrequency !== "none") {
-      auto_export.initializeBackUp();
-    }
 	}
 
 	openFileDialogSettingData = (event) => {
@@ -1106,7 +1109,7 @@ class SettingsModal extends React.Component {
                           <FormattedMessage id="label-auto-backup" />
                           </label>
                           <RadioButtonGroup
-                            valueSelected={backupFrequency}
+                            valueSelected={backupFrequency === "" ? "daily" : backupFrequency}
                             name="autobackup"
                             style={{display: "flex", marginBottom:"6%", marginTop: "8px"}}
                             onChange={(event, value) => this.onChangeBackupSetting(value)}

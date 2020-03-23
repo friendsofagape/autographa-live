@@ -163,13 +163,13 @@ function getTimeStamp(date) {
         minute = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes(),
         second = (date.getSeconds() < 10 ? '0' : '') + date.getSeconds();
 
-    return (months[parseInt(month)-1] + " " + day + "-" + year.toString() + "_" + hour + ":" + minute + ":" + second).toString();
+    return (months[parseInt(month)-1] + " " + day + "-" + year.toString() + "_" + hour + "" + minute + "" + second).toString();
 }
 
 function calculateDays(currDate, preDate) 
  {
-    var currTime = new Date(currDate[0] + " " + currDate[1]);
-    var preTime = new Date(preDate[0] + " " + preDate[1]);
+    var currTime = new Date(currDate[0] + " " + currDate[1].toString().replace(/\B(?=(\d{2})+(?!\d))/g, ":"));
+    var preTime = new Date(preDate[0] + " " + preDate[1].toString().replace(/\B(?=(\d{2})+(?!\d))/g, ":"));
     var difference = Math.abs(currTime.getTime() - preTime.getTime()) / 1000;
     // var hour = Math.floor(difference / 3600) % 24;
     // var minutes = Math.floor(difference / 60) % 60;
