@@ -1,6 +1,7 @@
 import ConcatAudio from './ConcatAudio';
 import swal from 'sweetalert';
 import AutographaStore from '../../components/AutographaStore';
+import { FormattedMessage } from 'react-intl';
 const { app } = require('electron').remote;
 const fs = require('fs');
 const path = require('path');
@@ -13,7 +14,6 @@ const mergeAudios = async(book, chapter, versenum,) => {
         let doc = await db.get('targetBible');
         let filepath = doc.targetPath
         let outputmetaData = [];
-        console.log(AutographaStore.ChapterComplete)
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
                 let audiomp3 =[];
@@ -108,16 +108,15 @@ const mergeAudios = async(book, chapter, versenum,) => {
                             }
                         }
                     })
-                    .then(() => {
+                    .catch((error) => {
+						// => Error Message
+						console.log('error', error);
+					}).finally(() => {
                         const currentTrans = AutographaStore.currentTrans;
                         let filePath = path.join(filepath[0],'recordings',book.bookName);
                         AutographaStore.isAudioSave = true
-                        swal(currentTrans["dynamic-msg-export-recording"], currentTrans["label-folder-location"]`: ${filePath}`, "success");
+                        swal({title: currentTrans["dynamic-msg-export-recording"], text: `${currentTrans["label-folder-location"]} : ${filePath}` ,  icon: 'success'})
                     })
-					.catch((error) => {
-						// => Error Message
-						console.log('error', error);
-					});
 				audio.notSupported(() => {
 					console.log('Handle no browser support');
 					// Handle no browser support
