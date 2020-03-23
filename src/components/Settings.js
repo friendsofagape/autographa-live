@@ -1106,7 +1106,7 @@ class SettingsModal extends React.Component {
                           <FormattedMessage id="label-auto-backup" />
                           </label>
                           <RadioButtonGroup
-                            valueSelected={backupFrequency}
+                            valueSelected={backupFrequency === "" ? "daily" : backupFrequency}
                             name="autobackup"
                             style={{display: "flex", marginBottom:"6%", marginTop: "8px"}}
                             onChange={(event, value) => this.onChangeBackupSetting(value)}
