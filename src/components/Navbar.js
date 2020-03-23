@@ -743,9 +743,11 @@ class Navbar extends React.Component {
             <div>
                 <Modal show={AutographaStore.showModalBooks} onHide = {close} id="tab-books">
                     <Modal.Header closeButton>
-                        <Modal.Title>Book and Chapter</Modal.Title>
+                        <Modal.Title><FormattedMessage id="label-book-chapter" /></Modal.Title>
                     </Modal.Header>
                     <Modal.Body   style={{ top:'-38px' }}>
+                    <FormattedMessage id="btn-save" >
+                    {(chaptertrans) =>
                         <Tabs 
                             animation={false}
                             activeKey={AutographaStore.activeTab}
@@ -813,14 +815,15 @@ class Navbar extends React.Component {
                                 </div>
                                 <div className= "clearfix"></div>
                             </Tab>)}
-                            <Tab eventKey={2} title="Chapters" > 
+                            <Tab eventKey={2} title={AutographaStore.AudioMount? chaptertrans: 'Chapter'} > 
                                 <div className="chapter-no">
                                     <ul id="chaptersList">
                                     { chapterList }
                                     </ul>
                                 </div>
                             </Tab>
-                        </Tabs>
+                        </Tabs>}
+                        </FormattedMessage>
                     </Modal.Body>
                 </Modal>
                 <SettingsModal show={AutographaStore.showModalSettings} showLoader = {this.setLoader} loadData={this.loadData} />

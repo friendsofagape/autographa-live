@@ -390,7 +390,7 @@ function BottomBar(props) {
 											<span>
 											<Fab
 												aria-label='previous'
-												disabled={isLoading===true}
+												disabled={isLoading===true || onselect === 1}
 												className={classes.fab}
 												onClick={selectPrev}>
 												<SkipPreviousIcon
@@ -466,7 +466,7 @@ function BottomBar(props) {
 													<span>
 													<Fab
 														aria-label='next'
-														disabled={isLoading===true}
+														disabled={isLoading===true || (onselect === AutographaStore.chunkGroup.length)}
 														className={classes.fab}
 														onClick={selectNext}>
 														<SkipNextIcon
@@ -538,7 +538,7 @@ function BottomBar(props) {
 									className={classes.totaltime}
 									style={{ left: '81%' }}>
 									<Box fontSize={13} fontStyle='italic'>
-										Total time recorded:{' '}
+									<FormattedMessage id="label-total-chapter-length"/>{' '}
 										{formattedSeconds(totalTime)}
 									</Box>
 								</span>
@@ -549,6 +549,9 @@ function BottomBar(props) {
 										backgroundcolor='black'
 										title='Save'
 										TransitionComponent={Zoom}>
+										<span>
+										<FormattedMessage id="btn-save" >
+                                		{(message) =>
 										<Fab
 											variant='extended'
 											size='large'
@@ -560,8 +563,10 @@ function BottomBar(props) {
 												borderRadius: '10px',
 											}}
 											aria-label='Save'>
-											Save
-										</Fab>
+											{message}
+										</Fab>}
+										</FormattedMessage>
+										</span>
 									</Tooltip>
 								</span>
 							</Toolbar>

@@ -4,9 +4,9 @@ import { Typography, AppBar, Slide, Zoom, Tooltip } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import BackupIcon from '@material-ui/icons/Backup';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Mic from '@material-ui/icons/Mic';
+import CloseIcon from '@material-ui/icons/Close';
 import Fab from '@material-ui/core/Fab';
 import BookIcon from '@material-ui/icons/Book';
 import AutographaStore from '../../../components/AutographaStore';
@@ -48,8 +48,7 @@ const useStyles = makeStyles((theme) => ({
 		color: 'red',
 	},
 	mic: {
-		background: '#f9f1f1',
-		right: 260,
+		right: -17,
 	},
 	TexttoSpeech: {
 		marginLeft: 20,
@@ -226,6 +225,7 @@ export default function RecorderNav(props) {
 		const { shell } = require('electron');
 		shell.openExternal('ms-settings:sound');
 		shell.openExternal('x-apple.systempreferences:')
+
 	};
 	return (
 		<div>
@@ -297,9 +297,10 @@ export default function RecorderNav(props) {
 									<Fab
 										aria-label="add"
 										size='medium'
+										disabled={isLoading===true}
 										className={classes.mic}
 										onClick={mountAudio}>
-										<Mic style={{ fontSize: '1.8rem' }} />
+										<CloseIcon style={{ fontSize: '1.8rem' }} />
 									</Fab>
 								</BootstrapTooltip>
 								</span>
@@ -323,15 +324,14 @@ export default function RecorderNav(props) {
 											aria-label='Export'
 											disabled={isLoading===true}
 											onClick={exportAudio}>
-											<BackupIcon style={{ fontSize: '1.8rem' }}/>
+											<CloudDownloadIcon style={{ fontSize: '1.8rem' }}/>
 										</Fab>
 										</span>
 									</BootstrapTooltip>
 								</span>
 								<span
 									style={{
-										right: '100%',
-										left: '96%',
+										left: '91.5%',
 										position: 'absolute',
 									}}>
 									<BootstrapTooltip
@@ -343,14 +343,15 @@ export default function RecorderNav(props) {
 												</FormattedMessage>
 										</span>}
 										TransitionComponent={Zoom}>
-										<IconButton
-											aria-controls='menu-appbar'
-											aria-haspopup='true'
+										<span>
+										<Fab
 											size='medium'
-											color='inherit'
-											onClick={openmic}>
-											<SettingsIcon />
-										</IconButton>
+											aria-label='Export'
+											onClick={openmic}
+											disabled={isLoading===true} >
+											<SettingsIcon  />
+										</Fab>
+										</span>
 									</BootstrapTooltip>
 								</span>
 							</Toolbar>
