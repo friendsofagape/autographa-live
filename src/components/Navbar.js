@@ -746,7 +746,7 @@ class Navbar extends React.Component {
                         <Modal.Title><FormattedMessage id="label-book-chapter" /></Modal.Title>
                     </Modal.Header>
                     <Modal.Body   style={{ top:'-38px' }}>
-                    <FormattedMessage id="btn-save" >
+                    <FormattedMessage id="label-chapter-tab" >
                     {(chaptertrans) =>
                         <Tabs 
                             animation={false}
