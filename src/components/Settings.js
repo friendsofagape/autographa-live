@@ -276,10 +276,6 @@ class SettingsModal extends React.Component {
 			swal(currentTrans["dynamic-msg-trans-data"], currentTrans["dynamic-msg-went-wrong"], "success");
 		});
     });
-
-    if (langCode && langVersion && backupFrequency !== "none") {
-      auto_export.initializeBackUp();
-    }
 	}
 
 	openFileDialogSettingData = (event) => {

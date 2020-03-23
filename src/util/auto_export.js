@@ -37,7 +37,6 @@ async function backUp() {
             let timeStamp = [ d && getTimeStamp(d) ].filter(Boolean);
             let currentTime = timeStamp[0].split('_');
             let days = calculateDays(currentTime,folderName);
-            console.log(targetLangDoc.backupFrequency)
             if (days >= 1 && (targetLangDoc.backupFrequency).toLowerCase() === "daily") {
                 buildFilePath(new Date(), dirPath);
                 folderHandling (folders, dirPath);
