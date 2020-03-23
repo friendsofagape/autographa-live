@@ -1113,7 +1113,7 @@ class SettingsModal extends React.Component {
                           >
                             <RadioButton
                             value="none"
-                            label={<FormattedMessage id="label-none" />}
+                            label={<span style={{ color: '#FF0000'}}><FormattedMessage id="label-none" /></span>}
                             style={{width: "70%"}}
                             />
                             <RadioButton
