@@ -70,7 +70,7 @@ const mergeAudios = async(book, chapter, versenum,) => {
                                 chapter,
                                 `output.json`,
                             );
-                            let outputTxtfile = path.join(filepath[0],'recordings',book.bookName, `${chapter}.txt`)
+                            let outputTxtfile = path.join(filepath[0],'recordings',book.bookName, `${chapter}_timing.tsv`)
                             if (fs.existsSync(newfilepath)) {
                                 fs.readFile(
                                     newfilepath,
