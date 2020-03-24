@@ -282,6 +282,8 @@ class StoreContextProvider extends Component {
 		AutographaStore.activeTab = 1;
 	};
 	findChapter = () => {
+		let bookId = AutographaStore.bookId.toString();
+		let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 		AutographaStore.aId = 2;
 		AutographaStore.showModalBooks = true;
 		AutographaStore.activeTab = 2;
@@ -310,6 +312,29 @@ class StoreContextProvider extends Component {
 			.catch(function(err) {
 				console.log(err);
 			});
+			let existing = localStorage.getItem(BookName);
+				// If no existing data, create an array
+				// Otherwise, convert the localStorage string to an array
+				existing = existing ? existing.split(',') : [];
+			if ((AutographaStore.chunkGroup.length !== this.state.recVerse.length) && (existing.indexOf(AutographaStore.chapterId.toString())!== -1)) {
+				// Add new data to localStorage Array
+				console.log(existing.indexOf(AutographaStore.chapterId.toString())!== -1)
+				if(existing.indexOf(AutographaStore.chapterId.toString()!== -1))
+				existing.splice(
+					existing.indexOf(
+						AutographaStore.chapterId.toString(),
+					),
+					1,
+				);
+				localStorage.setItem(BookName, existing.toString());
+			}
+			let existingValue = localStorage.getItem(BookName);
+			// If no existing data, create an array
+			// Otherwise, convert the localStorage string to an array
+			existingValue = existingValue
+				? existingValue.split(',')
+				: [];
+			AutographaStore.recordedChapters = existingValue;
 	};
 
 	render() {
