@@ -14,6 +14,7 @@ import { StoreContext } from '../../context/StoreContext';
 import swal from 'sweetalert';
 import Timer from '../Timer';
 import { FormattedMessage } from 'react-intl';
+import * as mobx from 'mobx';
 const db = require(`${__dirname}/../../../util/data-provider`).targetDb();
 const constants = require('../../../util/constants');
 const { app } = require('electron').remote;
@@ -78,9 +79,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const useStylesBootstrap = makeStyles(theme => ({
-	arrow: {
-	  color: theme.palette.common.black,
-	},
 	tooltip: {
 	  backgroundColor: theme.palette.common.black,
 	},
@@ -89,7 +87,7 @@ const useStylesBootstrap = makeStyles(theme => ({
   function BootstrapTooltip(props) {
 	const bootsrapclasses = useStylesBootstrap();
   
-	return <Tooltip arrow classes={bootsrapclasses} {...props} />;
+	return <Tooltip classes={bootsrapclasses} {...props} />;
   }
 
 export default function RecorderNav(props) {
@@ -124,7 +122,8 @@ export default function RecorderNav(props) {
 			window.location.reload();
 		}
 		if (isOpen === true) {
-			if (AutographaStore.chunkGroup.length === recVerse.length) {
+			let joint = mobx.toJS(AutographaStore.AudioJointVerse);
+			if (AutographaStore.chunkGroup.length === (recVerse.length + joint.length)) {
 				// Get the existing data
 				let existing = localStorage.getItem(BookName);
 				// If no existing data, create an array
@@ -170,16 +169,6 @@ export default function RecorderNav(props) {
 					window.location.reload();
 				}
 			});
-		// } else {
-		// 	swal({
-		// 		title: 'Cannot switch off Audio',
-		// 		text:
-		// 			'You have some newly recorded verses, Please export them to proceed!',
-		// 		icon: 'error',
-		// 		buttons: true,
-		// 		dangerMode: true,
-		// 	});
-		// }
 	};
 
 	const importAudio = () => {
@@ -293,7 +282,7 @@ export default function RecorderNav(props) {
 										}
 									</FormattedMessage>
 										</span>}
-									TransitionComponent={Zoom} arrow>
+									TransitionComponent={Zoom}>
 									<Fab
 										aria-label="add"
 										size='medium'

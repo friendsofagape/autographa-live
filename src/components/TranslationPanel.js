@@ -130,7 +130,6 @@ class TranslationPanel extends React.Component {
 				    					var val = jsonParsed[key];
 				    					if(val.verse === AutographaStore.vId){
                                             AutographaStore.savedTime = val.totaltime
-                                            console.log(AutographaStore.savedTime)
 				    					}
                                     
 				    				}
@@ -281,7 +280,6 @@ class TranslationPanel extends React.Component {
 					.then((buffers) => {
 						// => [AudioBuffer, AudioBuffer]
 						merged = audio.concatAudio(buffers);
-						console.log('buff', merged);
 					})
 					.then(() => {
 						// => AudioBuffer
