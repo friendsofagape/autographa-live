@@ -3,14 +3,15 @@ import Viewer from '@bit/unfoldingword.resources.viewer';
 import Constant from './util/constants';
 import { Offline, Online } from "react-detect-offline";
 import { FormattedMessage } from 'react-intl';
+import AutographaStore from './components/AutographaStore';
 
 function App(props) {
 	let defaultContext = {
 		// username: 'STR',
 		// username: 'unfoldingword',
 		username: 'Door43-Catalog',
-		languageId: 'en',
-		resourceId: 'ult',
+		languageId: AutographaStore.translationHelplanguageId,
+		resourceId: AutographaStore.translationHelpresourceId,
 		reference: {
 			bookId: `${props.book ? Constant.bookCodeList[parseInt(props.book, 10) - 1].toLowerCase() : 'gen' }`,
 			chapter: props.chapter ? props.chapter : '1',
@@ -28,8 +29,14 @@ function App(props) {
 	useEffect(() => {
 		props.onChangeChapter(defaultContext.reference.chapter);
 		setContext(defaultContext)
-    }, [props.chapter])
-
+	}, [props.chapter])
+	
+	useEffect(() => {
+		setContext(defaultContext)
+	}, [props.onLanguagechange])
+	useEffect(() => {
+		setContext(defaultContext)
+    }, [props.onResourceChange])
 	useEffect(() => {
 		const viewer = (
 			<Viewer {...props}

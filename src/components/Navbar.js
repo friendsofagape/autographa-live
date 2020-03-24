@@ -980,7 +980,15 @@ class Navbar extends React.Component {
                     AutographaStore.layout === 4 &&
                     <div className="parentdiv">
                         <div className="layoutx">
-                            <App book = { AutographaStore.bookId.toString() } chapter = {AutographaStore.chapterId.toString()} onChangeBook={this.onChangeBook} onChangeChapter={this.onChangeChapter}/>
+                        {AutographaStore.translationhelpsRefresh === false ? (
+                            <App onLanguagechange={AutographaStore.translationHelplanguageId}
+				                onResourceChange={AutographaStore.translationHelpresourceId} 
+                                book = { AutographaStore.bookId.toString() } 
+                                chapter = {AutographaStore.chapterId.toString()} 
+                                onChangeBook={this.onChangeBook} 
+                                onChangeChapter={this.onChangeChapter}/>
+                        ):  
+                        ( <Loader />)}
                         </div>
                         <div  style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
