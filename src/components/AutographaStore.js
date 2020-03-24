@@ -96,5 +96,8 @@ export class AutographaStore {
   @observable recordedChapters = []
   @observable AudioJointVerse = []
   @observable ChapterComplete = false
+  @observable translationHelplanguageId = 'en'
+  @observable translationHelpresourceId = 'ust'
+  @observable translationhelpsRefresh = false
 }
 export default new AutographaStore();

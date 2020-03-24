@@ -5,6 +5,7 @@ import AutographaStore from "./AutographaStore";
 import { FormattedMessage } from 'react-intl';
 import { Button } from 'react-bootstrap/lib';
 import AudioApp from '../Audio/AudioApp';
+import TranslationHelpsMenu from './TranslationHelpsMenu';
 const refDb = require(`${__dirname}/../util/data-provider`).referenceDb();
 
 
@@ -146,12 +147,15 @@ class Footer extends React.Component {
                             }
                             </FormattedMessage>
 
-                            <FormattedMessage id="tooltip-4-column">
+                            <FormattedMessage id="tooltip-5-translationhelp">
                                 { (message) =>                            
                                 <Button className={`btn btn-primary btn-default ${layout === 4 ? "active" : ""} ${toggle ? "disabled" : "" }`} id="btn-4x" onClick = {this.handleChange.bind(this,4)}  data-output="4x"  data-toggle="tooltip" data-placement="top" title={message}>Help &nbsp;<i className="fa fa-columns fa-lg"></i>
                                 </Button>
                             }
                             </FormattedMessage>
+                            {AutographaStore.layout === 4 && (                        
+                               <TranslationHelpsMenu />
+                            )}
                         </div>
                     </div>
                     <span id="saved-time">{AutographaStore.transSaveTime ? `Saved ${AutographaStore.transSaveTime}` : ""}</span>
