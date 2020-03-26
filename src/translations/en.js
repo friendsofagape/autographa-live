@@ -89,7 +89,7 @@ export default {
 	"tooltip-about" : "About",
     "tooltip-settings" : "Settings",
     "modal-translate-book-name": "Translate Book Name",
-	"icon-button-reset": "Reset",
+    "label-button-reset": "Reset to default",
 	"tooltip-modal-close" : "Close",
 	"tooltip-minus-font-size" : "Decrease font size",
 	"tooltip-plus-font-size" : "Increase font size",

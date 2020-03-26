@@ -335,10 +335,8 @@ class SettingsModal extends React.Component {
 			langVersion
 		} = this.state.settingData;
 		let date = new Date();
-		fs.exists(`${appPath}/report/error${date.getDate()}${date.getMonth()}${date.getFullYear()}.log`, function(exists) {
-            if (exists) console.log("Directory Exists")
-            else fs.mkdir(`${appPath}/report`, (err) => {if (err) throw err;});
-        });
+		if(!fs.existsSync(`${appPath}/report/error${date.getDate()}${date.getMonth()}${date.getFullYear()}.log`))
+            fs.mkdirSync(`${appPath}/report`, {  recursive:  true  })
         const importDir = Array.isArray(this.state.folderPathImport) ?
                             this.state.folderPathImport :
                             [this.state.folderPathImport];
@@ -400,6 +398,15 @@ class SettingsModal extends React.Component {
                 }))
             })
 		}).then(() => {
+            db.get('translatedBookNames', function (err, doc) {
+                if (err) {
+                    return console.log(err);
+                } else {
+                    localStorage.setItem('editBookNamesMode', true);
+                    AutographaStore.editBookNamesMode = true
+                    doc.books = mobx.toJS(AutographaStore.translatedBookNames)                }
+                db.put(doc)
+            });
             this.props.showLoader(false);
             this.setState({show:true});
             AutographaStore.showModalSettings = false;
@@ -516,10 +523,8 @@ class SettingsModal extends React.Component {
 		} = this.state.refSetting;
         const currentTrans = AutographaStore.currentTrans;
 		let date = new Date();
-        fs.exists(`${appPath}/report/error${date.getDate()}${date.getMonth()}${date.getFullYear()}.log`, function(exists) {
-            if (exists) console.log("Directory Exists")
-            else fs.mkdir(`${appPath}/report`, (err) => {if (err) throw err;});
-        });
+        if(!fs.existsSync(`${appPath}/report/error${date.getDate()}${date.getMonth()}${date.getFullYear()}.log`))
+        fs.mkdirSync(`${appPath}/report`, {  recursive:  true  })
 		usfm_import.saveJsonToDb(dir, bibleName, refLangCodeValue, refVersion)
 			.then((res)=> {
             res = mobx.toJS(AutographaStore.successFile);
