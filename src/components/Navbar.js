@@ -80,7 +80,7 @@ class Navbar extends React.Component {
         this.resetDiffValue();        
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         db.get('translatedBookNames', function (err, doc) {
             if (err) {
                 localStorage.setItem('editBookNamesMode', false);
@@ -263,7 +263,8 @@ class Navbar extends React.Component {
         let id = AutographaStore.currentRef + '_' + Constant.bookCodeList[parseInt(AutographaStore.bookId, 10) - 1];
         db.get('targetBible').then((doc) => {
             db.get(AutographaStore.bookId.toString()).then((book) => {
-                exportHtml.exportHtml(id, book, db, doc.langScript, column, currentTrans);
+                let currentBookname = AutographaStore.editBookNamesMode ? AutographaStore.translatedBookNames[parseInt(AutographaStore.bookId, 10) - 1] : Constant.booksList[parseInt(AutographaStore.bookId, 10) - 1]
+                exportHtml.exportHtml(id, book, db, doc.langScript, column, currentTrans, currentBookname);
             })
         }).catch(function(err) {
             // handle any errors
@@ -746,8 +747,6 @@ class Navbar extends React.Component {
                         <Modal.Title><FormattedMessage id="label-book-chapter" /></Modal.Title>
                     </Modal.Header>
                     <Modal.Body   style={{ top:'-38px' }}>
-                    <FormattedMessage id="label-chapter-tab" >
-                    {(chaptertrans) =>
                         <Tabs 
                             animation={false}
                             activeKey={AutographaStore.activeTab}
@@ -815,15 +814,14 @@ class Navbar extends React.Component {
                                 </div>
                                 <div className= "clearfix"></div>
                             </Tab>)}
-                            <Tab eventKey={2} title={AutographaStore.AudioMount? chaptertrans: 'Chapter'} > 
+                            <Tab eventKey={2} title='Chapter'>
                                 <div className="chapter-no">
                                     <ul id="chaptersList">
                                     { chapterList }
                                     </ul>
                                 </div>
                             </Tab>
-                        </Tabs>}
-                        </FormattedMessage>
+                        </Tabs>
                     </Modal.Body>
                 </Modal>
                 <SettingsModal show={AutographaStore.showModalSettings} showLoader = {this.setLoader} loadData={this.loadData} />
@@ -846,7 +844,7 @@ class Navbar extends React.Component {
                             <span className="icon-bar"></span>
                             <span className="icon-bar"></span>
                         </button>
-                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}></a>
+                        <a href="#" className="navbar-brand" style={{cursor: 'default'}}><img alt='Brand' src={brandLogo} /></a>
                     </div>
                     <div className="navbar-collapse collapse" id="navbar">
                         <ul className="nav navbar-nav" style={{padding: "3px 0 0 0px"}}>
