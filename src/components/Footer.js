@@ -149,13 +149,14 @@ class Footer extends React.Component {
 
                             <FormattedMessage id="tooltip-5-translationhelp">
                                 { (message) =>                            
-                                <Button className={`btn btn-primary btn-default ${layout === 4 ? "active" : ""} ${toggle ? "disabled" : "" }`} id="btn-4x" onClick = {this.handleChange.bind(this,4)}  data-output="4x"  data-toggle="tooltip" data-placement="top" title={message}>Help &nbsp;<i className="fa fa-columns fa-lg"></i>
+                                <Button style={{padding: "0px", height: "37px", width:"80px"}} className={`btn btn-primary btn-default ${layout === 4 ? "active" : ""} ${toggle ? "disabled" : "" }`} id="btn-4x" onClick = {this.handleChange.bind(this,4)}  data-output="4x"  data-toggle="tooltip" data-placement="top" title={message}>Help &nbsp; { (AutographaStore.layout === 4) ? (                        
+                               <span style={{marginLeft: "-15px", float: "right", margin: "-13px", marginRight: "-5px"}}>
+                               <TranslationHelpsMenu />
+                               </span>
+                            ): <i className="fa fa-columns fa-lg"></i> }
                                 </Button>
                             }
                             </FormattedMessage>
-                            {AutographaStore.layout === 4 && (                        
-                               <TranslationHelpsMenu />
-                            )}
                         </div>
                     </div>
                     <span id="saved-time">{AutographaStore.transSaveTime ? `Saved ${AutographaStore.transSaveTime}` : ""}</span>

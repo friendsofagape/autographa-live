@@ -65,9 +65,9 @@ export default function TranslationHelpsMenu() {
 		setAnchorEl(null);
 		AutographaStore.translationhelpsRefresh = false;
 	};
-	const changeLanguageToHin = () => {
-		AutographaStore.translationHelplanguageId = 'hi';
-		AutographaStore.translationHelpresourceId = 'udb';
+	const changeLanguage= (lang, resource) => {
+		AutographaStore.translationHelplanguageId = lang;
+		AutographaStore.translationHelpresourceId = resource;
 		AutographaStore.translationhelpsRefresh = true;
 		let interval;
 		interval = setInterval(
@@ -76,17 +76,17 @@ export default function TranslationHelpsMenu() {
 		);
 		return () => clearInterval(interval);
 	};
-	const changeLanguageToEng = () => {
-		AutographaStore.translationHelplanguageId = 'en';
-		AutographaStore.translationHelpresourceId = 'ult';
-		AutographaStore.translationhelpsRefresh = true;
-		let interval;
-		interval = setInterval(
-			() => (AutographaStore.translationhelpsRefresh = false),
-			1000,
-		);
-		return () => clearInterval(interval);
-	};
+	// const changeLanguageToEng = () => {
+	// 	AutographaStore.translationHelplanguageId = 'en';
+	// 	AutographaStore.translationHelpresourceId = 'ult';
+	// 	AutographaStore.translationhelpsRefresh = true;
+	// 	let interval;
+	// 	interval = setInterval(
+	// 		() => (AutographaStore.translationhelpsRefresh = false),
+	// 		1000,
+	// 	);
+	// 	return () => clearInterval(interval);
+	// };
 
 	return (
 		<React.Fragment>
@@ -106,7 +106,7 @@ export default function TranslationHelpsMenu() {
 							aria-controls='customized-menu'
 							aria-haspopup='true'
 							variant='contained'
-							color='primary'
+							color='inherit'
 							style={{ transform: 'rotateX(180deg)' }}
 							onClick={handleClick}>
 							<ArrowDropDownCircleIcon />
@@ -119,17 +119,59 @@ export default function TranslationHelpsMenu() {
 					keepMounted
 					open={Boolean(anchorEl)}
 					onClose={handleClose}>
-					<StyledMenuItem onClick={changeLanguageToEng}>
+					<StyledMenuItem onClick={()=> {changeLanguage('en','ult')}}>
 						<ListItemIcon>
 							<BookIcon fontSize='small' />
 						</ListItemIcon>
 						<ListItemText primary='English' />
 					</StyledMenuItem>
-					<StyledMenuItem onClick={changeLanguageToHin}>
+					<StyledMenuItem onClick={()=> {changeLanguage('hi','udb')}}>
 						<ListItemIcon>
 							<BookIcon fontSize='small' />
 						</ListItemIcon>
 						<ListItemText primary='Hindi' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('bn','irv')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Bengali' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('ml','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Malayalam' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('gu','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Gujarati' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('or','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Oriya' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('ta','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Tamil' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('kn','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Kannada' />
+					</StyledMenuItem>
+					<StyledMenuItem onClick={()=> {changeLanguage('te','ulb')}}>
+						<ListItemIcon>
+							<BookIcon fontSize='small' />
+						</ListItemIcon>
+						<ListItemText primary='Telugu' />
 					</StyledMenuItem>
 				</StyledMenu>
 			</span>
