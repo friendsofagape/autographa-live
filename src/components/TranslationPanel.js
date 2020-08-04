@@ -10,6 +10,7 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import StopIcon from '@material-ui/icons/Stop';
 import { Tooltip, Zoom } from '@material-ui/core';
 import ConcatAudio from '../Audio/core/ConcatAudio';
+import FontSelect from "./FontSelect";
 let audio = new ConcatAudio();
 const { app } = require('electron').remote;
 const path = require('path');
@@ -309,7 +310,7 @@ class TranslationPanel extends React.Component {
 			})
 		}
 
-		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap"}}>
+		verseGroup.push(<div key={i} id={`versediv${i+1}`} onClick={this.highlightRef.bind(this, vid, i)} style={{cursor: "text", whiteSpace: "pre-wrap", fontFamily: AutographaStore.fontselected}}>
         {AudioMount && ((recflag === i  && AutographaStore.AudioMount === true) ? (
 					<span onClick ={this.fetchAudio}>
                             {(AutographaStore.isPlaying===false)  && (
@@ -341,14 +342,14 @@ class TranslationPanel extends React.Component {
 			{AudioMount ?
             <React.Fragment>
             <span className={ AudioMount? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
-			<span contentEditable={!AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
+			<span contentEditable={!AudioMount} suppressContentEditableWarning={true} id={vid} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap", fontFamily: AutographaStore.fontselected}} data-chunk-group={AutographaStore.chunkGroup[i]} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
 			</span>
             </React.Fragment>
             :
             (<ContextMenuTrigger id={(AutographaStore.jointVerse[i] === undefined ? "true" : "false")} disable={(i+1) === 1 ? true : false } verseId = {parseInt(i,10)+1}  collect = {props => props}>
             <span className={ AudioMount ? 'verse-num-onaudio' : 'verse-num' } key={i}>{(i+1)}</span>
-			<span contentEditable={AutographaStore.jointVerse[i] === undefined ? true : false} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap"}} onKeyUp={this.handleKeyUp}>
+			<span contentEditable={AutographaStore.jointVerse[i] === undefined ? true : false} suppressContentEditableWarning={true} id={vid} data-chunk-group={AutographaStore.chunkGroup[i]} style={{cursor: AudioMount? "pointer" : "text", whiteSpace: "pre-wrap", fontFamily: AutographaStore.fontselected}} onKeyUp={this.handleKeyUp}>
 			{AutographaStore.jointVerse[i] === undefined ? AutographaStore.translationContent[i] : <FormattedMessage id="label-joint-with-the-preceding-verse(s)"/>}
 			</span>
 			</ContextMenuTrigger>)}
@@ -360,7 +361,9 @@ class TranslationPanel extends React.Component {
 			<div className="col-editor container-fluid trans-margin" style={{width: AutographaStore.layout===0? "200%" : ""}}>
 				<div className="row">
 				<div className="col-12 center-align">
-					<p className="translation"><a href="javscript:;" style = {{fontWeight: "bold", pointerEvents: toggle ? "none" : "" }} onClick={() => AudioMount ? "" : this.openStatPopup()}><FormattedMessage id="label-translation" /></a></p>
+					<p className="translation" style={{lineHeight:"68px"}}><a href="javscript:;" style = {{fontWeight: "bold", pointerEvents: toggle ? "none" : "" }} onClick={() => AudioMount ? "" : this.openStatPopup()}><FormattedMessage id="label-translation" /></a>
+					<div style={{ width: 200, float:"right", paddingTop:"10px" }}><FontSelect /></div>
+					</p>
 				</div>
 				</div>
 				<div className="row">
