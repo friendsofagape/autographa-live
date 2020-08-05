@@ -99,5 +99,6 @@ export class AutographaStore {
   @observable translationHelplanguageId = 'en'
   @observable translationHelpresourceId = 'ust'
   @observable translationhelpsRefresh = false
+  @observable fontselected = ""
 }
 export default new AutographaStore();

@@ -38,6 +38,7 @@ export default {
 	"label-join-to-preceding-verse": "Junte-se ao verso anterior",
 	"label-joint-with-the-preceding-verse(s)" : "----- Juntar-se ao (s) versículo (s) -----",
 	"label-button-reset": "Restaurar ao padrão",
+	"label-change-font": "mudar fonte",
 	"placeholder-search-text" : "Buscar Texto",
 	"placeholder-replace-text" : "Substituição",
 	"placeholder-path-to-destination" : "Localização da pasta de destino",
