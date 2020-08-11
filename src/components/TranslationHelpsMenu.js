@@ -10,6 +10,10 @@ import BookIcon from '@material-ui/icons/Book';
 import { IconButton, Zoom, Tooltip, makeStyles } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import AutographaStore from './AutographaStore';
+import { observable, action } from "mobx";
+import { observer } from "mobx-react";
+import Menucustom from "./Menu";
+import SubMenuItem from "./SubMenuItem";
 import App from '../App';
 
 const StyledMenu = withStyles({
@@ -31,7 +35,125 @@ const StyledMenu = withStyles({
 		{...props}
 	/>
 ));
-
+const menuItems = [
+	{
+	  key: "1",
+	  caption: "English",
+	  subMenuItems: [
+		  {
+			key: "2",
+			caption: "English ult",
+			onClick: () => {}
+		  },
+		  {
+			key: "3",
+			caption: "English udb",
+			onClick: () => {}
+		  },
+		]
+	},
+	{
+		key: "4",
+		caption: "Hindi",
+		subMenuItems: [
+			{
+			  key: "5",
+			  caption: "Hindi udb",
+			  onClick: () => {}
+			},
+			{
+			  key: "6",
+			  caption: "Hindi irv",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+	  {
+		key: "7",
+		caption: "Bengali",
+		subMenuItems: [
+			{
+			  key: "8",
+			  caption: "Bengali irv",
+			  onClick: () => {}
+			},
+			{
+			  key: "9",
+			  caption: "Bengali udb",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+	  {
+		key: "10",
+		caption: "Malayalam",
+		subMenuItems: [
+			{
+			  key: "11",
+			  caption: "Malayalam ult",
+			  onClick: () => {}
+			},
+			{
+			  key: "12",
+			  caption: "Malayalam udb",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+	  {
+		key: "13",
+		caption: "Gujarati",
+		subMenuItems: [
+			{
+			  key: "14",
+			  caption: "Gujarati irv",
+			  onClick: () => {}
+			},
+			{
+			  key: "3",
+			  caption: "Gujarati udb",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+	  {
+		key: "1",
+		caption: "Oriya",
+		subMenuItems: [
+			{
+			  key: "2",
+			  caption: "Oriya irv",
+			  onClick: () => {}
+			},
+			{
+			  key: "3",
+			  caption: "Oriya udb",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+	  {
+		key: "1",
+		caption: "Tamil",
+		onClick: () => {},
+	  },
+	  {
+		key: "1",
+		caption: "Kannada",
+		subMenuItems: [
+			{
+			  key: "2",
+			  caption: "Kannada irv",
+			  onClick: () => {}
+			},
+			{
+			  key: "3",
+			  caption: "Kannada udb",
+			  onClick: () => {}
+			},
+		  ]
+	  },
+  ];
 const StyledMenuItem = withStyles((theme) => ({
 	root: {
 		'&:focus': {
@@ -125,7 +247,7 @@ export default function TranslationHelpsMenu() {
 						</IconButton>
 					</span>
 				</BootstrapTooltip>
-				<StyledMenu
+				{/* <StyledMenu
 					id='customized-menu'
 					anchorEl={anchorEl}
 					keepMounted
@@ -141,7 +263,13 @@ export default function TranslationHelpsMenu() {
 					</StyledMenuItem>
 						)
 					})}
-				</StyledMenu>
+				</StyledMenu> */}
+				<Menucustom
+        		  open={Boolean(anchorEl)}
+        		  menuItems={menuItems}
+        		  anchorElement={anchorEl}
+        		  onClose={handleClose}
+        		/>
 			</span>
 			{/* {refresh === false && (
                 <App
