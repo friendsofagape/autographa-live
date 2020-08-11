@@ -55,6 +55,18 @@ function BootstrapTooltip(props) {
 	return <Tooltip classes={bootsrapclasses} {...props} />;
 }
 
+const language = [
+	{"id": 0 , "name": "English-ULT", "languageId": "en", "resourceId": "ult"}, 
+	{"id": 1 , "name": "Hindi-UDB", "languageId": "hi", "resourceId": "irv"}, 
+	{"id": 2 , "name": "Bengali-IRV", "languageId": "bn", "resourceId": "irv"}, 
+	{"id": 3 , "name": "Malayalam-IRV", "languageId": "ml", "resourceId": "irv"}, 
+	{"id": 4 , "name": "Gujarati", "languageId": "gu", "resourceId": "ulb"}, 
+	{"id": 5 , "name": "Oriya", "languageId": "or", "resourceId": "ulb"}, 
+	{"id": 6 , "name": "Tamil", "languageId": "ta", "resourceId": "ulb"}, 
+	{"id": 7 , "name": "Kannada", "languageId": "kn", "resourceId": "ulb"}, 
+	{"id": 8 , "name": "Telugu", "languageId": "te", "resourceId": "ulb"}
+]
+
 export default function TranslationHelpsMenu() {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const handleClick = (event) => {
@@ -119,60 +131,16 @@ export default function TranslationHelpsMenu() {
 					keepMounted
 					open={Boolean(anchorEl)}
 					onClose={handleClose}>
-					<StyledMenuItem onClick={()=> {changeLanguage('en','ult')}}>
+					{language.map((value, index) => {
+						return (
+							<StyledMenuItem onClick={()=> {changeLanguage(value.languageId,value.resourceId)}}>
 						<ListItemIcon>
 							<BookIcon fontSize='small' />
 						</ListItemIcon>
-						<ListItemText primary='English' />
+						<ListItemText primary={value.name} />
 					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('hi','udb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Hindi' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('bn','irv')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Bengali' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('ml','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Malayalam' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('gu','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Gujarati' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('or','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Oriya' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('ta','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Tamil' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('kn','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Kannada' />
-					</StyledMenuItem>
-					<StyledMenuItem onClick={()=> {changeLanguage('te','ulb')}}>
-						<ListItemIcon>
-							<BookIcon fontSize='small' />
-						</ListItemIcon>
-						<ListItemText primary='Telugu' />
-					</StyledMenuItem>
+						)
+					})}
 				</StyledMenu>
 			</span>
 			{/* {refresh === false && (
