@@ -7,6 +7,7 @@ import { observer } from "mobx-react";
 import ArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import withStyles from "@material-ui/core/styles/withStyles";
 import classNames from "classnames";
+import AutographaStore from "./AutographaStore";
 
 const styles = {
   subMenuItem: {
@@ -15,52 +16,56 @@ const styles = {
   }
 };
 
-@observer
-class SubMenuItem extends React.Component {
-  @observable menuOpen = false;
-  @observable anchorElement = null;
+const SubMenuItem = ({ caption, menuItems, classes }) =>{
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  
+  const handleItemClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
 
-  @action
-  setAnchorElement = node => {
-    this.anchorElement = node;
-  };
+	const handleSubMenuClose = () => {
+		setAnchorEl(null);
+		AutographaStore.translationhelpsRefresh = false;
+	};
 
-  @action.bound
-  handleItemClick(event) {
-    if (!this.anchorElement) {
-      this.setAnchorElement(event.currentTarget);
-    }
-    this.menuOpen = !this.menuOpen;
-  }
+  // @action
+  // setAnchorElement = node => {
+  //   this.anchorElement = node;
+  // };
 
-  @action.bound
-  handleSubMenuClose() {
-    this.menuOpen = false;
-  }
+  // @action.bound
+  // handleItemClick(event) {
+  //   if (!this.anchorElement) {
+  //     this.setAnchorElement(event.currentTarget);
+  //   }
+  //   this.menuOpen = !this.menuOpen;
+  // }
 
-  render() {
-    const { caption, menuItems, classes } = this.props;
+  // @action.bound
+  // handleSubMenuClose() {
+  //   this.menuOpen = false;
+  // }
     return (
       <React.Fragment>
         <MenuItem
-          onClick={this.handleItemClick}
+          onClick={handleItemClick}
+          selected={AutographaStore.selectedTranslationhelplang.toString() === caption.key}
           className={classNames(classes.subMenuItem)}
         >
-          {caption}
+          {caption.caption}
           <ArrowRightIcon />
         </MenuItem>
         <Menu
-          open={this.menuOpen}
+          open={anchorEl}
           menuItems={menuItems}
-          anchorElement={this.anchorElement}
-          onClose={this.handleSubMenuClose}
+          anchorElement={anchorEl}
+          onClose={handleSubMenuClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "left" }}
         />
       </React.Fragment>
     );
   }
-}
 
 SubMenuItem.propTypes = {
   caption: PropTypes.string.isRequired,

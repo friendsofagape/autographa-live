@@ -4,6 +4,7 @@ import MuiMenu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { observer } from "mobx-react";
 import SubMenuItem from "./SubMenuItem";
+import AutographaStore from "./AutographaStore";
 
 @observer
 class Menucustom extends React.Component {
@@ -14,14 +15,14 @@ class Menucustom extends React.Component {
         return (
           <SubMenuItem
             key={menuItem.key}
-            caption={menuItem.caption}
+            caption={menuItem}
             menuItems={menuItem.subMenuItems}
           />
         );
       }
 
       return (
-        <MenuItem key={menuItem.key} onClick={menuItem.onClick}>
+        <MenuItem key={menuItem.key} selected={AutographaStore.selectedTranslationhelpversion.toString() === menuItem.key} onClick={menuItem.onClick}>
           {menuItem.caption}
         </MenuItem>
       );
