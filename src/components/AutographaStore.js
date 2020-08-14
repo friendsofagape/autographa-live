@@ -101,5 +101,6 @@ export class AutographaStore {
   @observable translationhelpsRefresh = false
   @observable selectedTranslationhelpversion = 1
   @observable selectedTranslationhelplang = 1
+  @observable fontselected = ""
 }
 export default new AutographaStore();
