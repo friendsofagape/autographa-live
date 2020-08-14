@@ -26,23 +26,6 @@ const SubMenuItem = ({ caption, menuItems, classes }) =>{
 		AutographaStore.translationhelpsRefresh = false;
 	};
 
-  // @action
-  // setAnchorElement = node => {
-  //   this.anchorElement = node;
-  // };
-
-  // @action.bound
-  // handleItemClick(event) {
-  //   if (!this.anchorElement) {
-  //     this.setAnchorElement(event.currentTarget);
-  //   }
-  //   this.menuOpen = !this.menuOpen;
-  // }
-
-  // @action.bound
-  // handleSubMenuClose() {
-  //   this.menuOpen = false;
-  // }
     return (
       <React.Fragment>
         <MenuItem

@@ -7,7 +7,7 @@ import SubMenuItem from "./SubMenuItem";
 import AutographaStore from "./AutographaStore";
 
 @observer
-class Menucustom extends React.Component {
+class CustomizedMenu extends React.Component {
   renderMenuItems = () => {
     const { menuItems } = this.props;
     return menuItems.map(menuItem => {
@@ -44,45 +44,11 @@ class Menucustom extends React.Component {
   }
 }
 
-Menucustom.propTypes = {
+CustomizedMenu.propTypes = {
   open: PropTypes.bool.isRequired,
   menuItems: PropTypes.array.isRequired,
   anchorElement: PropTypes.any,
   onClose: PropTypes.func.isRequired
 };
 
-export default Menucustom
-/* Example of menuItems:
-[
-    {
-        'key': 'item1',
-        'caption': 'Item 1',
-        'onClick': (event) => function () {
-        }
-    },
-    {
-        'key': 'item2',
-        'caption': 'Item 2',
-        'onClick': (event) => function () {
-        }
-    },
-    {
-        'key': 'item3',
-        'caption': 'Item 3',
-        'subMenuItems': [
-            {
-                'key': 'item1',
-                'caption': 'Item 1',
-                'onClick': (event) => function () {
-                }
-            },
-            {
-                'key': 'item2',
-                'caption': 'Item 2',
-                'onClick': (event) => function () {
-                }
-            }
-        ]
-    }
-];
- */
+export default CustomizedMenu
