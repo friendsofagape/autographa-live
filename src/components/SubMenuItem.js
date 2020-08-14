@@ -2,8 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "./Menu";
-import { observable, action } from "mobx";
-import { observer } from "mobx-react";
 import ArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import withStyles from "@material-ui/core/styles/withStyles";
 import classNames from "classnames";
