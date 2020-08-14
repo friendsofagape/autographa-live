@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import Viewer from '@bit/unfoldingword.resources.viewer';
+import Viewer from 'translation-helps-patch';
 import Constant from './util/constants';
 import { Offline, Online } from "react-detect-offline";
 import { FormattedMessage } from 'react-intl';
