@@ -148,69 +148,80 @@ export default function TranslationHelpsMenu() {
 		  {
 			key: "19",
 			caption: "Tamil",
-			onClick: () => {changeLanguage("ta","irv",19,19)},
+			subMenuItems: [
+				{
+				  key: "20",
+				  caption: "Tamil ulb",
+				  onClick: () => {changeLanguage("ta","ulb",20,19)}
+				},
+				{
+				  key: "21",
+				  caption: "Tamil irv",
+				  onClick: () => {changeLanguage("ta","irv",21,19)}
+				},
+			  ]
 		  },
 		  {
-			key: "20",
+			key: "22",
 			caption: "Kannada",
 			subMenuItems: [
 				{
-				  key: "21",
+				  key: "23",
 				  caption: "Kannada ulb",
-				  onClick: () => {changeLanguage("kn","ulb",21,20)}
+				  onClick: () => {changeLanguage("kn","ulb",23,22)}
 				},
 				{
-				  key: "22",
+				  key: "24",
 				  caption: "Kannada irv",
-				  onClick: () => {changeLanguage("kn","irv",22,20)}
+				  onClick: () => {changeLanguage("kn","irv",24,22)}
 				},
 			  ]
 		  },
 		  {
-			key: "24",
+			key: "25",
 			caption: "Assamese",
 			subMenuItems: [
 				{
-				  key: "25",
+				  key: "26",
 				  caption: "Assamese ulb",
-				  onClick: () => {changeLanguage("as","ulb",25,24)}
+				  onClick: () => {changeLanguage("as","ulb",26,25)}
 				},
 				{
-				  key: "26",
+				  key: "27",
 				  caption: "Assamese irv",
-				  onClick: () => {changeLanguage("as","irv",26,24)}
+				  onClick: () => {changeLanguage("as","irv",27,25)}
 				},
 			  ]
 		  },
 		  {
-			key: "27",
+			key: "28",
 			caption: "Punjabi",
 			subMenuItems: [
 				{
-				  key: "28",
+				  key: "29",
 				  caption: "Punjabi ulb",
-				  onClick: () => {changeLanguage("pa","ulb",28,27)}
+				  onClick: () => {changeLanguage("pa","ulb",29,28)}
 				},
 				{
-				  key: "29",
+				  key: "30",
 				  caption: "Punjabi irv",
-				  onClick: () => {changeLanguage("pa","irv",29,27)}
+				  onClick: () => {changeLanguage("pa","irv",30,28)}
 				},
 			  ]
 		  },
 		  {
-			key: "30",
+			key: "31",
 			caption: "Marathi",
 			subMenuItems: [
 				{
-				  key: "31",
+				  key: "32",
 				  caption: "Marathi ulb",
-				  onClick: () => {changeLanguage("mr","ulb",31,30)}
+				  onClick: () => {changeLanguage("mr","ulb",32,31)}
 				},
 				{
-				  key: "32",
+				  key: "33",
 				  caption: "Marathi irv",
-				  onClick: () => {changeLanguage("mr","irv", 32,30)}
+				  onClick: () => {changeLanguage("mr","irv", 33,31)}
 				},
 			  ]
 		  },
