@@ -26,6 +26,7 @@ module.exports = {
                 c = 0,
                 v = 0,
                 vnum = 0,
+                id = '',
                 usfmBibleBook = false,
                 validLineCount = 0,
                 id_prefix = options.lang + '_' + options.version + '_' + options.bibleName + '_' ;
@@ -49,7 +50,8 @@ module.exports = {
                 //Do nothing for empty lines.
             } else if (splitLine[0] === '\\id') {
                 if (booksCodes.includes(splitLine[1].toUpperCase()))
-                    usfmBibleBook = true;
+                usfmBibleBook = true;
+                id = splitLine[1]
                 book._id = id_prefix + splitLine[1].toUpperCase();
             } else if (splitLine[0] === '\\c') {
                 book.chapters[parseInt(splitLine[1], 10) - 1] = {
@@ -115,17 +117,19 @@ module.exports = {
                 //Do nothing for section headers now.
             } else if (splitLine[0].match(new RegExp(/\\mt$/gm))) {
                 let cleanedStr = replaceMarkers(line);
-                let bookid = book._id.split(/_+/)
-                if (booksCodes.includes(bookid[3].toUpperCase())){
+                if (booksCodes.includes(id.toUpperCase())){
                     let userBookList = AutographaStore.translatedBookNames
-                    userBookList.splice(booksCodes.indexOf(bookid[3]), 1, cleanedStr)
+                    userBookList.splice(booksCodes.indexOf(id), 1, cleanedStr)
                 }
             } else if (splitLine.length === 1) {
                 // Do nothing here for now.
             } else if (splitLine[0].match(new RegExp(/\\m$/gm))) {
                 let cleanedStr = replaceMarkers(line);
-                cleanedStr = "\n" + cleanedStr;
-                book.chapters[c - 1].verses[vnum - 1].verse += ((cleanedStr.length === 0 ? '' : ' ') + cleanedStr);
+                cleanedStr = "\n" + cleanedStr
+                let verseIndex = book.chapters[c - 1].verses.findIndex(val => val.verse_number === vnum);
+                if(book.chapters[c - 1].verses[verseIndex].verse !== undefined) {
+                    book.chapters[c - 1].verses[verseIndex].verse += ((cleanedStr.length === 0 ? '' : ' ') + cleanedStr);
+                }
             } else if (splitLine[0].startsWith('\\r')) {
                 // Do nothing here for now.
             } else if (c > 0 && vnum > 0) {
