@@ -89,6 +89,8 @@ export default {
     "tooltip-nextverse": 'Siguiente verso',
     "tooltip-previousverse": 'Verso anterior',
     "tooltip-start/stop": 'Mantenga presionado durante 1 segundo para comenzar a grabar.',
+	"tooltip-start": 'Presione para comenzar a grabar',
+	"tooltip-stop": 'Presione para detener la grabación',
 	"tooltip-deleterecording": 'Eliminar grabación',
 	"tooltip-change-translationhelpslanguage": 'Cambiar la traducción ayuda al idioma',
 	"tooltip-5-translationhelp": 'Ayuda de traducción',

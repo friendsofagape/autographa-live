@@ -114,6 +114,8 @@ export default {
     "tooltip-nextverse": 'Next verse',
     "tooltip-previousverse": 'Previous verse',
     "tooltip-start/stop": 'Press and hold for 1 second to start recording.',
+	"tooltip-start": 'Press to start recording',
+	"tooltip-stop": 'Press to stop recording',
 	"tooltip-deleterecording": 'Delete recording',
 	"tooltip-change-translationhelpslanguage": 'Change translationhelps language',
 	"tooltip-5-translationhelp": 'Translation help',

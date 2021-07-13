@@ -4,6 +4,8 @@ import { Typography, AppBar, Slide, Zoom, Tooltip } from '@material-ui/core';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CloseIcon from '@material-ui/icons/Close';
@@ -101,6 +103,7 @@ export default function RecorderNav(props) {
 		setRecverse,
 		fetchTimer,
 		updateJSON,
+		verseExport,
 		startRecording,
 		stopRecording,
 		findBook,
@@ -111,6 +114,15 @@ export default function RecorderNav(props) {
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	const [book, setbook] = useState(BookName);
+	const [anchorEl, setAnchorEl] = React.useState(null);
+
+  	const handleClick = (event) => {
+  	  setAnchorEl(event.currentTarget);
+  	};
+	
+  	const handleClose = () => {
+  	  setAnchorEl(null);
+  	};
 
 	useEffect(() => {
 		if (props.isOpen.audioImport === true) {
@@ -297,7 +309,7 @@ export default function RecorderNav(props) {
 									className={classes.save}
 									style={{ left: '87%' }}>
 									<BootstrapTooltip
-										placement="bottom"
+										// placement="top"
 										style={{ backgroundColor:'black'}}
 										title={<span style={{ fontSize: '10px' }}>
 												<FormattedMessage id="tooltip-exportrecording">
@@ -312,11 +324,21 @@ export default function RecorderNav(props) {
 											size='medium'
 											aria-label='Export'
 											disabled={isLoading===true}
-											onClick={exportAudio}>
+											onClick={handleClick}>
 											<CloudDownloadIcon style={{ fontSize: '1.8rem' }}/>
 										</Fab>
 										</span>
 									</BootstrapTooltip>
+										<Menu
+      									  id="simple-menu"
+      									  anchorEl={anchorEl}
+      									  keepMounted
+      									  open={Boolean(anchorEl)}
+      									  onClose={handleClose}
+      									>
+      									  <MenuItem onClick={exportAudio}>Chapter Export</MenuItem>
+      									  <MenuItem onClick={verseExport}>Verse Export</MenuItem>
+      									</Menu>
 								</span>
 								<span
 									style={{

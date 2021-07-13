@@ -94,6 +94,8 @@ export default {
     "tooltip-nextverse": 'الآية التالية',
     "tooltip-previousverse": 'الآية السابقة',
     "tooltip-start/stop": 'اضغط مع الاستمرار لمدة ثانية واحدة لبدء التسجيل.',
+	"tooltip-start": 'اضغط لبدء التسجيل',
+	"tooltip-stop": 'اضغط لإيقاف التسجيل',
 	"tooltip-deleterecording": 'حذف التسجيل',
 	"tooltip-change-translationhelpslanguage": 'يساعد على تغيير اللغة',
 	"tooltip-5-translationhelp": 'مساعدة الترجمة',
