@@ -33,6 +33,14 @@ jobs:
             - name: set max memory allocation
               run: export NODE_OPTIONS=–max_old_space_size=4096
 
+            # - name: Read version and commit sha
+            #   run:
+            #       echo "::set-env name=HASH::$(node -p -e "'${{ github.sha }}'.substring(0, 7)")"
+            #       echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
+
+            # - name: Set x64 artifact name
+            #   run: echo "::set-env name=ARTIFACT_X64::$(echo "Autographa-linux-x64-${{ env.APP_VERSION }}.exe")"
+
             - name: package
               id: package
               run: |
