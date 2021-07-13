@@ -1,7 +1,7 @@
 {
 	"name": "autographa-live",
 	"description": "A Bible translation editor for everyone. Now live.",
-	"version": "0.2.0-beta.3",
+	"version": "0.2.0-beta.4",
 	"main": "public/electron.js",
 	"author": "Friends of Agape <mathew.joel@protonmail.com>",
 	"license": "GPL-3.0",
@@ -94,9 +94,6 @@
 		"build:electron": "craco build --config craco.config.js main=build/electron.js",
 		"preelectron-pack": "npm run build",
 		"electron-pack": "electron-builder build -p never"
-	},
-	"eslintConfig": {
-		"extends": "react-app"
 	},
 	"browserslist": [
 		">0.2%",

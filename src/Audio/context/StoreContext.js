@@ -2,6 +2,7 @@ import React, { createContext, Component } from 'react';
 import AutographaStore from '../../components/AutographaStore';
 import swal from 'sweetalert';
 import mergeAudios from '../core/mergeAudios';
+import verseExport from '../core/verseExport';
 import createPauseData from '../core/createPauseData';
 import * as mobx from 'mobx';
 const refDb = require(`${__dirname}/../../util/data-provider`).referenceDb();
@@ -247,6 +248,8 @@ class StoreContextProvider extends Component {
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
+		console.log(this.state.recVerse,
+			this.state.storeRecord)
 		save = await mergeAudios(
 			book,
 			chapter,
@@ -254,6 +257,21 @@ class StoreContextProvider extends Component {
 			this.state.storeRecord,
 		);
 	};
+
+	verseExport = async() => {
+		let save,
+			book = {};
+		let chapter = 'Chapter' + AutographaStore.chapterId;
+		book.bookNumber = AutographaStore.bookId.toString();
+		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
+		console.log(this.state.recVerse,
+			this.state.storeRecord)
+		save = await verseExport(
+			book,
+			chapter,
+			this.state.recVerse,
+		);
+	}
 
 	reduceTimer = (deletedTime) => {
 		this.setState({ totalTime: this.state.totalTime - deletedTime });
@@ -362,6 +380,7 @@ class StoreContextProvider extends Component {
 					findChapter: this.findChapter,
 					SetLoader: this.SetLoader,
 					setPreviousTime: this.setPreviousTime,
+					verseExport: this.verseExport
 				}}>
 				{this.props.children}
 			</StoreContext.Provider>

@@ -89,6 +89,8 @@ export default {
     "tooltip-nextverse": 'अगली आयत',
     "tooltip-previousverse": 'पिछला आयत',
     "tooltip-start/stop": 'रिकॉर्डिंग शुरू करने के लिए 1 सेकंड के लिए दबाए रखें।',
+	"tooltip-start": 'रिकॉर्डिंग शुरू करने के लिए दबाएं',
+	"tooltip-stop": 'रिकॉर्डिंग बंद करने के लिए दबाएं',
 	"tooltip-deleterecording": 'रिकॉर्डिंग हटाएं',
 	"tooltip-change-translationhelpslanguage": 'अनुवाद भाषा बदलें',
 	"tooltip-5-translationhelp": 'अनुवाद की मदद',

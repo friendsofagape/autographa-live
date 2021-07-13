@@ -12,7 +12,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 // import Mic from '@material-ui/icons/Mic';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import StopIcon from '@material-ui/icons/Stop';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -22,12 +21,14 @@ import Player from '../AudioPlayer';
 import { ReactMicPlus } from 'react-mic-plus';
 import AutographaStore from '../../../components/AutographaStore';
 import swal from 'sweetalert';
+import StopIcon from '@material-ui/icons/Stop';
 // import TexttoSpeech from '../TexttoSpeech/TexttoSpeech';
 import FontSlider from '../FontSlider/FontSlider';
 import RecorderNav from '../RecorderNav';
 import { Box, Tooltip, Zoom, useTheme } from '@material-ui/core';
 import AudioAnalyser from '../Visualization/AudioAnalyser';
 import { FormattedMessage } from 'react-intl';
+import { useTimer } from './useTimer';
 const { app } = require('electron').remote;
 const fs = require('fs');
 const constants = require('../../../util/constants');
@@ -151,6 +152,7 @@ function BottomBar(props) {
 		resetVal,
 		storeRecord,
 		reduceTimer,
+		secondsElapsed,
 		totalTime,
 		setOnselect,
 		exportAudio,
@@ -166,6 +168,15 @@ function BottomBar(props) {
 		setPreviousTime,
 		isLoading,
 	} = useContext(StoreContext);
+	const { 
+		timer, 
+		isActive, 
+		isPaused, 
+		handleStart, 
+		handlePause, 
+		handleResume, 
+		handleReset 
+	} = useTimer(0)
 	let bookId = AutographaStore.bookId.toString();
 	let BookName = constants.booksList[parseInt(bookId, 10) - 1];
 	var newfilepath = path.join(
@@ -182,6 +193,7 @@ function BottomBar(props) {
 	function onStop(recordedBlob) {
 		saveRecord(recordedBlob)
 	}
+	
 	function deleteRecordedVerse() {
 		const currentTrans = AutographaStore.currentTrans;
 		if (AutographaStore.isWarning === true) {
@@ -277,23 +289,23 @@ function BottomBar(props) {
 		if (record === true) {
 			AutographaStore.currentSession = false;
 		}
+		if(record === true && timer >= 185){
+			stopRecording()
+			handleReset()
+		}
 	});
 	// For space press and hold
 	function handleButtonPress(event) {
-		if (event.key === ' ' && record === false) {
-			setspacekey(true);
-		}
-		if (spacekey === true || event.type === 'mousedown') {
+		if (record === false) {
 			startRecording();
-			// getMicrophone()
-			setspacekey(false);
+			handleStart()
 		}
 	}
 
 	function handleButtonRelease(event) {
 		if (record === true) {
-			setspacekey(false);
 			stopRecording();
+			handleReset()
 			// stopMicrophone()
 		}
 	}
@@ -410,31 +422,52 @@ function BottomBar(props) {
 											className={classes.shadow}>
 											""
 										</Fab>
-										<FormattedMessage id="tooltip-start/stop">
+										<span>
+										{record===false ? (
+										<FormattedMessage id="tooltip-start">
                                 		{(message) =>
 										<Tooltip
 											title={message}
 											TransitionComponent={Zoom}>
-											<span>
-											<Fab
+												<Fab
 												color='secondary'
 												aria-label='start'
 												disabled={isLoading===true}
 												className={classes.start}
-												onKeyDown={handleButtonPress}
-												onKeyUp={handleButtonRelease}
-												onMouseDown={handleButtonPress}
-												onMouseUp={handleButtonRelease}>
+												onClick={handleButtonPress}>
 												<FiberManualRecordIcon
 													style={{
 														fontSize: '1.8rem',
 													}}
 												/>
 											</Fab>
-											</span>
+											
 										</Tooltip>
 										}
 										</FormattedMessage>
+										):(
+												<FormattedMessage id="tooltip-stop">
+                                				{(message) =>
+													<Tooltip
+														title={message}
+														TransitionComponent={Zoom}>
+														<Fab
+														color='secondary'
+														aria-label='start'
+														disabled={isLoading===true}
+														className={classes.start}
+														onClick={handleButtonRelease}>
+															<StopIcon
+																style={{
+																	fontSize: '1.8rem',
+																}}
+															/>
+														</Fab>
+												</Tooltip>
+												}
+												</FormattedMessage>
+										)}
+										</span>
 									</span>
 								</span>
 								<span

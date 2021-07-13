@@ -974,7 +974,7 @@ class Navbar extends React.Component {
                         <div style={{ padding: "10px"}} className="layout3x"><TranslationPanel vId={AutographaStore.vId} onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
                 }  
-                {
+                {/* {
                     AutographaStore.layout === 4 &&
                     <div className="parentdiv">
                         <div className="layoutx">
@@ -990,7 +990,7 @@ class Navbar extends React.Component {
                         </div>
                         <div  style={{padding: "10px"}} className="layoutx"><TranslationPanel onSave={this.saveTarget} tIns = {AutographaStore.tIns[0]} tDel = {AutographaStore.tDel[0]}/></div>
                     </div>
-                }  
+                }   */}
                 <Footer onSave={this.saveTarget} getRef = {this.getRefContents}/>
                 {this.state.showLoader ? <Loader /> : ""}
             </div>
