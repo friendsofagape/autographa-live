@@ -23,19 +23,15 @@ jobs:
             - run: |
                   node --version
                   npm --version
-            
+
             - name: set @bitregistry translation-help
               run: npm config set '@bit:registry' https://node.bit.dev
 
             - name: npm install
               run: npm ci
 
-            - name: Read version and commit sha
-              run: |
-                  echo "::set-env name=HASH::$(echo $GITHUB_SHA | cut -c1-7)"
-                  echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
-            - name: Set artifact name
-              run: echo "::set-env name=ARTIFACT_NAME::$(echo "Autographa-linux-x64-$APP_VERSION.deb")"
+            - name: set max memory allocation
+              run: export NODE_OPTIONS=–max_old_space_size=4096
 
             - name: package
               id: package
@@ -48,7 +44,7 @@ jobs:
             - name: Upload artifacts
               uses: actions/upload-artifact@v1
               with:
-                  name: ${{ env.ARTIFACT_NAME }}
+                  name: Autographa
                   path: dist
 
     build-windows:
@@ -74,13 +70,16 @@ jobs:
             - name: npm install
               run: npm ci
 
-            - name: Read version and commit sha
-              run:
-                  echo "::set-env name=HASH::$(node -p -e "'${{ github.sha }}'.substring(0, 7)")"
-                  echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
+            - name: set max memory allocation
+              run: export NODE_OPTIONS=–max_old_space_size=4096
 
-            - name: Set x64 artifact name
-              run: echo "::set-env name=ARTIFACT_X64::$(echo "Autographa-win-x64-${{ env.APP_VERSION }}.exe")"
+            # - name: Read version and commit sha
+            #   run:
+            #       echo "::set-env name=HASH::$(node -p -e "'${{ github.sha }}'.substring(0, 7)")"
+            #       echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
+
+            # - name: Set x64 artifact name
+            #   run: echo "::set-env name=ARTIFACT_X64::$(echo "Autographa-win-x64-${{ env.APP_VERSION }}.exe")"
 
             - name: packaging
               id: packaging
@@ -99,7 +98,7 @@ jobs:
             - name: Upload artifacts ${{ env.ARTIFACT_X64 }}
               uses: actions/upload-artifact@v1
               with:
-                  name: ${{ env.ARTIFACT_X64 }}
+                  name: Autographa
                   path: artifacts
 
     build-mac:
@@ -122,16 +121,19 @@ jobs:
                   npm --version
             - name: set @bitregistry translation-help
               run: npm config set '@bit:registry' https://node.bit.dev
-              
+
             - name: npm install
               run: npm ci
 
-            - name: Read version and commit sha
-              run: |
-                  echo "::set-env name=HASH::$(echo $GITHUB_SHA | cut -c1-7)"
-                  echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
-            - name: Set artifact name
-              run: echo "::set-env name=ARTIFACT_NAME::$(echo "Autographa-mac-x64-$APP_VERSION.dmg")"
+            - name: set max memory allocation
+              run: export NODE_OPTIONS=–max_old_space_size=4096
+
+            # - name: Read version and commit sha
+            #   run: |
+            #       echo "::set-env name=HASH::$(echo $GITHUB_SHA | cut -c1-7)"
+            #       echo "::set-env name=APP_VERSION::$(node -p -e "require('./package.json').version")"
+            # - name: Set artifact name
+            #   run: echo "::set-env name=ARTIFACT_NAME::$(echo "Autographa-mac-x64-$APP_VERSION.dmg")"
 
             - name: package
               id: package
@@ -143,5 +145,5 @@ jobs:
             - name: Upload artifacts
               uses: actions/upload-artifact@v1
               with:
-                  name: ${{ env.ARTIFACT_NAME }}
+                  name: Autographa
                   path: dist
