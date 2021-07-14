@@ -273,22 +273,9 @@ class TranslationPanel extends React.Component {
 							`Chapter${AutographaStore.chapterId}`,
 							`verse${versenum}.mp3`,
 						);
-						audiomp3.push(newfilepath)
+						AutographaStore.blobURL = newfilepath
 					}
 				});
-				audio
-					.fetchAudio( ...audiomp3 )
-					.then((buffers) => {
-						// => [AudioBuffer, AudioBuffer]
-						merged = audio.concatAudio(buffers);
-					})
-					.then(() => {
-						// => AudioBuffer
-						output = audio.export(merged, 'audio/mp3');
-					})
-					.then(() => {
-						AutographaStore.blobURL = output.url
-					});
 			}
 
 	}
