@@ -248,8 +248,6 @@ class StoreContextProvider extends Component {
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
-		console.log(this.state.recVerse,
-			this.state.storeRecord)
 		save = await mergeAudios(
 			book,
 			chapter,
@@ -264,8 +262,6 @@ class StoreContextProvider extends Component {
 		let chapter = 'Chapter' + AutographaStore.chapterId;
 		book.bookNumber = AutographaStore.bookId.toString();
 		book.bookName = constants.booksList[parseInt(book.bookNumber, 10) - 1];
-		console.log(this.state.recVerse,
-			this.state.storeRecord)
 		save = await verseExport(
 			book,
 			chapter,

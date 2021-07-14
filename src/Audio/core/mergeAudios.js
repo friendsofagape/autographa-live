@@ -14,16 +14,14 @@ const mergeAudios = async(book, chapter, versenum,) => {
         let doc = await db.get('targetBible');
         let filepath = doc.targetPath
         let outputmetaData = [];
+        let audiomp3 =[];
         if (fs.existsSync(path.join(app.getPath('userData'), 'recordings',book.bookName, chapter))){
 				// fileReader.readAsArrayBuffer()
-                let audiomp3 =[];
                 versenum = versenum.sort((a,b)=> a-b)
                 versenum.forEach(function(verse, i) {
-                    let audioImport;
-					audioImport = (path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${verse}.mp3`))
-                    audiomp3.push(audioImport)
+                    audiomp3.push((path.join(app.getPath('userData'), 'recordings',book.bookName, chapter , `verse${verse}.mp3`)))
                   });
-                  console.log(audiomp3)
+                  console.log("path", path.join(filepath[0],'recordings',book.bookName, chapter))
 				audio
 					.fetchAudio(...audiomp3)
 					.then((buffers) => {
@@ -38,13 +36,14 @@ const mergeAudios = async(book, chapter, versenum,) => {
 					})
 					.then(() => {
                         console.log('out', output);
-                        fs.mkdirSync(path.join(filepath[0],'recordings',book.bookName, chapter, { recursive: true }))
+                        let destinationPath = path.join(filepath[0],'recordings',book.bookName, chapter)
+                        fs.mkdirSync(destinationPath, { recursive: true })
 
-                        if (fs.existsSync(path.join(filepath[0],'recordings',book.bookName, chapter, `${chapter}.mp3`))){
+                        if (fs.existsSync(destinationPath)){
                             writeRecfile(output.blob, path.join(filepath[0],'recordings',book.bookName, chapter, `${chapter}.mp3`))
                         }
                         else {
-                            fs.mkdirSync(path.join(filepath[0],'recordings',book.bookName, chapter, { recursive: true }))
+                            fs.mkdirSync(destinationPath, { recursive: true })
                             writeRecfile(output.blob, path.join(filepath[0],'recordings',book.bookName, chapter, `${chapter}.mp3`))
                         }
                     })
@@ -102,6 +101,9 @@ const mergeAudios = async(book, chapter, versenum,) => {
                         const currentTrans = AutographaStore.currentTrans;
                         let filePath = path.join(filepath[0], 'recordings', book.bookName, chapter);
                         AutographaStore.isAudioSave = true
+                        audiomp3 = undefined
+                        merged = undefined
+                        output = undefined
                         swal({title: currentTrans["dynamic-msg-export-recording"], text: `${currentTrans["label-folder-location"]} : ${filePath}` ,  icon: 'success'})
                     })
 				audio.notSupported(() => {

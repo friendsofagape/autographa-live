@@ -1,7 +1,7 @@
 {
 	"name": "autographa-live",
 	"description": "A Bible translation editor for everyone. Now live.",
-	"version": "0.2.0-beta.4",
+	"version": "0.2.1-beta.1",
 	"main": "public/electron.js",
 	"author": "Friends of Agape <mathew.joel@protonmail.com>",
 	"license": "GPL-3.0",
@@ -25,6 +25,7 @@
 		"pouchdb": "^7.1.1",
 		"pouchdb-quick-search": "^1.3.0",
 		"react": "^16.8.4",
+		"react-audio-player": "^0.17.0",
 		"react-bootstrap": "^0.32.1",
 		"react-bootstrap-slider": "^2.1.5",
 		"react-contextmenu": "^2.13.0",

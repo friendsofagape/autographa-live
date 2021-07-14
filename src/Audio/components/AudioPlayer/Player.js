@@ -3,6 +3,7 @@ import AudioPlayer from 'react-h5-audio-player';
 import { makeStyles } from '@material-ui/core/styles';
 import { StoreContext } from '../../context/StoreContext';
 import AutographaStore from '../../../components/AutographaStore';
+import ReactAudioPlayer from 'react-audio-player';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -16,6 +17,10 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: 20,
 		position: 'static',
 	},
+	player:{
+		flexGrow: 1,
+		margin: theme.spacing(1),
+	}
 }));
 
 const Player = (props) => {
@@ -23,15 +28,11 @@ const Player = (props) => {
 	return (
 		<div>
 			{AutographaStore.isPlaying && (
-				<div className={classes.root} >
-					<AudioPlayer
-						src={AutographaStore.blobURL}
-						onPause={() => (AutographaStore.isPlaying = false)}
-						showDownloadProgress={true}
-						showVolumeControl={true}
-						showJumpControls={true}
-						onEnded={(e) => (AutographaStore.isPlaying = false)}
-					/>
+				<div className={classes.player} >
+				<ReactAudioPlayer
+					src={AutographaStore.blobURL}
+					controls
+				/>
 				</div>
 			)}
 		</div>
