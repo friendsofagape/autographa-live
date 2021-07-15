@@ -186,6 +186,7 @@ export default {
 	"label-exported-book": "Subir exitosa",
 	"label-create-project": "Crear nuevo proyecto",
 	"label-backup-usfm": "Todos los archivos USFM se han guardado en",
+	"label-title-verse" : "Verso",
 	"usfm-bookid-missing": "El archivo USFM sin ID de libro no es compatible",
 	"usfm-chaper-missing": "Los archivos USFM sin ID de capítulos no son compatibles",
 	"usfm-warning1-chapter": "Falta el capítulo",
