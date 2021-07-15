@@ -336,8 +336,12 @@ export default function RecorderNav(props) {
       									  open={Boolean(anchorEl)}
       									  onClose={handleClose}
       									>
-      									  <MenuItem onClick={exportAudio}>Chapter Export</MenuItem>
-      									  <MenuItem onClick={verseExport}>Verse Export</MenuItem>
+      									  	<MenuItem onClick={exportAudio}>
+												<FormattedMessage id="usfm-warning1-chapter" />
+											</MenuItem>
+      									  	<MenuItem onClick={verseExport}>
+												<FormattedMessage id="label-title-verse" />
+											</MenuItem>
       									</Menu>
 								</span>
 								<span

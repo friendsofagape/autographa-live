@@ -117,6 +117,7 @@ export default {
 	"label-usfm": "usfm",
 	"label-empty-chapters" : "الفصول الفارغة",
 	"label-incomplete-verses" : "ممكن الآيات غير كاملة",
+	"label-title-verse" : "بيت شعر",
 	"label-multiple-spaces" : "آيات مع مساحات متعددة",
 	"label-statistic-heading": "إحصائيات كتاب",
 	"label-paratext": "Paratext",

@@ -97,6 +97,7 @@ export default {
     "label-Recorder": 'रिकॉर्डर',
 	"modal-import-report" : "आयात रिपोर्ट",
 	"modal-title-about" : "के विषय में",
+	"label-title-verse" : "आयत",
 	"label-books-tab" : "पुस्तकें",
 	"label-chapter-tab" : "अध्याय",
 	"label-overview-tab" : "अवलोकन",

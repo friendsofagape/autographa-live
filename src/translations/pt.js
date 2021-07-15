@@ -98,6 +98,7 @@ export default {
 	"modal-title-about" : "Sobre",
 	"label-books-tab" : "Livros",
 	"label-chapter-tab" : "Capítulos",
+	"label-title-verse" : "Versículo",
 	"label-overview-tab" : "Visão geral do conjunto",
 	"label-license-tab" : "Licença",
 	"label-hosted-url": "Código-fonte disponível em",

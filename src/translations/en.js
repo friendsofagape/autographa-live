@@ -122,6 +122,7 @@ export default {
 	"modal-import-report" : "Import Report",
 	"modal-title-about" : "About",
 	"label-books-tab" : "Books",
+	"label-title-verse" : "Verse",
 	"label-chapter-tab" : "Chapters",
 	"label-overview-tab" : "Overview",
 	"label-license-tab" : "License",
